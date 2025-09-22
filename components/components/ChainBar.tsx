@@ -98,7 +98,7 @@ export default function ChainBar() {
   };
 
   return (
-    <div className="mb-16 backdrop-blur-sm border-white border-y-[0.5px]">
+    <div className="backdrop-blur-sm border-white border-y-[0.5px]">
       <div
         ref={containerRef}
         className="relative overflow-hidden select-none"

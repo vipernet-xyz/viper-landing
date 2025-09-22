@@ -8,8 +8,8 @@ export function TechShowcase() {
         {/* Partner Logos */}
         <ChainBar />
         {/* Main Heading */}
-        <div className="text-center mb-12">
-          <h2 className="text-5xl md:text-6xl font-bold text-white mb-6 font-inter">
+        <div className="text-center flex flex-col gap-8 py-24">
+          <h2 className="text-4xl md:text-5xl font-bold text-white font-inter">
             Built for Developers,<br />
             Built for Web3
           </h2>
