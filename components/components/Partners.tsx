@@ -14,7 +14,7 @@ const partners = [
   { src: "assets/partners/partner-8.svg", alt: "Partner 8" },
 ];
 
-export default function ChainBar() {
+export default function Partners() {
   const [isPaused, setIsPaused] = useState(false);
 
   const contentRef = useRef<HTMLDivElement>(null);
