@@ -43,7 +43,7 @@ export function WhyChooseViper() {
   const getCardClasses = (index) => {
     const isTopRow = index < 2
     const isBottomRow = index >= features.length - 2
-    let classes = "bg-transparent border-white/20 transition-colors rounded-none h-full"
+    let classes = "bg-transparent border-white/20 transition-colors rounded-none h-full pt-16 pb-4 pr-12"
 
     if (isTopRow) {
       classes += " border-t-0"
