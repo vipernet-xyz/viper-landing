@@ -1,23 +1,19 @@
 'use client'
-import ChainBar from "../components/ChainBar"
+import FeaturesBullets from "../components/FeaturesBullets"
+import FeaturesHeader from "../components/FeaturesHeader"
+import Partners from "../components/Partners"
 
 export function TechShowcase() {
 
   return (
-    <section className="">
-        {/* Partner Logos */}
-        <ChainBar />
-        {/* Main Heading */}
-        <div className="text-center flex flex-col gap-8 py-24">
-          <h2 className="text-4xl md:text-5xl font-bold text-white font-inter">
-            Built for Developers,<br />
-            Built for Web3
-          </h2>
-          <p className="text-xl text-white/70 max-w-3xl mx-auto font-space-grotesk">
-            Powered by a global fleet of nodes—delivering security, reliability, and
-            scalability for every blockchain app.
-          </p>
+    <section id='features'>
+        <Partners />
+        <FeaturesHeader />
+        <div className="flex flex-col gap-4 max-w-7xl mx-auto lg:flex-row lg:items-center py-16 px-6">
+          <div className="h-[320px] lg:w-2/3"></div>
+            <FeaturesBullets />
         </div>
+        <p className="text-center underline text-lg">View Docs To Know More</p>
     </section>
   )
 }
