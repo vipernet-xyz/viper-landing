@@ -19,22 +19,6 @@ export function HeroSection() {
       {/* Hero Content */}
       <div className="relative z-10 flex-1 flex items-center justify-center px-4">
         <div className="text-center max-w-4xl mx-auto">
-          {/* Floating Icons */}
-          <div className="absolute -top-20 -left-20 floating-animation">
-            <Diamond className="h-16 w-16 text-white/30" />
-          </div>
-          <div className="absolute -top-10 -right-20 floating-animation" style={{ animationDelay: '2s' }}>
-            <Atom className="h-20 w-20 text-white/20" />
-          </div>
-          <div className="absolute -bottom-10 -left-10 floating-animation" style={{ animationDelay: '4s' }}>
-            <Link2 className="h-12 w-12 text-white/25" />
-          </div>
-          <div className="absolute top-10 right-10 floating-animation" style={{ animationDelay: '1s' }}>
-            <Blocks className="h-14 w-14 text-white/25" />
-          </div>
-          <div className="absolute bottom-20 right-20 floating-animation" style={{ animationDelay: '3s' }}>
-            <Diamond className="h-10 w-10 text-white/30" />
-          </div>
 
           <h1 className="text-7xl md:text-8xl font-bold text-white mb-6 font-inter">
             Viper Network
