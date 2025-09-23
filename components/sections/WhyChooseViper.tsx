@@ -1,5 +1,4 @@
 'use client'
-
 import { Card, CardContent } from "@/components/ui/card"
 import DollarIcon from "@/components/icons/DollarIcon"
 import GlobeIcon from "@/components/icons/GlobeIcon"
@@ -41,32 +40,73 @@ export function WhyChooseViper() {
     }
   ]
 
+  const getCardClasses = (index) => {
+    const isTopRow = index < 2
+    const isBottomRow = index >= features.length - 2
+    let classes = "bg-transparent border-white/20 transition-colors rounded-none h-full"
+
+    if (isTopRow) {
+      classes += " border-t-0"
+    }
+    if (isBottomRow) {
+      classes += " border-b-0"
+    }
+
+    return classes
+  }
+
+  const renderGridItem = (index) => {
+    const feature = features[index]
+
+    return (
+      <div key={index} className="col-span-2 h-full">
+        <Card className={getCardClasses(index)}>
+          <CardContent className="p-8">
+            <div className="mb-6">
+              {feature.icon}
+            </div>
+            <h3 className="text-xl font-bold text-white mb-4 font-lato">
+              {feature.title}
+            </h3>
+            <p className="text-white/80 font-lato leading-relaxed">
+              {feature.description}
+            </p>
+          </CardContent>
+        </Card>
+      </div>
+    )
+  }
+
   return (
-    <section className="py-20 px-4">
-      <div className="max-w-7xl mx-auto">
+    <section className="py-20">
+      <div>
         <h2 className="text-5xl font-bold text-white text-center mb-16 font-inter">
           Why choose Viper?
         </h2>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {features.map((feature, index) => (
-            <Card key={index} className="bg-transparent border-white/20 hover:border-white/40 transition-colors">
-              <CardContent className="p-8">
-                <div className="mb-6">
-                  {feature.icon}
-                </div>
-                <h3 className="text-xl font-bold text-white mb-4 font-lato">
-                  {feature.title}
-                </h3>
-                <p className="text-white/80 font-lato leading-relaxed">
-                  {feature.description}
-                </p>
-                <div className="text-white/20 text-2xl mt-6 font-space-grotesk">
-                  +
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+        {/* Top Row */}
+        <div className="grid md:grid-cols-6">
+          <div className="border-b-white/20 border-b h-full"></div>
+          {renderGridItem(0)}
+          {renderGridItem(1)}
+          <div className="border-b-white/20 border-b h-full"></div>
+        </div>
+
+        {/* Middle Row */}
+        <div className="grid md:grid-cols-6">
+           <div className="border-b-white/20 border-b h-full"></div>
+          {renderGridItem(2)}
+          {renderGridItem(3)}
+          <div className="border-b-white/20 border-b h-full"></div>
+
+        </div>
+
+        {/* Bottom Row */}
+        <div className="grid md:grid-cols-6">
+          <div className=""></div>
+          {renderGridItem(4)}
+          {renderGridItem(5)}
+          <div className=""></div>
         </div>
       </div>
     </section>
