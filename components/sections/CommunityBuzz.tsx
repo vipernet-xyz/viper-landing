@@ -81,7 +81,7 @@ export function CommunityBuzz() {
   }, [emblaApi, onSelect])
 
   return (
-    <section className="py-20 px-4">
+    <section className="py-20 px-4 mb-[26rem]">
       <div className="container mx-auto">
         <h2 className="text-5xl font-bold text-white text-center mb-16 font-inter">
           Community Buzz

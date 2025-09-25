@@ -5,8 +5,19 @@ import { Blocks } from "lucide-react"
 
 export function FooterCTA() {
   return (
-    <section className="py-20 px-4 relative">
-      <div className="absolute inset-0 bg-gradient-to-t from-black via-purple-900/20 to-transparent" />
+    <section className="py-20 px-4 relative h-[57rem]">
+      {/* SVG Background */}
+      <div className="absolute inset-0 overflow-hidden -top-[38rem]">
+        <div 
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: 'url(/assets/footerBG.svg)',
+            backgroundSize: 'cover',
+            backgroundPosition: 'center',
+            backgroundRepeat: 'no-repeat'
+          }}
+        />
+      </div>
       
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Main CTA */}
