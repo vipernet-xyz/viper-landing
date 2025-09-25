@@ -1,9 +1,9 @@
-'use client'
+"use client";
 
-import { useCallback, useEffect, useState } from "react"
-import useEmblaCarousel from "embla-carousel-react"
-import Autoplay from "embla-carousel-autoplay"
-import { Testimonial } from "@/components/ui/testimonial"
+import { useCallback, useEffect, useState } from "react";
+import useEmblaCarousel from "embla-carousel-react";
+import Autoplay from "embla-carousel-autoplay";
+import { Testimonial } from "../components/Testimonial";
 
 const testimonials = [
   {
@@ -55,10 +55,10 @@ const testimonials = [
     content:
       "Put my nodes up on Viper last night. I'm 66 years old and found it so simple to get them running, a two year old could do it. Great job development team.",
   },
-]
+];
 
 export function CommunityBuzz() {
-  const [selectedIndex, setSelectedIndex] = useState(0)
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const [emblaRef, emblaApi] = useEmblaCarousel(
     {
@@ -66,18 +66,18 @@ export function CommunityBuzz() {
       loop: true,
       slidesToScroll: 1,
     },
-    [Autoplay({ delay: 2500, stopOnInteraction: false })]
-  )
+    [Autoplay({ delay: 3500, stopOnInteraction: true })],
+  );
 
   const onSelect = useCallback((emblaApi) => {
-    setSelectedIndex(emblaApi.selectedScrollSnap())
-  }, [])
+    setSelectedIndex(emblaApi.selectedScrollSnap());
+  }, []);
 
   useEffect(() => {
-    if (!emblaApi) return
-    emblaApi.on("select", onSelect)
-    onSelect(emblaApi)
-  }, [emblaApi, onSelect])
+    if (!emblaApi) return;
+    emblaApi.on("select", onSelect);
+    onSelect(emblaApi);
+  }, [emblaApi, onSelect]);
 
   return (
     <section className="py-20">
@@ -86,8 +86,8 @@ export function CommunityBuzz() {
           Community Buzz
         </h2>
 
-        <div className="relative">
-          <div className="overflow-hidden" ref={emblaRef}>
+        <div className="relative overflow-x-clip">
+          <div className="" ref={emblaRef}>
             <div className="flex">
               {testimonials.map((testimonial, index) => (
                 <div
@@ -105,5 +105,5 @@ export function CommunityBuzz() {
         </div>
       </div>
     </section>
-  )
+  );
 }
