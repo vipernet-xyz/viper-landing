@@ -78,7 +78,36 @@ export function WhyChooseViper() {
   }
 
   return (
-    <section className="py-20">
+    <section className="py-20 relative overflow-hidden">
+      {/* Background circles */}
+      <div
+        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none"
+        style={{
+          backgroundImage: "url('/assets/circles.svg')",
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'left',
+          backgroundSize: 'contain',
+          width: '400px',
+          height: '800px',
+          top: '67%',
+          left: '9rem',
+        }}
+      />
+      {/* Right side circles */}
+      <div
+        className="absolute right-0 top-1/2 -translate-y-[30%] translate-x-[60%] pointer-events-none"
+        style={{
+          backgroundImage: "url('/assets/circles.svg')",
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'right',
+          backgroundSize: 'contain',
+          width: '400px',
+          height: '800px',
+          top: '15%',
+          right: '11rem',
+          transform: 'scaleX(-1)',
+        }}
+      />
       <div>
         <h2 className="text-5xl font-bold text-white text-center mb-16 font-inter">
           Why choose Viper?

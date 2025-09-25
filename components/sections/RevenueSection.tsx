@@ -25,29 +25,55 @@ export function RevenueSection() {
         <h2 className="text-5xl font-bold text-white font-inter px-8 py-8 border-b border-white/20">
           Turn Reliability Into Revenue
         </h2>
-        <div className="flex flex-col border-r border-r-white/20 lg:w-[45%]">
-          {features.map((feature, index) => (
-            <div key={index} className="border-b border-b-white/20 py-16 px-12">
+        <div className="grid grid-cols-2">
+
+          <div className="flex flex-col border-r border-r-white/20 col-span-1">
+            {features.map((feature, index) => (
+              <div key={index} className="border-b border-b-white/20 py-16 px-12">
+                <h3 className="text-xl font-bold text-white mb-4 font-space-grotesk">
+                  {feature.title}
+                </h3>
+                <p className="text-white/70 font-space-grotesk text-xl">
+                  {feature.description}
+                </p>
+              </div>
+            ))}
+            <div className="pt-16 pb-12 px-12">
               <h3 className="text-xl font-bold text-white mb-4 font-space-grotesk">
-                {feature.title}
+                Maximise Your Earning With Viper
               </h3>
-              <p className="text-white/70 font-space-grotesk text-xl">
-                {feature.description}
+              <p className="text-white/70 font-space-grotesk mb-12 text-xl">
+                Viper is built to keep node ops sustainable and profitable long-term.
               </p>
+              <Button className="bg-transparent border border-white/30 text-white hover:bg-white/10 font-space-grotesk">
+                Run a Node
+              </Button>
             </div>
-          ))}
-          <div className="pt-16 pb-12 px-12">
-            <h3 className="text-xl font-bold text-white mb-4 font-space-grotesk">
-              Maximise Your Earning With Viper
-            </h3>
-            <p className="text-white/70 font-space-grotesk mb-12 text-xl">
-              Viper is built to keep node ops sustainable and profitable long-term.
-            </p>
-            <Button className="bg-transparent border border-white/30 text-white hover:bg-white/10 font-space-grotesk">
-              Run a Node
-            </Button>
+
+          </div>
+          <div className="col-span-1 relative flex items-center justify-center p-8">
+            {/* Three circles background */}
+            <div
+              className="absolute inset-0 pointer-events-none z-0"
+              style={{
+                backgroundImage: "url('/assets/threecircles.svg')",
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'center',
+                backgroundSize: 'cover',
+              }}
+            />
+
+            {/* Main reliability illustration */}
+            <div className="relative z-20 flex flex-col items-center">
+              <img
+                src="/assets/reliability.svg"
+                alt="Reliability Network"
+                className="w-full max-w-md h-auto"
+              />
+            </div>
           </div>
         </div>
+
       </div>
     </section>
   )
