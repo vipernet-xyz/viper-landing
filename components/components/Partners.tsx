@@ -1,8 +1,8 @@
-'use client';
+"use client";
 
-import React, { useState, useRef, useEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import Image from "next/image";
-import { Marquee } from '../ui/marquee';
+import { Marquee } from "../ui/marquee";
 
 const partners = [
   { src: "assets/partners/partner-1.svg", alt: "Partner 1" },
@@ -22,14 +22,14 @@ export default function Partners() {
     return duplicatedPartners.map((partner, index) => (
       <div
         key={index}
-        className="flex items-center justify-center px-4 py-8 border border-white"
-        style={{ width: `145px` }}
+        className="flex items-center justify-center lg:px-4 py-4 lg:py-8 border border-white w-24 lg:w-36"
       >
         <Image
           src={partner.src}
           alt={partner.alt}
           height={60}
           width={60}
+          className="w-12 h-12 lg:w-14 lg:h-14"
           draggable={false}
         />
       </div>
@@ -38,9 +38,7 @@ export default function Partners() {
 
   return (
     <div className="backdrop-blur-sm">
-     <Marquee pauseOnHover>
-          {renderContent()}
-    </Marquee>
+      <Marquee pauseOnHover>{renderContent()}</Marquee>
     </div>
   );
 }
