@@ -1,24 +1,24 @@
-'use client'
+"use client";
 
-import { Button } from "@/components/ui/button"
-import { Blocks } from "lucide-react"
+import { Button } from "@/components/ui/button";
+import { Blocks } from "lucide-react";
 
 export function FooterCTA() {
   return (
     <section className="py-20 px-4 relative h-[57rem]">
       {/* SVG Background */}
       <div className="absolute inset-0 overflow-hidden -top-[38rem]">
-        <div 
+        <div
           className="absolute inset-0 w-full h-full"
           style={{
-            backgroundImage: 'url(/assets/footerBG.svg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            backgroundRepeat: 'no-repeat'
+            backgroundImage: "url(/assets/footerBG.svg)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
           }}
         />
       </div>
-      
+
       <div className="max-w-7xl mx-auto relative z-10">
         {/* Main CTA */}
         <div className="text-center mb-20">
@@ -28,12 +28,19 @@ export function FooterCTA() {
           <h2 className="text-6xl md:text-7xl font-bold text-white/90 mb-12 font-inter">
             Needs You.
           </h2>
-          
+
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button size="lg" className="bg-white text-black hover:bg-white/90 font-space-grotesk font-medium">
+            <Button
+              size="lg"
+              className="bg-white text-black hover:bg-[#9c7ff162] hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-xs lg:text-base"
+            >
               Get Started
             </Button>
-            <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 font-space-grotesk">
+            <Button
+              size="lg"
+              variant="outline"
+              className="border-white/30 text-white hover:bg-white/10 font-space-grotesk"
+            >
               Join Community
             </Button>
           </div>
@@ -50,7 +57,7 @@ export function FooterCTA() {
               <p className="text-white font-space-grotesk">Doc</p>
             </div>
           </div>
-          
+
           <div>
             <h3 className="text-xl font-bold text-white mb-6 font-space-grotesk">
               + Community:
@@ -70,7 +77,7 @@ export function FooterCTA() {
           <div className="flex items-center space-x-2 mb-4 md:mb-0">
             <Blocks className="h-12 w-12 text-white" />
           </div>
-          
+
           <p className="text-white/70 font-space-grotesk text-sm">
             © 2025 Viper Network Inc. All Rights Reserved
           </p>
@@ -84,5 +91,5 @@ export function FooterCTA() {
         </div>
       </div>
     </section>
-  )
+  );
 }

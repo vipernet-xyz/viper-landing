@@ -11,6 +11,9 @@ importers:
       '@kombai/react-error-boundary':
         specifier: ^1.1.0
         version: 1.1.0(react@19.1.0)
+      '@lottiefiles/react-lottie-player':
+        specifier: ^3.6.0
+        version: 3.6.0(react@19.1.0)
       '@radix-ui/react-accordion':
         specifier: ^1.2.12
         version: 1.2.12(@types/react-dom@19.1.9(@types/react@19.1.13))(@types/react@19.1.13)(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
@@ -577,6 +580,11 @@ packages:
     resolution: {integrity: sha512-QZ3x87LjaNACT7srWGZdaSVL3uGUw8Utt/1cHRqmmoBrcVU8WsxTpANJMHcRRWwAuNQWjkfQIejhXJ+tw6Xftw==}
     peerDependencies:
       react: '>=16.13.1'
+
+  '@lottiefiles/react-lottie-player@3.6.0':
+    resolution: {integrity: sha512-WK5TriLJT93VF3w4IjSVyveiedraZCnDhKzCPhpbeLgQeMi6zufxa3dXNc4HmAFRXq+LULPAy+Idv1rAfkReMA==}
+    peerDependencies:
+      react: 16 - 19
 
   '@modelcontextprotocol/sdk@1.18.1':
     resolution: {integrity: sha512-d//GE8/Yh7aC3e7p+kZG8JqqEAwwDUmAfvH1quogtbk+ksS6E0RR6toKKESPYYZVre0meqkJb27zb+dhqE9Sgw==}
@@ -2362,6 +2370,9 @@ packages:
     resolution: {integrity: sha512-lyuxPGr/Wfhrlem2CL/UcnUc1zcqKAImBDzukY7Y5F/yQiNdko6+fRLevlw1HgMySw7f611UIY408EtxRSoK3Q==}
     hasBin: true
 
+  lottie-web@5.13.0:
+    resolution: {integrity: sha512-+gfBXl6sxXMPe8tKQm7qzLnUy5DUPJPKIyRHwtpCpyUEYjHYRJC/5gjUvdkuO2c3JllrPtHXH5UJJK8LRYl5yQ==}
+
   lru-cache@5.1.1:
     resolution: {integrity: sha512-KpNARQA3Iwv+jTA0utUVVbrh+Jlrr1Fv0e56GGzAFOXN7dk/FviaDW8LHmK52DlcH4WP2n6gI8vN1aesBFgo9w==}
 
@@ -3629,6 +3640,11 @@ snapshots:
   '@kombai/react-error-boundary@1.1.0(react@19.1.0)':
     dependencies:
       '@babel/runtime': 7.28.4
+      react: 19.1.0
+
+  '@lottiefiles/react-lottie-player@3.6.0(react@19.1.0)':
+    dependencies:
+      lottie-web: 5.13.0
       react: 19.1.0
 
   '@modelcontextprotocol/sdk@1.18.1':
@@ -5345,6 +5361,8 @@ snapshots:
   loose-envify@1.4.0:
     dependencies:
       js-tokens: 4.0.0
+
+  lottie-web@5.13.0: {}
 
   lru-cache@5.1.1:
     dependencies:

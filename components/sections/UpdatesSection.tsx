@@ -1,7 +1,7 @@
-'use client'
+"use client";
 
-import { Button } from "@/components/ui/button"
-import UpdateCard from "../components/UpdateCard"
+import { Button } from "@/components/ui/button";
+import UpdateCard from "../components/UpdateCard";
 
 export function UpdatesSection() {
   const updates = [
@@ -14,13 +14,17 @@ export function UpdatesSection() {
       image: "/images/blog-2.png",
       date: "May 30, 2024",
       title: "Viper Network Partners with Kakarot zkEVM",
-    }
-  ]
+    },
+  ];
 
   return (
     <section
       className="py-20 px-4 min-h-screen bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: "url('/assets/community-grid.svg')", backgroundSize: "cover", backgroundPosition: "center" }}
+      style={{
+        backgroundImage: "url('/assets/community-grid.svg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+      }}
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-24">
@@ -38,12 +42,12 @@ export function UpdatesSection() {
         <div className="text-center mt-12">
           <Button
             variant="outline"
-            className="border-white/30 text-white hover:bg-white/10 font-space-grotesk"
+            className=" hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base"
           >
             Browse More
           </Button>
         </div>
       </div>
     </section>
-  )
+  );
 }
