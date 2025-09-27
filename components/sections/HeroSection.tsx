@@ -42,6 +42,27 @@ export function HeroSection() {
 
       {/* Hero Content */}
       <div className="relative z-10 flex-1 flex items-center justify-center px-4">
+        {/* Light beam extending upward from hero asset */}
+        <motion.div
+          className="absolute bottom-0 left-1/2 transform -translate-x-1/2 pointer-events-none"
+          initial={{ opacity: 0, scaleY: 0 }}
+          animate={{ opacity: 1, scaleY: 1 }}
+          transition={{ duration: 2, delay: 1.5, ease: "easeOut" }}
+        >
+          <motion.div
+            className="w-32 h-96 bg-gradient-to-t from-purple-500/30 via-purple-400/15 to-transparent rounded-full blur-2xl"
+            animate={{
+              scaleY: [1, 1.2, 1],
+              opacity: [0.4, 0.6, 0.4]
+            }}
+            transition={{
+              duration: 3,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+        </motion.div>
+        
         <div className="text-center max-w-4xl mx-auto">
           {/* Main Heading */}
           <motion.h1 
@@ -71,7 +92,7 @@ export function HeroSection() {
 
           {/* Description */}
           <motion.p 
-            className="text-lg text-white/70 mb-12 font-space-grotesk"
+            className="text-lg text-white/70 mb-4 font-space-grotesk"
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, ease: "easeOut", delay: 0.8 }}
@@ -118,7 +139,7 @@ export function HeroSection() {
 
       {/* Animated Hero Image */}
       <motion.div 
-        className="relative z-10 flex justify-center pb-20"
+        className="relative z-10 flex justify-center pb-2"
         initial={{ opacity: 0, y: 100 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 1.2, ease: "easeOut", delay: 1.2 }}
@@ -139,6 +160,27 @@ export function HeroSection() {
             rotate: 0
           }}
         >
+          {/* Light beam effect */}
+          <motion.div
+            className="absolute inset-0 flex items-center justify-center pointer-events-none"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ duration: 2, delay: 1.5 }}
+          >
+            <motion.div
+              className="w-96 h-96 bg-gradient-to-t from-purple-500/20 via-purple-400/10 to-transparent rounded-full blur-3xl"
+              animate={{
+                scale: [1, 1.1, 1],
+                opacity: [0.3, 0.5, 0.3]
+              }}
+              transition={{
+                duration: 4,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </motion.div>
+
           <motion.div
             animate={{ 
               scale: [1, 1.02, 1],
