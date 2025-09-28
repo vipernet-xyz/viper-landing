@@ -1,10 +1,5 @@
 import { Button } from "@/components/ui/button";
-import dynamic from 'next/dynamic';
-
-const LottiePlayer = dynamic(
-  () => import('@lottiefiles/react-lottie-player').then((mod) => mod.Player),
-  { ssr: false }
-);
+import Image from "next/image";
 
 export function HeroSection() {
   return (
@@ -43,8 +38,14 @@ export function HeroSection() {
           </div>
         </div>
       </div>
-      <div className="w-full max-w-md mx-auto mb-8">
-        <LottiePlayer src="/assets/lottie/home.lottie" loop autoplay />
+      <div className="w-full mx-auto mb-8 max-w-lg">
+        <Image
+          src="/assets/viper-chip.svg"
+          alt="Hero Animation"
+          width={600}
+          height={400}
+          className="mx-auto"
+        />
       </div>
     </section>
   );
