@@ -1,7 +1,6 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { motion } from "motion/react";
-import HeroCircles from "../components/HeroCircles";
 
 export function HeroSection() {
   return (
@@ -39,8 +38,7 @@ export function HeroSection() {
           </div>
         </div>
       </div>
-      <div className="w-full mx-auto mb-8 max-w-lg flex justify-center z-10 absolute top-1/4">
-        {/* First chip - always visible with floating animation */}
+      <div className="w-full mx-auto max-w-lg flex justify-center z-10 absolute top-1/4">
         <motion.div
           className="absolute"
           animate={{
@@ -60,7 +58,6 @@ export function HeroSection() {
           />
         </motion.div>
 
-        {/* Second chip - fades in and out smoothly over the first */}
         <motion.div
           className="absolute"
           animate={{

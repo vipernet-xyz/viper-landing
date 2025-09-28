@@ -5,7 +5,7 @@ import Partners from "../components/Partners";
 import Image from "next/image";
 
 const nodesMesh = "/assets/nodes-mesh.svg";
-const viperNode = "/assets/viper-node.svg";
+const viperNode = "/assets/tech/viper-circle.png";
 
 export function TechShowcase() {
   return (
@@ -16,14 +16,14 @@ export function TechShowcase() {
         {/* Desktop Layout: 3 columns */}
         <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-center justify-center">
           <div className="flex justify-center">
-            <Image src={nodesMesh} height={250} width={250} alt="" />
+            <Image src={nodesMesh} height={300} width={300} alt="" />
           </div>
 
           <div className="flex justify-center">
             <Image src={viperNode} height={250} width={250} alt="" />
           </div>
 
-          <div className="flex justify-center">
+          <div className="flex justify-end w-[300px]">
             <FeaturesBullets />
           </div>
         </div>
