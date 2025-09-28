@@ -11,9 +11,9 @@ export function TechShowcase() {
   return (
     <section id="features" className="relative">
       {/* Full space gradient background */}
-      <div className="absolute inset-0 pointer-events-none top-96">
+      <div className="absolute inset-0 pointer-events-none top-64">
         <div
-          className="w-full h-full blur-3xl opacity-30"
+          className="w-full h-[125%] blur-3xl opacity-30"
           style={{
             background: `radial-gradient(circle, #7E5CFF 0%, transparent 70%)`,
           }}
