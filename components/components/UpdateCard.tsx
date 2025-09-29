@@ -12,7 +12,7 @@ interface UpdateCardPropsI {
 
 export default function UpdateCard({ update }: UpdateCardPropsI) {
   return (
-    <Card className="bg-black border-white/70 border-[0.6px] rounded-none overflow-hidden">
+    <Card className="bg-black border-white/70 border-[0.6px] rounded-none overflow-hidden relative">
       <div className="px-8 pt-8 pb-4">
         <div className="relative h-48 border-white/70 border-[0.6px]">
           <Image
@@ -30,7 +30,14 @@ export default function UpdateCard({ update }: UpdateCardPropsI) {
         <h3 className="text-white text-lg font-space-grotesk h-32 leading-tight">
           {update.title}
         </h3>
-        <div className="border-t border-white/20 pt-6">
+        <Image
+          src={"/assets/read-more/bottom-line.svg"}
+          alt={update.title}
+          width={292}
+          height={44}
+          className="w-[87.5%] absolute bottom-12"
+        />
+        <div className="pt-6">
           <Button
             variant="outline"
             className="text-white hover:bg-white/10 font-space-grotesk p-0 h-auto text-sm border border-white/20 px-10 py-3"
