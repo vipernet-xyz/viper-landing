@@ -82,7 +82,7 @@ export function CommunityBuzz() {
   return (
     <section className="py-20">
       <div className="mx-auto">
-        <h2 className="text-5xl font-bold text-white text-center mb-16 font-inter">
+        <h2 className="text-3xl lg:text-5xl font-bold text-white text-center mb-16 font-inter">
           Community Buzz
         </h2>
 
@@ -92,7 +92,7 @@ export function CommunityBuzz() {
               {testimonials.map((testimonial, index) => (
                 <div
                   key={index}
-                  className="min-w-0 flex-[0_0_50%] lg:flex-[0_0_25%] mx-8"
+                  className="min-w-0 flex-[0_0_60%] lg:flex-[0_0_25%] mx-8"
                 >
                   <Testimonial
                     {...testimonial}

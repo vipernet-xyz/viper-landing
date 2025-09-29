@@ -28,7 +28,7 @@ export function UpdatesSection() {
     >
       <div className="max-w-7xl mx-auto">
         <div className="text-center mb-24">
-          <h2 className="text-5xl font-bold text-white font-inter">
+          <h2 className="text-4xl lg:text-5xl font-bold text-white font-inter">
             Discover Updates
           </h2>
         </div>

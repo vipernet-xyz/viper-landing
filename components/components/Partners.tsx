@@ -38,7 +38,7 @@ export default function Partners() {
 
   return (
     <div className="backdrop-blur-sm">
-      <Marquee pauseOnHover>{renderContent()}</Marquee>
+      <Marquee>{renderContent()}</Marquee>
     </div>
   );
 }

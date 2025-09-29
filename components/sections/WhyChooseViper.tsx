@@ -100,7 +100,7 @@ export function WhyChooseViper() {
         }}
       />
       <div>
-        <h2 className="text-5xl font-bold text-white text-center mb-16 font-inter">
+        <h2 className="text-4xl lg:text-5xl font-bold text-white text-center mb-16 font-inter">
           Why choose Viper?
         </h2>
 
