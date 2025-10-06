@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/ui/button";
+import CrazyAnimation from "../components/CrazyAnimation";
 
 export function RevenueSection() {
   const features = [
@@ -87,12 +88,8 @@ export function RevenueSection() {
               }}
             />
             {/* Main reliability illustration */}
-            <div className="relative z-20 flex flex-col items-center">
-              <img
-                src="/assets/reliability.svg"
-                alt="Reliability Network"
-                className="w-full max-w-md h-auto"
-              />
+            <div className="z-20 flex flex-col items-center justify-center w-full h-full">
+              <CrazyAnimation />
             </div>
           </div>
         </div>
