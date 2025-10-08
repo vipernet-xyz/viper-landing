@@ -22,7 +22,7 @@ export default function Partners() {
     return duplicatedPartners.map((partner, index) => (
       <div
         key={index}
-        className="flex items-center justify-center lg:px-4 py-4 lg:py-8 border border-white w-24 lg:w-36"
+        className="flex items-center justify-center lg:px-4 py-4 lg:py-8 border-[0.5px] border-opacity-20 border-white w-24 lg:w-36"
       >
         <Image
           src={partner.src}
