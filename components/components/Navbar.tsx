@@ -7,7 +7,7 @@ export default function Navbar() {
       <div className="glass-effect px-4 lg:px-8 py-2 lg:py-4">
         <div className="flex items-center justify-between">
           <Image
-            src="assets/logo.svg"
+            src="/assets/logo.png"
             height={40}
             width={40}
             alt="vipernet logo"
