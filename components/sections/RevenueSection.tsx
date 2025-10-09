@@ -1,6 +1,7 @@
 "use client";
 import { Button } from "@/components/ui/button";
 import CrazyAnimation from "../components/CrazyAnimation";
+import Image from "next/image";
 
 export function RevenueSection() {
   const features = [
@@ -36,18 +37,6 @@ export function RevenueSection() {
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-2">
           <div className="flex flex-col md:border-r md:border-r-white/20 col-span-1 relative">
-            {/* Mobile background circles - positioned behind content */}
-            <div
-              className="absolute inset-0 pointer-events-none z-0 md:hidden"
-              style={{
-                backgroundImage: "url('/assets/threecircles.svg')",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-                backgroundSize: "cover",
-                opacity: 0.1,
-              }}
-            />
-
             {features.map((feature, index) => (
               <div
                 key={index}
@@ -76,17 +65,15 @@ export function RevenueSection() {
           </div>
 
           {/* Right column - hidden on mobile */}
-          <div className="hidden md:flex col-span-1 relative items-center justify-center p-8">
-            {/* Three circles background */}
-            <div
-              className="absolute inset-0 pointer-events-none z-0"
-              style={{
-                backgroundImage: "url('/assets/threecircles.svg')",
-                backgroundRepeat: "no-repeat",
-                backgroundPosition: "center",
-                backgroundSize: "cover",
-              }}
-            />
+          <div className="hidden md:flex col-span-1 relative items-center justify-center p-8 overflow-clip">
+            <div className="absolute inset-0 -z-10 right-1/4 overflow-visible">
+            <Image
+                src="/assets/revenue/circles-bg.svg"
+                alt="Reliability Network"
+                fill
+                className="z-5 w-full h-auto object-cover object-center overflow-visible"
+              /> 
+              </div>
             {/* Main reliability illustration */}
             <div className="z-20 flex flex-col items-center justify-center w-full h-full">
               <CrazyAnimation />
