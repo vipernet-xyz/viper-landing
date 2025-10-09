@@ -4,7 +4,7 @@ import FeaturesHeader from "../components/FeaturesHeader";
 import Partners from "../components/Partners";
 import Image from "next/image";
 
-const nodesMesh = "/assets/nodes-mesh.svg";
+const nodesMesh = "/assets/tech/nodes-mesh.svg";
 const viperNode = "/assets/tech/viper-circle.png";
 
 export function TechShowcase() {
