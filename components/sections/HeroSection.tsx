@@ -1,11 +1,14 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { motion } from "motion/react";
+import PulseLine from "../components/PulseAnimation";
 
 export function HeroSection() {
   return (
     <section
-      className="h-screen flex flex-col items-center justify-center bg-black text-center relative"
+      className="h-screen flex flex-col items-center justify-center bg-black text-center relative overflow-hidden"
       style={{
         backgroundImage: "url('/assets/hero-section/bg.png')",
         backgroundSize: "cover",
@@ -13,6 +16,7 @@ export function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
+      {/* TEXT + BUTTONS */}
       <div className="flex-1 flex items-center justify-center z-20">
         <div>
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 font-inter">
@@ -31,16 +35,26 @@ export function HeroSection() {
             <Button
               size="lg"
               variant="outline"
-              className=" hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base"
+              className="hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base"
             >
               Run a Node
             </Button>
           </div>
         </div>
       </div>
-      <div className="w-3/4 md:w-1/2 bg-red-200 mx-auto flex justify-center z-10 absolute top-4/10">
+
+      {/* CHIP + LINES */}
+      <div className="absolute bottom-0 z-10 h-full w-full">
+        <div className="absolute bottom-8 left-1/2">
+          <PulseLine flip />
+        </div>
+
+        <div className="absolute bottom-8 right-1/2 scale-x-[-1]">
+          <PulseLine flip />
+        </div>
+
         <motion.div
-          className="absolute"
+          className="absolute bottom-0 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
           animate={{
             y: [0, -12, 0],
           }}
@@ -55,12 +69,13 @@ export function HeroSection() {
             alt="Hero Animation"
             width={375}
             height={250}
-            className="w-full h-auto"
+            className="mx-auto"
           />
         </motion.div>
 
+        {/* Chip glow overlay */}
         <motion.div
-          className="absolute"
+          className="absolute bottom-0 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
           animate={{
             opacity: [0, 0.5, 0.5, 0],
             y: [0, -12, 0],
@@ -73,10 +88,10 @@ export function HeroSection() {
         >
           <Image
             src="/assets/hero-section/chip-glow.svg"
-            alt="Hero Animation"
+            alt="Hero Glow"
             width={375}
+            className="mx-auto"
             height={250}
-            className="w-full h-auto"
           />
         </motion.div>
       </div>
