@@ -38,7 +38,7 @@ export function HeroSection() {
           </div>
         </div>
       </div>
-      <div className="w-full mx-auto max-w-lg flex justify-center z-10 absolute top-4/10">
+      <div className="w-3/4 md:w-1/2 bg-red-200 mx-auto flex justify-center z-10 absolute top-4/10">
         <motion.div
           className="absolute"
           animate={{
@@ -53,8 +53,9 @@ export function HeroSection() {
           <Image
             src="/assets/hero-section/chip.svg"
             alt="Hero Animation"
-           width={375}
+            width={375}
             height={250}
+            className="w-full h-auto"
           />
         </motion.div>
 
@@ -73,8 +74,9 @@ export function HeroSection() {
           <Image
             src="/assets/hero-section/chip-glow.svg"
             alt="Hero Animation"
-             width={375}
+            width={375}
             height={250}
+            className="w-full h-auto"
           />
         </motion.div>
       </div>
