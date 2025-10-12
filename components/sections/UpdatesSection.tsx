@@ -6,12 +6,12 @@ import UpdateCard from "../components/UpdateCard";
 export function UpdatesSection() {
   const updates = [
     {
-      image: "/images/blog-1.png",
+      image: "/assets/blog/blog-1.png",
       date: "Jun 12, 2024",
       title: "Viper Network Unlocks Decentralised Access to Sui",
     },
     {
-      image: "/images/blog-2.png",
+      image: "/assets/blog/blog-2.png",
       date: "May 30, 2024",
       title: "Viper Network Partners with Kakarot zkEVM",
     },

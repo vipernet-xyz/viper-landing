@@ -3,7 +3,7 @@
 import { motion } from "motion/react";
 
 export default function PulseLine({ flip = false }) {
-  const animationX = flip ? [-200, 600] : [600, -200];
+  const animationX = flip ? [600, -200] : [-200, 600];
   return (
     <div className="bg-transparent pointer-events-none">
       <motion.svg

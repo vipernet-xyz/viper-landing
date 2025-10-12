@@ -65,7 +65,7 @@ export function HeroSection() {
           }}
         >
           <Image
-            src="/assets/hero-section/chip.svg"
+            src="/assets/hero-section/viper-chip.png"
             alt="Hero Animation"
             width={375}
             height={250}
@@ -87,7 +87,7 @@ export function HeroSection() {
           }}
         >
           <Image
-            src="/assets/hero-section/chip-glow.svg"
+            src="/assets/hero-section/viper-chip-glow.png"
             alt="Hero Glow"
             width={375}
             className="mx-auto"
