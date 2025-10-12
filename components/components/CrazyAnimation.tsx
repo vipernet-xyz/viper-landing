@@ -2,7 +2,7 @@ import Image from "next/image";
 
 export default function CrazyAnimation() {
   return (
-    <div className="relative w-full mx-auto opacity-80">
+    <div className="relative w-full mx-auto opacity-70">
       <div className="relative w-full" style={{ aspectRatio: "400/600" }}>
         {/* Base server image - static */}
         <div className="absolute inset-0 z-20">
@@ -41,9 +41,9 @@ export default function CrazyAnimation() {
         </div>
 
         {/* Middle center server box */}
-        <div 
+        <div
           className="absolute bottom-[48%] right-[40.5%] w-[12%] z-10 server-piston"
-          style={{ animationDelay: '0.1s' }}
+          style={{ animationDelay: "0.1s" }}
         >
           <Image
             src="/assets/revenue/server_box_left.svg"
@@ -55,11 +55,8 @@ export default function CrazyAnimation() {
           />
         </div>
 
-
-        {/* Left cubes server box */}  
-        <div 
-          className="absolute bottom-[48%] left-[25.5%] w-[12%] z-10 cube-bottom"
-        >
+        {/* Left cubes server box */}
+        <div className="absolute bottom-[48%] left-[25.5%] w-[12%] z-10 cube-bottom">
           <Image
             src="/assets/revenue/cube.svg"
             alt="Middle Center Server Box"
@@ -69,9 +66,7 @@ export default function CrazyAnimation() {
           />
         </div>
 
-        <div 
-          className="absolute bottom-[55%] left-[25.5%] w-[12%] z-10 cube-top"
-        >
+        <div className="absolute bottom-[55%] left-[25.5%] w-[12%] z-10 cube-top">
           <Image
             src="/assets/revenue/cube.svg"
             alt="Middle Center Server Box"
@@ -80,9 +75,9 @@ export default function CrazyAnimation() {
             className="w-full h-auto"
           />
         </div>
-        <div 
+        <div
           className="absolute bottom-[45%] left-[25.5%] w-[12%] z-5"
-          style={{ animationDelay: '0.1s' }}
+          style={{ animationDelay: "0.1s" }}
         >
           <Image
             src="/assets/revenue/cube_base.svg"
@@ -93,42 +88,92 @@ export default function CrazyAnimation() {
           />
         </div>
       </div>
-      
 
       <style jsx>{`
         @keyframes glowPulse {
-          0%, 20% { opacity: 0; }
-          30% { opacity: 1; }
-          70% { opacity: 1; }
-          80% { opacity: 0; }
-          100% { opacity: 0; }
+          0%,
+          20% {
+            opacity: 0;
+          }
+          30% {
+            opacity: 1;
+          }
+          70% {
+            opacity: 1;
+          }
+          80% {
+            opacity: 0;
+          }
+          100% {
+            opacity: 0;
+          }
         }
 
         @keyframes pistonMove {
-          0%, 20% { transform: translateY(0) translateZ(0); }
-          30% { transform: translateY(-8px) translateZ(0); }
-          70% { transform: translateY(-8px) translateZ(0); }
-          80% { transform: translateY(0) translateZ(0); }
-          88% { transform: translateY(1px) translateZ(0); }
-          96%, 100% { transform: translateY(0) translateZ(0); }
+          0%,
+          20% {
+            transform: translateY(0) translateZ(0);
+          }
+          30% {
+            transform: translateY(-8px) translateZ(0);
+          }
+          70% {
+            transform: translateY(-8px) translateZ(0);
+          }
+          80% {
+            transform: translateY(0) translateZ(0);
+          }
+          88% {
+            transform: translateY(1px) translateZ(0);
+          }
+          96%,
+          100% {
+            transform: translateY(0) translateZ(0);
+          }
         }
 
         @keyframes cubeBottomMove {
-          0% { transform: translateY(0) translateZ(0); }
-          15% { transform: translateY(-8px) translateZ(0); }
-          70% { transform: translateY(-8px) translateZ(0); }
-          80% { transform: translateY(0) translateZ(0); }
-          88% { transform: translateY(1px) translateZ(0); }
-          96%, 100% { transform: translateY(0) translateZ(0); }
+          0% {
+            transform: translateY(0) translateZ(0);
+          }
+          15% {
+            transform: translateY(-8px) translateZ(0);
+          }
+          70% {
+            transform: translateY(-8px) translateZ(0);
+          }
+          80% {
+            transform: translateY(0) translateZ(0);
+          }
+          88% {
+            transform: translateY(1px) translateZ(0);
+          }
+          96%,
+          100% {
+            transform: translateY(0) translateZ(0);
+          }
         }
 
         @keyframes cubeTopMove {
-          0% { transform: translateY(0) translateZ(0); }
-          15% { transform: translateY(-14px) translateZ(0); }
-          70% { transform: translateY(-14px) translateZ(0); }
-          80% { transform: translateY(0) translateZ(0); }
-          88% { transform: translateY(1px) translateZ(0); }
-          96%, 100% { transform: translateY(0) translateZ(0); }
+          0% {
+            transform: translateY(0) translateZ(0);
+          }
+          15% {
+            transform: translateY(-14px) translateZ(0);
+          }
+          70% {
+            transform: translateY(-14px) translateZ(0);
+          }
+          80% {
+            transform: translateY(0) translateZ(0);
+          }
+          88% {
+            transform: translateY(1px) translateZ(0);
+          }
+          96%,
+          100% {
+            transform: translateY(0) translateZ(0);
+          }
         }
 
         .server-glow {
