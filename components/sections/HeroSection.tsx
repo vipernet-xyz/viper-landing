@@ -17,7 +17,7 @@ export function HeroSection() {
       }}
     >
       {/* TEXT + BUTTONS */}
-      <div className="z-20 py-96">
+      <div className="z-20 min-h-screen flex justify-center items-center">
         <div>
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 font-inter">
             Viper Network
