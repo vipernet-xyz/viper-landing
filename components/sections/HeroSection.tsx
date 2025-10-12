@@ -8,7 +8,7 @@ import PulseLine from "../components/PulseAnimation";
 export function HeroSection() {
   return (
     <section
-      className="h-screen flex flex-col items-center justify-center bg-black text-center relative overflow-hidden"
+      className="flex flex-col items-center justify-center bg-black text-center relative overflow-hidden"
       style={{
         backgroundImage: "url('/assets/hero-section/bg.png')",
         backgroundSize: "cover",
@@ -17,7 +17,7 @@ export function HeroSection() {
       }}
     >
       {/* TEXT + BUTTONS */}
-      <div className="flex-1 flex items-center justify-center z-20">
+      <div className="z-20 py-96">
         <div>
           <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 font-inter">
             Viper Network
@@ -44,17 +44,17 @@ export function HeroSection() {
       </div>
 
       {/* CHIP + LINES */}
-      <div className="absolute bottom-0 z-10 h-full w-full">
-        <div className="absolute bottom-8 left-1/2">
+      <div className="z-10 relative py-8 w-full">
+        <div className="absolute bottom-16 right-1/5">
           <PulseLine flip />
         </div>
 
-        <div className="absolute bottom-8 right-1/2 scale-x-[-1]">
+        <div className="absolute bottom-16 left-1/5 scale-x-[-1]">
           <PulseLine flip />
         </div>
 
         <motion.div
-          className="absolute bottom-0 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
+          className="absolute bottom-8 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
           animate={{
             y: [0, -12, 0],
           }}
@@ -75,7 +75,7 @@ export function HeroSection() {
 
         {/* Chip glow overlay */}
         <motion.div
-          className="absolute bottom-0 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
+          className="absolute bottom-8 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
           animate={{
             opacity: [0, 0.5, 0.5, 0],
             y: [0, -12, 0],
