@@ -44,13 +44,13 @@ export function HeroSection() {
       </div>
 
       {/* CHIP + LINES */}
-      <div className="z-10 relative py-8 w-full">
-        <div className="absolute bottom-16 right-1/5">
-          <PulseLine flip />
+      <div className="z-10 relative py-8 w-full md:h-44">
+        <div className="absolute bottom-4 left-1/2">
+          <PulseLine />
         </div>
 
-        <div className="absolute bottom-16 left-1/5 scale-x-[-1]">
-          <PulseLine flip />
+        <div className="absolute bottom-4 right-1/2 scale-x-[-1]">
+          <PulseLine />
         </div>
 
         <motion.div
