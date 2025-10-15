@@ -6,7 +6,7 @@ export default function PulseLine({ flip = false }) {
   return (
     <div className="pointer-events-none">
       <motion.svg
-        width="50vh md:50vw"
+        width="50vw"
         height="auto"
         viewBox="0 0 509 143"
         fill="none"
