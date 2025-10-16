@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/button";
 import Image from "next/image";
 import { motion } from "motion/react";
-import PulseLine from "../components/PulseAnimation";
+import PulseAnimation from "../components/PulseAnimation";
 
 export function HeroSection() {
   return (
@@ -45,16 +45,16 @@ export function HeroSection() {
 
       {/* CHIP + LINES */}
       <div className="z-10 relative py-8 w-full md:h-44">
-        <div className="absolute bottom-4 left-1/2">
-          <PulseLine />
+        <div className="absolute bottom-12 left-1/2">
+          <PulseAnimation flip/>
         </div>
 
-        <div className="absolute bottom-4 right-1/2 scale-x-[-1]">
-          <PulseLine />
+        <div className="absolute bottom-12 right-1/2 scale-x-[-1]">
+          <PulseAnimation flip />
         </div>
 
         <motion.div
-          className="absolute bottom-8 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
+          className="absolute bottom-26 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
           animate={{
             y: [0, -12, 0],
           }}
@@ -75,7 +75,7 @@ export function HeroSection() {
 
         {/* Chip glow overlay */}
         <motion.div
-          className="absolute bottom-8 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
+          className="absolute bottom-26 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
           animate={{
             opacity: [0, 0.5, 0.5, 0],
             y: [0, -12, 0],

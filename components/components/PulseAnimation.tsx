@@ -1,12 +1,12 @@
 "use client";
 import { motion } from "motion/react";
 
-export default function PulseLine({ flip = false }) {
+export default function PulseAnimation({ flip = false }) {
   const animationX = flip ? [-200, 600] : [600, -200];
   return (
     <div className="pointer-events-none">
       <motion.svg
-        width="50vw"
+        width="800px"
         height="auto"
         viewBox="0 0 509 143"
         fill="none"
