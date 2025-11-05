@@ -28,14 +28,14 @@ export function HeroSection() {
           <div className="flex gap-4 justify-center">
             <Button
               size="lg"
-              className="bg-white text-black hover:bg-[#9c7ff1]/40 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base"
+              className="bg-white text-black hover:bg-[#9c7ff1]/40 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base cursor-pointer"
             >
               Get Started
             </Button>
             <Button
               size="lg"
               variant="outline"
-              className="hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base"
+              className="hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base cursor-pointer"
             >
               Run a Node
             </Button>
@@ -45,11 +45,11 @@ export function HeroSection() {
 
       {/* CHIP + LINES */}
       <div className="z-10 relative py-8 w-full md:h-44">
-        <div className="absolute bottom-12 left-1/2">
+        <div className="absolute bottom-0 md:bottom-12 left-[calc(50%+2.5rem)]">
           <PulseAnimation flip/>
         </div>
 
-        <div className="absolute bottom-12 right-1/2 scale-x-[-1]">
+        <div className="absolute bottom-0 md:bottom-12 right-[calc(50%+2.5rem)] scale-x-[-1]">
           <PulseAnimation flip />
         </div>
 
