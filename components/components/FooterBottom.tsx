@@ -9,6 +9,7 @@ export default function () {
           height={60}
           width={60}
           alt="vipernet logo"
+          className="scale-75 md:scale-100"
         />
       </div>
 
