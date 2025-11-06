@@ -3,6 +3,7 @@ import FeaturesBullets from "../components/FeaturesBullets";
 import FeaturesHeader from "../components/FeaturesHeader";
 import Partners from "../components/Partners";
 import Image from "next/image";
+import Link from "next/link";
 
 const nodesMesh = "/assets/tech/nodes-mesh.svg";
 const viperNode = "/assets/tech/viper-circle.png";
@@ -24,9 +25,11 @@ export function TechShowcase() {
       <div className="relative z-10">
         <Partners />
         <FeaturesHeader />
-        <div className="max-w-7xl mx-auto pb-16 px-6">
+        <div className="relative max-w-7xl mx-auto pb-16 px-6">
+
+
           {/* Desktop Layout: 3 columns with equal spacing */}
-          <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-center">
+          <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-center relative z-10">
             <div className="flex justify-center">
               <Image src={nodesMesh} height={350} width={350} alt="" />
             </div>
@@ -54,9 +57,15 @@ export function TechShowcase() {
           </div>
         </div>
 
-        <p className="text-center underline text-lg cursor-pointer">
-          View Docs To Know More
-        </p>
+        <div className="flex justify-center">
+          <Link
+            href={"https://docs.vipernet.xyz/"}
+            className="text-center underline text-lg cursor-pointer mx-auto"
+            target="_blank"
+          >
+            View Docs To Know More
+          </Link>
+        </div>
       </div>
     </section>
   );
