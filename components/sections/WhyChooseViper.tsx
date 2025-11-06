@@ -72,7 +72,7 @@ export function WhyChooseViper() {
     <section className="py-20 relative overflow-hidden">
       {/* Background circles */}
       <div
-        className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-1/2 pointer-events-none"
+        className="absolute scale-65 md:scale-100 left-0 top-1/2 -translate-y-1/2 -translate-x-[calc(50%+24px)] md:-translate-x-1/2 pointer-events-none"
         style={{
           backgroundImage: "url('/assets/circles.svg')",
           backgroundRepeat: "no-repeat",
@@ -86,7 +86,7 @@ export function WhyChooseViper() {
       />
       {/* Right side circles */}
       <div
-        className="absolute right-0 top-1/2 -translate-y-[30%] translate-x-[60%] pointer-events-none"
+        className="absolute scale-65 md:scale-100 right-0 top-1/2 -translate-y-[30%] translate-x-[70%] md:translate-x-[60%] pointer-events-none"
         style={{
           backgroundImage: "url('/assets/circles.svg')",
           backgroundRepeat: "no-repeat",
