@@ -3,7 +3,7 @@ export default function FeaturesBullets() {
     <div className="flex justify-between gap-6 lg:gap-12 w-full lg:max-w-72 items-stretch flex-col">
       <div className="flex-1 flex flex-col">
         <div className="flex-grow">
-          <h3 className="text-xl lg:text-2xl font-bold text-white mb-3 lg:mb-4 font-lato">
+          <h3 className="text-xl lg:text-2xl font-bold text-white mb-2 lg:mb-4 font-lato">
             Connect
           </h3>
           <p className="text-sm lg:text-base text-white/80 font-lato">
@@ -14,7 +14,7 @@ export default function FeaturesBullets() {
       </div>
       <div className="flex-1 flex flex-col">
         <div className="flex-grow">
-          <h3 className="text-xl lg:text-2xl font-bold text-white mb-3 lg:mb-4 font-lato">
+          <h3 className="text-xl lg:text-2xl font-bold text-white mb-2 lg:mb-4 font-lato">
             Query
           </h3>
           <p className="text-sm lg:text-base text-white/80 font-lato">
@@ -25,7 +25,7 @@ export default function FeaturesBullets() {
       </div>
       <div className="flex-1 flex flex-col">
         <div className="flex-grow">
-          <h3 className="text-xl lg:text-2xl font-bold text-white mb-3 lg:mb-4 font-lato">
+          <h3 className="text-xl lg:text-2xl font-bold text-white mb-2 lg:mb-4 font-lato">
             Scale
           </h3>
           <p className="text-sm lg:text-base text-white/80 font-lato">

@@ -2,6 +2,7 @@
 import FeaturesBullets from "../components/FeaturesBullets";
 import FeaturesHeader from "../components/FeaturesHeader";
 import Partners from "../components/Partners";
+import StraightPulseLine from "../components/StraightPulseLine";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -28,17 +29,21 @@ export function TechShowcase() {
         <div className="relative max-w-7xl mx-auto pb-16 px-6">
 
 
-          {/* Desktop Layout: 3 columns with equal spacing */}
-          <div className="hidden lg:grid lg:grid-cols-3 gap-8 items-center relative z-10">
-            <div className="flex justify-center">
-              <Image src={nodesMesh} height={350} width={350} alt="" />
+          {/* Desktop Layout: absolutely center the mask, let sides auto size */}
+          <div className="hidden lg:flex relative items-center justify-between mx-auto min-h-[360px] px-6">
+            <div className="flex-none flex justify-end z-10">
+              <Image src={nodesMesh} height={200} width={200} alt="" />
             </div>
-            <div className="flex justify-center">
-              <Image src={viperNode} height={250} width={250} alt="" />
+            <div className="w-full px-4 py-16overflow-hidden flex items-center justify-center">
+              <StraightPulseLine />
+              <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 z-10 flex items-center justify-center">
+                <Image src={viperNode} height={260} width={260} alt="" />
+              </div>
             </div>
-            <div className="flex justify-center">
+            <div className="flex-none flex justify-start z-10 w-[200px]">
               <FeaturesBullets />
             </div>
+          
           </div>
 
           {/* Mobile Layout: Images on top, bullets below */}
