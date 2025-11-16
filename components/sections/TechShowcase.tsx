@@ -32,7 +32,7 @@ export function TechShowcase() {
           {/* Desktop Layout: absolutely center the mask, let sides auto size */}
           <div className="hidden lg:flex relative items-center justify-between mx-auto min-h-[360px] px-6">
             <div className="flex-none flex justify-end z-10">
-              <Image src={nodesMesh} height={200} width={200} alt="" />
+              <Image src={nodesMesh} height={225} width={225} alt="" />
             </div>
             <div className="w-full px-4 py-16overflow-hidden flex items-center justify-center">
               <StraightPulseLine />
@@ -40,7 +40,7 @@ export function TechShowcase() {
                 <Image src={viperNode} height={260} width={260} alt="" />
               </div>
             </div>
-            <div className="flex-none flex justify-start z-10 w-[200px]">
+            <div className="flex-none flex justify-start z-10 w-[225px]">
               <FeaturesBullets />
             </div>
           

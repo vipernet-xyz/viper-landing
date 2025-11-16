@@ -56,9 +56,10 @@ export default function StraightPulseLine({
             filter={`url(#${filterId})`}
             animate={{ x: animationX }}
             transition={{
-              duration: 3,
+              duration: 2.4,
               ease: "easeInOut",
               repeat: Infinity,
+              repeatType: "reverse",
             }}
           >
             <rect x="-90" y="-120" width="40" height="240" fill="#AC92FA" />

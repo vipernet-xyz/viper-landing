@@ -3,6 +3,16 @@ import { motion } from "motion/react";
 
 export default function PulseAnimation({ flip = false }) {
   const animationX = flip ? [-200, 600] : [600, -200];
+  const pulseColors = {
+    primary: "#AC92FA",
+    secondary: "#BCAFEB",
+  } as const;
+  const strokeProps = {
+    stroke: "url(#lineGradient)",
+    strokeWidth: 2,
+    strokeLinecap: "round",
+    strokeLinejoin: "round",
+  } as const;
   return (
     <div className="pointer-events-none">
       <motion.svg
@@ -20,17 +30,11 @@ export default function PulseAnimation({ flip = false }) {
         {/* --- VISIBLE LINE PATHS --- */}
         <path
           d="M508.5 2L420 1.54381M214 142L314.5 1L420 1.54381M214 142H0M214 142H321L420 1.54381"
-          stroke="url(#lineGradient)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          {...strokeProps}
         />
         <path
           d="M0 21H133L196.5 80.5"
-          stroke="url(#lineGradient)"
-          strokeWidth="1.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
+          {...strokeProps}
         />
 
         {/* --- MASK FOR LINE PATHS --- */}
@@ -63,22 +67,35 @@ export default function PulseAnimation({ flip = false }) {
               repeat: Infinity,
             }}
           >
-            <rect x="-72" y="-160" width="38" height="340" fill="#C4B5FD" />
+            <rect
+              x="-86"
+              y="-165"
+              width="28"
+              height="240"
+              fill={pulseColors.primary}
+            />
+            <rect
+              x="-26"
+              y="-135"
+              width="16"
+              height="190"
+              fill={pulseColors.secondary}
+            />
           </motion.g>
         </g>
         {/* --- FILTER & GRADIENT DEFINITIONS --- */}
         <defs>
           <linearGradient id="lineGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-            <stop offset="0%" stopColor="#8B5CF6" stopOpacity="0.04" />
-            <stop offset="50%" stopColor="#AC92FA" stopOpacity="0.04" />
-            <stop offset="100%" stopColor="#C4B5FD" stopOpacity="0.04" />
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.03" />
+            <stop offset="50%" stopColor="#FFFFFF" stopOpacity="0.03" />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0.03" />
           </linearGradient>
           <filter
             id="filter0_f_1471_5281"
-            x="-50"
-            y="-50"
-            width="600"
-            height="300"
+            x="-140"
+            y="-220"
+            width="520"
+            height="600"
             filterUnits="userSpaceOnUse"
             colorInterpolationFilters="sRGB"
           >
@@ -89,7 +106,13 @@ export default function PulseAnimation({ flip = false }) {
               in2="BackgroundImageFix"
               result="shape"
             />
-            <feGaussianBlur stdDeviation="20" />
+            <feGaussianBlur in="shape" stdDeviation="34.9" result="blur" />
+            <feComponentTransfer in="blur">
+              <feFuncR type="linear" slope="1.4" />
+              <feFuncG type="linear" slope="1.4" />
+              <feFuncB type="linear" slope="1.4" />
+              <feFuncA type="linear" slope="1" />
+            </feComponentTransfer>
           </filter>
         </defs>
       </motion.svg>
