@@ -2,6 +2,7 @@
 import { Button } from "@/components/ui/button";
 import CrazyAnimation from "../components/CrazyAnimation";
 import Image from "next/image";
+import Link from "next/link";
 
 export function RevenueSection() {
   const features = [
@@ -58,9 +59,12 @@ export function RevenueSection() {
                 Viper is built to keep node ops sustainable and profitable
                 long-term.
               </p>
-              <Button className="bg-transparent border border-white/30 text-white hover:bg-white/10 font-space-grotesk w-full md:w-auto">
-                Run a Node
+        <Link href={'https://discord.com/invite/eBDYH4Zxek'}  target="_blank">
+
+              <Button className="bg-transparent border border-white/30 text-white hover:bg-white/10 font-space-grotesk w-full md:w-auto cursor-pointer">
+                Join Us
               </Button>
+              </Link>
             </div>
           </div>
 

@@ -37,9 +37,14 @@ export default function Navbar() {
             </Link>
           </div>
 
-          <Button className="bg-white text-black hover:bg-[#9c7ff162] hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-xs lg:text-base cursor-pointer">
-            Get Started
-          </Button>
+          <Link href={'https://tally.so/r/wdrzdd'} target="_blank">
+        <Button
+          size="lg"
+          className="bg-white text-black hover:bg-[#9c7ff162] hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-sm md:text-base w-28 cursor-pointer"
+        >
+          Join Waitlist
+        </Button>
+        </Link>
         </div>
       </div>
     </nav>

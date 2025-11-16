@@ -24,7 +24,7 @@ export default function Footer() {
       <div className="absolute inset-x-0 -top-36 h-[320px] w-[127%] -left-[13.5%] bg-white opacity-50 blur-[15px] rounded-t-[50%_30%] lg:rounded-t-[50%_100%]"></div>
 
       {/* Black arc (main element) */}
-      <div className="absolute inset-x-0 -top-32 h-[1000px] w-[200%] -left-1/2 bg-black rounded-t-[50%_30%] lg:rounded-t-[50%_100%] shadow-[0_0_120px_rgba(255,255,255,0.3)]"></div>
+      <div className="absolute inset-x-0 -top-32 h-[900px] md:h-[1000px] w-[200%] -left-1/2 bg-black rounded-t-[50%_30%] lg:rounded-t-[50%_100%] shadow-[0_0_120px_rgba(255,255,255,0.3)]"></div>
       {/* Content */}
       <div className="relative z-10 mx-auto overflow-clip bg-black">
         <div className="max-w-7xl mx-auto">
@@ -32,7 +32,7 @@ export default function Footer() {
           <FooterLinks />
           <FooterBottom />
           <div
-            className="h-12 lg:h-24 w-full bg-black mt-12 "
+            className="h-12 lg:h-24 w-full bg-black mt-12 bg-red-500"
             style={{
               background: "url('/assets/footer/viper-network.svg')",
               backgroundRepeat: "no-repeat",
