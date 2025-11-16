@@ -3,7 +3,7 @@ import Image from "next/image";
 export default function () {
   return (
     <div className="flex flex-col items-center md:flex-row justify-between md:items-baseline mt-8">
-      <div className="flex items-center space-x-2 mb-4 md:mb-0">
+      <div className="items-center space-x-2 mb-4 md:mb-0 hidden md:flex">
         <Image
           src="/assets/logo.png"
           height={60}

@@ -8,7 +8,7 @@ import PulseAnimation from "../components/PulseAnimation";
 export function HeroSection() {
   return (
     <section
-      className="flex flex-col items-center justify-center bg-black text-center relative overflow-hidden"
+      className="relative flex flex-col items-center overflow-hidden bg-black text-center pb-24"
       style={{
         backgroundImage: "url('/assets/hero-section/bg.png')",
         backgroundSize: "cover",
@@ -16,85 +16,98 @@ export function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      {/* TEXT + BUTTONS */}
-      <div className="z-20 min-h-screen flex justify-center items-center">
-        <div>
-          <h1 className="text-5xl md:text-7xl font-bold text-white mb-6 font-inter">
-            Viper Network
-          </h1>
-          <p className="text-xl md:text-2xl text-white/80 mb-8 font-space-grotesk">
-            The Trustless Gateway to Web3.
-          </p>
-          <div className="flex gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-black hover:bg-[#9c7ff1]/40 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base cursor-pointer"
-            >
-              Get Started
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base cursor-pointer"
-            >
-              Run a Node
-            </Button>
+      <div className="relative w-full min-h-screen px-4 pt-12">
+        <div className="relative flex w-full justify-center overflow-hidden">
+          <div
+            className="relative flex w-full items-end justify-center overflow-hidden pb-12"
+            style={{
+              aspectRatio: "1280 / 600",
+              backgroundImage: "url('/assets/hero-section/top-section.png')",
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+            }}
+          >
+            <div className="relative z-10 max-w-3xl text-center">
+              <h1 className="mb-6 font-inter text-5xl font-bold text-white md:text-7xl">
+                Viper Network
+              </h1>
+              <p className="mb-8 font-space-grotesk text-xl text-white/80 md:text-2xl">
+                The Trustless Gateway to Web3.
+              </p>
+              <div className="flex justify-center gap-4">
+                <Button
+                  size="lg"
+                  className="border border-white bg-white text-black hover:border hover:bg-[#9c7ff1]/40 hover:text-white font-space-grotesk font-medium text-base cursor-pointer"
+                >
+                  Get Started
+                </Button>
+                <Button
+                  size="lg"
+                  variant="outline"
+                  className="border border-white hover:border hover:bg-[#D1D1D1]/20 hover:text-white font-space-grotesk font-medium text-base cursor-pointer"
+                >
+                  Run a Node
+                </Button>
+              </div>
+            </div>
           </div>
         </div>
-      </div>
+        {/* CHIP + LINES */}
+        <div className="relative z-10 mt-6 flex w-full justify-center overflow-hidden px-4 pb-24">
+          <div className="relative h-[360px] w-[960px] min-w-[960px]">
+            <div className="absolute bottom-0 left-[calc(50%+2.5rem)]">
+              <PulseAnimation flip />
+            </div>
 
-      {/* CHIP + LINES */}
-      <div className="z-10 relative py-8 w-full md:h-44">
-        <div className="absolute bottom-0 md:bottom-12 left-[calc(50%+2.5rem)]">
-          <PulseAnimation flip/>
+            <div className="absolute bottom-0 right-[calc(50%+2.5rem)] scale-x-[-1]">
+              <PulseAnimation flip />
+            </div>
+
+            <motion.div
+              className="absolute bottom-0 right-1/2 translate-x-1/2"
+              animate={{
+                y: [0, -12, 0],
+              }}
+              transition={{
+                duration: 3,
+                ease: "easeInOut",
+                repeat: Infinity,
+              }}
+            >
+              <Image
+                src="/assets/hero-section/viper-chip.png"
+                alt="Hero Animation"
+                width={375}
+                height={250}
+                className="mx-auto"
+              />
+            </motion.div>
+
+            {/* Chip glow overlay */}
+            <motion.div
+              className="absolute bottom-0 right-1/2 translate-x-1/2"
+              animate={{
+                opacity: [0, 0.5, 0.5, 0],
+                y: [0, -12, 0],
+              }}
+              transition={{
+                duration: 3,
+                ease: "easeInOut",
+                repeat: Infinity,
+              }}
+            >
+              <Image
+                src="/assets/hero-section/viper-chip-glow.png"
+                alt="Hero Glow"
+                width={375}
+                className="mx-auto"
+                height={250}
+              />
+            </motion.div>
+          </div>
         </div>
-
-        <div className="absolute bottom-0 md:bottom-12 right-[calc(50%+2.5rem)] scale-x-[-1]">
-          <PulseAnimation flip />
-        </div>
-
-        <motion.div
-          className="absolute bottom-26 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
-          animate={{
-            y: [0, -12, 0],
-          }}
-          transition={{
-            duration: 3,
-            ease: "easeInOut",
-            repeat: Infinity,
-          }}
-        >
-          <Image
-            src="/assets/hero-section/viper-chip.png"
-            alt="Hero Animation"
-            width={375}
-            height={250}
-            className="mx-auto"
-          />
-        </motion.div>
-
-        {/* Chip glow overlay */}
-        <motion.div
-          className="absolute bottom-26 right-1/2 translate-x-1/2 w-3/4 md:w-1/2"
-          animate={{
-            opacity: [0, 0.5, 0.5, 0],
-            y: [0, -12, 0],
-          }}
-          transition={{
-            duration: 3,
-            ease: "easeInOut",
-            repeat: Infinity,
-          }}
-        >
-          <Image
-            src="/assets/hero-section/viper-chip-glow.png"
-            alt="Hero Glow"
-            width={375}
-            className="mx-auto"
-            height={250}
-          />
-        </motion.div>
       </div>
     </section>
   );
 }
+

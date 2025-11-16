@@ -27,17 +27,15 @@ export function TechShowcase() {
         <Partners />
         <FeaturesHeader />
         <div className="relative max-w-7xl mx-auto pb-16 px-6">
-
-
           {/* Desktop Layout: absolutely center the mask, let sides auto size */}
           <div className="hidden lg:flex relative items-center justify-between mx-auto min-h-[360px] px-6">
             <div className="flex-none flex justify-end z-10">
-              <Image src={nodesMesh} height={225} width={225} alt="" />
+              <Image src={nodesMesh} height={180} width={180} alt="" />
             </div>
-            <div className="w-full px-4 py-16overflow-hidden flex items-center justify-center">
+            <div className="w-full px-4 py-16 overflow-hidden flex items-center justify-center">
               <StraightPulseLine />
               <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 left-1/2 -translate-x-1/2 z-10 flex items-center justify-center">
-                <Image src={viperNode} height={260} width={260} alt="" />
+                <Image src={viperNode} height={200} width={200} alt="" />
               </div>
             </div>
             <div className="flex-none flex justify-start z-10 w-[225px]">
@@ -46,17 +44,21 @@ export function TechShowcase() {
           
           </div>
 
-          {/* Mobile Layout: Images on top, bullets below */}
-          <div className="lg:hidden">
-            {/*<div className="grid grid-cols-2 gap-4 mb-12 items-center justify-center">
-              <div className="flex justify-center">
-                <Image src={nodesMesh} height={350} width={350} alt="" />
+          {/* Mobile Layout: stacked visuals with vertical pulse */}
+          <div className="lg:hidden flex flex-col items-center gap-4">
+            <div className="flex flex-col items-center">
+              <Image src={nodesMesh} height={140} width={140} alt="" />
+            </div>
+            <div className="relative w-full max-w-xs h-72 overflow-hidden flex items-center justify-center">
+              <StraightPulseLine
+                orientation="vertical"
+                className="absolute top-0 bottom-0 left-1/2 -translate-x-1/2"
+              />
+              <div className="relative z-10 flex justify-center">
+                <Image src={viperNode} height={165} width={165} alt="" />
               </div>
-              <div className="flex justify-center">
-                <Image src={viperNode} height={200} width={200} alt="" />
-              </div>
-            </div>*/}
-            <div className="flex justify-center">
+            </div>
+            <div className="flex justify-center w-full">
               <FeaturesBullets />
             </div>
           </div>
