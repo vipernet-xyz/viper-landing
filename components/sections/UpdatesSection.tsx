@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import UpdateCard from "../components/UpdateCard";
+import Link from "next/link";
 
 export function UpdatesSection() {
   const updates = [
@@ -9,11 +10,13 @@ export function UpdatesSection() {
       image: "/assets/blog/blog-1.png",
       date: "Jun 12, 2024",
       title: "Viper Network Unlocks Decentralised Access to Sui",
+      link:"https://medium.com/@vipernet/viper-network-unlocks-decentralized-access-to-sui-03910a13cbb3"
     },
     {
       image: "/assets/blog/blog-2.png",
       date: "May 30, 2024",
       title: "Viper Network Partners with Kakarot zkEVM",
+      link: "https://medium.com/@vipernet/viper-network-partners-with-kakarot-zkevm-eb718f2fa099"
     },
   ];
 
@@ -40,12 +43,14 @@ export function UpdatesSection() {
         </div>
 
         <div className="text-center mt-12">
+          <Link href={'https://medium.com/@vipernet'} target="_blank">
           <Button
             variant="outline"
-            className=" hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base"
+            className=" hover:bg-[#D1D1D1]/20 hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base cursor-pointer"
           >
             Browse More
           </Button>
+          </Link>
         </div>
       </div>
     </section>

@@ -1,12 +1,14 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "../ui/button";
 import Image from "next/image";
+import Link from "next/link";
 
 interface UpdateCardPropsI {
   update: {
     image: string;
     date: string;
     title: string;
+    link: string;
   };
 }
 
@@ -38,12 +40,14 @@ export default function UpdateCard({ update }: UpdateCardPropsI) {
           className="w-[87.5%] absolute bottom-12"
         />
         <div className="pt-6">
+          <Link href={update.link} target="_blank">
           <Button
             variant="outline"
-            className="text-white hover:bg-white/10 font-space-grotesk p-0 h-auto text-sm border border-white/20 px-10 py-3"
+            className="text-white hover:bg-white/10 font-space-grotesk p-0 h-auto text-sm border border-white/20 px-10 py-3 cursor-pointer"
           >
             Read More
           </Button>
+          </Link>
         </div>
       </CardContent>
     </Card>
