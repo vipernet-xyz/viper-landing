@@ -16,18 +16,18 @@ export function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="relative w-full min-h-screen px-4 pt-12">
-        <div className="relative flex w-full justify-center overflow-hidden">
+      <div className="relative w-full min-h-screen pt-18">
+        <div className="relative flex w-full justify-center overflow-hidden overflow-clip">
           <div
-            className="relative flex w-full items-end justify-center overflow-hidden pb-12"
+            className="relative flex items-end justify-center overflow-hidden pb-32 w-screen min-w-[1280px]"
             style={{
-              aspectRatio: "1280 / 600",
+              aspectRatio: "1280/550",
               backgroundImage: "url('/assets/hero-section/top-section.png')",
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           >
-            <div className="relative z-10 max-w-3xl text-center">
+            <div className="relative z-20 max-w-3xl text-center">
               <h1 className="mb-6 font-inter text-5xl font-bold text-white md:text-7xl">
                 Viper Network
               </h1>
@@ -53,7 +53,7 @@ export function HeroSection() {
           </div>
         </div>
         {/* CHIP + LINES */}
-        <div className="relative z-10 mt-6 flex w-full justify-center overflow-hidden px-4 pb-24">
+        <div className="relative z-10 top-[-64px] flex w-full justify-center overflow-visible px-4">
           <div className="relative h-[360px] w-[960px] min-w-[960px]">
             <div className="absolute bottom-0 left-[calc(50%+2.5rem)]">
               <PulseAnimation flip />
@@ -64,7 +64,7 @@ export function HeroSection() {
             </div>
 
             <motion.div
-              className="absolute bottom-0 right-1/2 translate-x-1/2"
+              className="absolute bottom-[72px] right-1/2 translate-x-1/2"
               animate={{
                 y: [0, -12, 0],
               }}
@@ -85,7 +85,7 @@ export function HeroSection() {
 
             {/* Chip glow overlay */}
             <motion.div
-              className="absolute bottom-0 right-1/2 translate-x-1/2"
+              className="absolute bottom-[72px] right-1/2 translate-x-1/2"
               animate={{
                 opacity: [0, 0.5, 0.5, 0],
                 y: [0, -12, 0],
