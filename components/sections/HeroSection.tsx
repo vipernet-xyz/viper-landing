@@ -68,7 +68,7 @@ export function HeroSection() {
                 y: [0, -12, 0],
               }}
               transition={{
-                duration: 3,
+                duration: 3.3,
                 ease: "easeInOut",
                 repeat: Infinity,
               }}
@@ -90,7 +90,7 @@ export function HeroSection() {
                 y: [0, -12, 0],
               }}
               transition={{
-                duration: 3,
+                duration: 3.3,
                 ease: "easeInOut",
                 repeat: Infinity,
               }}
