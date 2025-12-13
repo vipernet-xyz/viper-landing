@@ -24,6 +24,10 @@ const nextConfig = {
     ],
   },
   webpack: (config, options) => {
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
     config.devtool =
       process.env.NODE_ENV === "production" ? "source-map" : false;
     config.optimization = {

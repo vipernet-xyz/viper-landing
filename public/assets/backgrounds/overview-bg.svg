@@ -1,0 +1,17 @@
+<svg viewBox="0 0 895.4986 199" fill="none" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" id="621bf197" x="0" y="0"><g id="Dashboard" data-node-id="369:937" clip-path="url(#clip0_369_937)"><g id="Frame 42" data-node-id="771:958"><g clip-path="url(#clip6_369_937)"><g id="Vector_17" data-node-id="771:1023" filter="url(#filter8_f_369_937)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M773.57,-225.502c33.54,2.536 61.4,21.933 83.19,47.359c22.95,26.763 43,58.461 37.24,93.132c-6.13,36.894 -31.78,69.4 -66.61,83.653c-32.86,13.45 -67.74,-0.948 -100.17,-15.403c-34.072,-15.183 -71.995,-30.808 -82.991,-66.232c-11.723,-37.766 1.929,-79.694 28.577,-109.056c24.939,-27.479 63.604,-36.261 100.764,-33.453z" fill="currentColor" fill-opacity="0.6"/>
+</g><g id="Vector_18" data-node-id="771:960" filter="url(#filter9_f_369_937)">
+<path fill-rule="evenodd" clip-rule="evenodd" d="M170.282,181.498c45.768,2.536 83.791,21.933 113.536,47.359c31.309,26.763 58.68,58.461 50.82,93.132c-8.365,36.894 -43.368,69.4 -90.9,83.653c-44.854,13.45 -92.454,-0.948 -136.713,-15.403c-46.493,-15.183 -98.248,-30.808 -113.254,-66.232c-15.998,-37.766 2.632,-79.694 39,-109.056c34.034,-27.479 86.807,-36.261 137.511,-33.453z" fill="currentColor" fill-opacity="0.6"/>
+</g></g></g></g><defs><filter id="filter8_f_369_937" x="440" y="-426" width="655" height="630" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_369_937"/>
+</filter><filter id="filter9_f_369_937" x="-212" y="-19" width="748" height="630" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
+<feFlood flood-opacity="0" result="BackgroundImageFix"/>
+<feBlend mode="normal" in="SourceGraphic" in2="BackgroundImageFix" result="shape"/>
+<feGaussianBlur stdDeviation="100" result="effect1_foregroundBlur_369_937"/>
+</filter><clipPath id="clip0_369_937">
+<rect width="1280" height="733" fill="white" x="-300" y="-504"/>
+</clipPath><clipPath id="clip6_369_937">
+<rect x="0" y="0" width="939" height="199" rx="10" fill="white"/>
+</clipPath></defs></svg>

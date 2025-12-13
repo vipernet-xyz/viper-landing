@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// User model matching Ent schema
+model User {
+  id               Int      @id @default(autoincrement())
+  provider_user_id String   @unique @map("provider_user_id")
+  email            String?  @unique
+  name             String?
+  user_type        String   @default("free") @map("user_type") // Enums in Ent are strings in DB often, simple string is safer for compatibility unless we define the enum strictly
+  daily_rate_limit Int      @default(10000) @map("daily_rate_limit")
+  app_limit        Int      @default(5) @map("app_limit")
+  created_at       DateTime @default(now()) @map("created_at")
+  updated_at       DateTime @default(now()) @updatedAt @map("updated_at")
+
+  apps App[]
+
+  @@map("users")
+}
+
+// App model matching Ent schema
+model App {
+  id              Int      @id @default(autoincrement())
+  api_key         String   @unique @map("api_key")
+  user_id         Int      @map("user_id")
+  name            String
+  description     String?
+  allowed_origins String[] @map("allowed_origins")
+  allowed_chains  String[] @map("allowed_chains")
+  rate_limit      Int      @default(10000) @map("rate_limit")
+  is_active       Boolean  @default(true) @map("is_active")
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @default(now()) @updatedAt @map("updated_at")
+
+  user User @relation(fields: [user_id], references: [id])
+
+  @@map("apps")
+}
+
+// Requestor model matching Ent schema
+model Requestor {
+  id         Int      @id @default(autoincrement())
+  public_key String   @unique @map("public_key")
+  address    String
+  chain_ids  Json?    @map("chain_ids")
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("requestors")
+}

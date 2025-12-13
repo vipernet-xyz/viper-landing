@@ -1,7 +1,8 @@
+@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Lato:wght@400&display=swap");
-@import "tailwindcss";
+@import url("https://fonts.googleapis.com/css2?family=Source+Code+Pro:wght@400&display=swap");
 @import "tw-animate-css";
 
 @custom-variant dark (&:is(.dark *));
@@ -46,6 +47,14 @@
     --color-viper-purple-dark: var(--viper-purple-dark);
     --color-viper-accent: var(--viper-accent);
     --color-glass-border: var(--glass-border);
+    --color-viper-bg-primary: var(--viper-bg-primary);
+    --color-viper-bg-sidebar: var(--viper-bg-sidebar);
+    --color-viper-bg-card: var(--viper-bg-card);
+    --color-viper-text-muted-70: var(--viper-text-muted-70);
+    --color-viper-text-muted-60: var(--viper-text-muted-60);
+    --color-viper-text-muted-50: var(--viper-text-muted-50);
+    --color-viper-border-light: var(--viper-border-light);
+    --color-viper-border-muted: var(--viper-border-muted);
     --animate-marquee: marquee var(--duration) infinite linear;
     --animate-marquee-vertical: marquee-vertical var(--duration) linear infinite;
     @keyframes marquee {
@@ -103,6 +112,14 @@
     --viper-purple-dark: #46337d;
     --viper-accent: #829816;
     --glass-border: rgba(255, 255, 255, 0.35);
+    --viper-bg-primary: #161616;
+    --viper-bg-sidebar: #0d0d0d;
+    --viper-bg-card: rgba(37, 37, 37, 0.5);
+    --viper-text-muted-70: rgba(255, 255, 255, 0.7);
+    --viper-text-muted-60: rgba(255, 255, 255, 0.6);
+    --viper-text-muted-50: rgba(255, 255, 255, 0.5);
+    --viper-border-light: rgba(255, 255, 255, 0.2);
+    --viper-border-muted: rgba(153, 153, 153, 0.2);
 }
 
 :root {
