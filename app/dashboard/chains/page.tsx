@@ -6,39 +6,63 @@ import { Search, Plus } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ChainCard } from '@/components/dashboard/chains/ChainCard'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { toast } from "sonner"
 
-const chains = [
-    {
-        name: 'Ethereum',
-        description: 'The decentralized L1',
-        icon: '/assets/chains/ethereum.svg', // We'll need to check if these exist or use placeholders
-        status: 'active' as const,
-        type: 'tunnel' as const
-    },
-    {
-        name: 'Solana',
-        description: 'Fast, low-cost network for digital assets',
-        icon: '/assets/chains/solana.svg',
-        status: 'active' as const,
-        type: 'tunnel' as const
-    },
-    {
-        name: 'Polygon',
-        description: 'Low-fees, high-throughput',
-        icon: '/assets/chains/polygon.svg',
-        status: 'active' as const,
-        type: 'tunnel' as const
-    },
-    {
-        name: 'Sui',
-        description: 'Network with ease of web2',
-        icon: '/assets/chains/sui.svg',
-        status: 'active' as const,
-        type: 'tunnel' as const
-    }
-]
+interface Chain {
+    id: number
+    name: string
+    description: string
+    icon: string
+    status: 'active' | 'inactive'
+    type: 'tunnel' | 'bridge'
+}
 
 export default function ChainsPage() {
+    const [chains, setChains] = React.useState<Chain[]>([])
+    const [isLoading, setIsLoading] = React.useState(true)
+    const [searchQuery, setSearchQuery] = React.useState('')
+    const [isDialogOpen, setIsDialogOpen] = React.useState(false)
+
+    React.useEffect(() => {
+        async function fetchChains() {
+            try {
+                const response = await fetch('/api/chains')
+                if (response.ok) {
+                    const data = await response.json()
+                    setChains(data)
+                }
+            } catch (error) {
+                console.error('Failed to fetch chains:', error)
+            } finally {
+                setIsLoading(false)
+            }
+        }
+        fetchChains()
+    }, [])
+
+    const filteredChains = chains.filter(chain =>
+        chain.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        chain.description.toLowerCase().includes(searchQuery.toLowerCase())
+    )
+
+    const handleRequestChain = (e: React.FormEvent) => {
+        e.preventDefault()
+        // Here you would typically assume an API call
+        toast.success("Request sent successfully", {
+            description: "We'll review your request to add a new chain."
+        })
+        setIsDialogOpen(false)
+    }
+
     return (
         <div className="space-y-8 max-w-7xl mx-auto">
             <div className="space-y-1">
@@ -69,23 +93,64 @@ export default function ChainsPage() {
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                     <Input
                         placeholder="Search Chain"
+                        value={searchQuery}
+                        onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10 bg-[#111111] border-white/10 text-white placeholder:text-white/40 h-10"
                     />
                 </div>
-                <Button className="bg-white text-black hover:bg-white/90 gap-2 h-10 px-4">
-                    <Plus className="h-4 w-4" />
-                    Request Chain
-                </Button>
+
+                <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+                    <DialogTrigger asChild>
+                        <Button className="bg-white text-black hover:bg-white/90 gap-2 h-10 px-4">
+                            <Plus className="h-4 w-4" />
+                            Request Chain
+                        </Button>
+                    </DialogTrigger>
+                    <DialogContent className="bg-[#111111] border-white/10 text-white">
+                        <DialogHeader>
+                            <DialogTitle>Request a New Chain</DialogTitle>
+                            <DialogDescription className="text-white/60">
+                                Let us know which chain you would like to see supported.
+                            </DialogDescription>
+                        </DialogHeader>
+                        <form onSubmit={handleRequestChain} className="space-y-4 pt-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="chainName">Chain Name</Label>
+                                <Input id="chainName" placeholder="e.g. Avalanche, Optimism" className="bg-[#1A1A1A] border-white/10" required />
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="reason">Why do you need it?</Label>
+                                <Input id="reason" placeholder="Brief explanation..." className="bg-[#1A1A1A] border-white/10" />
+                            </div>
+                            <div className="flex justify-end pt-2">
+                                <Button type="submit" className="bg-white text-black hover:bg-white/90">
+                                    Submit Request
+                                </Button>
+                            </div>
+                        </form>
+                    </DialogContent>
+                </Dialog>
             </div>
 
             {/* Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                {chains.map((chain) => (
-                    <ChainCard
-                        key={chain.name}
-                        {...chain}
-                    />
-                ))}
+                {isLoading ? (
+                    // Skeleton loading state
+                    [...Array(4)].map((_, i) => (
+                        <div key={i} className="h-[200px] rounded-xl bg-white/5 animate-pulse" />
+                    ))
+                ) : (
+                    filteredChains.map((chain) => (
+                        <ChainCard
+                            key={chain.id}
+                            name={chain.name}
+                            description={chain.description}
+                            icon={chain.icon}
+                            status={chain.status as 'active' | 'inactive'}
+                            type={chain.type as 'tunnel' | 'bridge'}
+                        />
+                    ))
+                )}
             </div>
         </div>
     )

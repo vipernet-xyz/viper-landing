@@ -1,10 +1,21 @@
 import { PrismaClient } from '@prisma/client'
-import { Pool } from 'pg'
+import { Pool, PoolConfig } from 'pg'
 import { PrismaPg } from '@prisma/adapter-pg'
 
 const prismaClientSingleton = () => {
-    const connectionString = process.env.DATABASE_URL
-    const pool = new Pool({ connectionString })
+    const connectionString = process.env.DATABASE_URL || ''
+    const url = new URL(connectionString)
+
+    const poolConfig: PoolConfig = {
+        host: url.hostname,
+        port: parseInt(url.port) || 5432,
+        database: url.pathname.slice(1).split('?')[0],
+        user: decodeURIComponent(url.username),
+        password: decodeURIComponent(url.password),
+        ssl: { rejectUnauthorized: false }
+    }
+
+    const pool = new Pool(poolConfig)
     const adapter = new PrismaPg(pool)
     return new PrismaClient({ adapter })
 }

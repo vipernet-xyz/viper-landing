@@ -54,3 +54,17 @@ model Requestor {
 
   @@map("requestors")
 }
+
+// Chain model for dashboard
+model Chain {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
+  description String
+  icon        String?
+  status      String   @default("active") // active, inactive
+  type        String   @default("tunnel") // tunnel, bridge
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("chains")
+}
