@@ -1,5 +1,5 @@
 import FooterBottom from "../components/FooterBottom";
-import FooterCTA from "../components/FooterCTA";
+import FooterCTA from "./FooterCTA";
 import FooterLinks from "../components/FooterLinks";
 
 export default function Footer() {

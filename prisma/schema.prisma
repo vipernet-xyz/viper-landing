@@ -31,14 +31,16 @@ model App {
   user_id         Int      @map("user_id")
   name            String
   description     String?
-  allowed_origins String[] @map("allowed_origins")
-  allowed_chains  String[] @map("allowed_chains")
+  allowed_origins Json     @map("allowed_origins")
+  allowed_chains  Json     @map("allowed_chains")
   rate_limit      Int      @default(10000) @map("rate_limit")
   is_active       Boolean  @default(true) @map("is_active")
   created_at      DateTime @default(now()) @map("created_at")
   updated_at      DateTime @default(now()) @updatedAt @map("updated_at")
 
-  user User @relation(fields: [user_id], references: [id])
+  user               User               @relation(fields: [user_id], references: [id])
+  relay_logs         RelayLog[]
+  websocket_sessions WebSocketSession[]
 
   @@map("apps")
 }
@@ -67,4 +69,62 @@ model Chain {
   updated_at  DateTime @default(now()) @updatedAt @map("updated_at")
 
   @@map("chains")
+}
+
+// RelayLog model for tracking blockchain RPC requests
+model RelayLog {
+  id                 Int      @id @default(autoincrement())
+  app_id             Int      @map("app_id")
+  chain_id           String   @map("chain_id")
+  servicer_address   String   @map("servicer_address") @db.Text
+  request_type       String   @default("http") @map("request_type")
+  method             String
+  response_time_ms   Int      @default(0) @map("response_time_ms")
+  success            Boolean  @default(false)
+  session_height     BigInt?  @map("session_height")
+  bytes_transferred  Int      @default(0) @map("bytes_transferred")
+  geo_zone           String?  @map("geo_zone")
+  error_code         String?  @map("error_code")
+  created_at         DateTime @default(now()) @map("created_at")
+  updated_at         DateTime @default(now()) @updatedAt @map("updated_at")
+
+  app App @relation(fields: [app_id], references: [id])
+
+  @@map("relay_logs")
+}
+
+// WebSocketSession model for tracking WebSocket connections
+model WebSocketSession {
+  id                       Int       @id @default(autoincrement())
+  app_id                   Int       @map("app_id")
+  connection_id            String    @map("connection_id")
+  chain_id                 String    @map("chain_id")
+  servicer_address         String    @map("servicer_address") @db.Text
+  connected_at             DateTime  @map("connected_at")
+  disconnected_at          DateTime? @map("disconnected_at")
+  state                    String    @default("active")
+  subscription_type        String?   @map("subscription_type")
+  subscription_params      String?   @map("subscription_params") @db.Text
+  subscribed_at            DateTime? @map("subscribed_at")
+  messages_sent            Int       @default(0) @map("messages_sent")
+  messages_received        Int       @default(0) @map("messages_received")
+  session_duration_seconds Float?    @map("session_duration_seconds")
+  created_at               DateTime  @default(now()) @map("created_at")
+  updated_at               DateTime  @default(now()) @updatedAt @map("updated_at")
+
+  app App @relation(fields: [app_id], references: [id])
+
+  @@map("web_socket_sessions")
+}
+
+// ApiLog model for API endpoint logging
+model ApiLog {
+  id         Int      @id @default(autoincrement())
+  endpoint   String
+  api_key    String   @map("api_key")
+  chain_id   Int      @map("chain_id")
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @default(now()) @updatedAt @map("updated_at")
+
+  @@map("api_logs")
 }

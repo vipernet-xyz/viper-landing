@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { useQuery } from '@tanstack/react-query'
 import { Search, Plus, Link2 } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
@@ -14,25 +15,71 @@ import {
     TableRow,
 } from '@/components/ui/table'
 import { Badge } from '@/components/ui/badge'
-import { MOCK_APPS, type AppData } from '@/lib/mock-apps'
+
+interface AppData {
+    id: number
+    name: string
+    description: string | null
+    api_key: string
+    created_at: string
+    allowed_chains: string[]
+    allowed_origins: string[]
+    rate_limit: number
+    is_active: boolean
+}
+
+interface AppAnalytics {
+    [appId: number]: {
+        total_requests_24h: number
+        failed_requests_24h: number
+    }
+}
 
 export default function AppsPage() {
     const router = useRouter()
     const [searchTerm, setSearchTerm] = useState('')
 
-    // Using mock data - replace with API call later
-    const apps = MOCK_APPS
-    const isLoading = false
+    const { data: apps = [], isLoading } = useQuery<AppData[]>({
+        queryKey: ['apps'],
+        queryFn: async () => {
+            const res = await fetch('/api/apps')
+            if (!res.ok) throw new Error('Failed to fetch apps')
+            return res.json()
+        },
+    })
 
-    // Uncomment when connecting to database:
-    // const { data: apps, isLoading } = useQuery<AppData[]>({
-    //     queryKey: ['apps'],
-    //     queryFn: async () => {
-    //         const res = await fetch('/api/apps')
-    //         if (!res.ok) throw new Error('Failed to fetch apps')
-    //         return res.json()
-    //     },
-    // })
+    // Fetch analytics for each app
+    const { data: analyticsData } = useQuery({
+        queryKey: ['app-analytics'],
+        queryFn: async () => {
+            if (apps.length === 0) return {}
+
+            const analyticsPromises = apps.map(async (app) => {
+                const res = await fetch(`/api/analytics?app_id=${app.id}`)
+                if (!res.ok) return null
+                const data = await res.json()
+                return {
+                    appId: app.id,
+                    analytics: data.analytics
+                }
+            })
+
+            const results = await Promise.all(analyticsPromises)
+            const analyticsMap: AppAnalytics = {}
+
+            results.forEach(result => {
+                if (result) {
+                    analyticsMap[result.appId] = {
+                        total_requests_24h: result.analytics.total_requests_24h,
+                        failed_requests_24h: result.analytics.failed_requests_24h
+                    }
+                }
+            })
+
+            return analyticsMap
+        },
+        enabled: apps.length > 0,
+    })
 
     const formatDate = (date: string): string => {
         const d = new Date(date)
@@ -96,42 +143,53 @@ export default function AppsPage() {
                             </TableRow>
                         ) : (
                             filteredApps.map((app) => {
-                                const networks = app.networks.map(n => n.id)
-                                const displayNetworks = networks.slice(0, 2)
-                                const overflowCount = networks.length - 2
-
+                                const appAnalytics = analyticsData?.[app.id]
                                 return (
-                                    <TableRow key={app.id} className="border-b-[0.5px] border-white/10 hover:bg-white/5">
+                                    <TableRow
+                                        key={app.id}
+                                        className="border-b-[0.5px] border-white/10 hover:bg-white/5 cursor-pointer"
+                                        onClick={() => router.push(`/dashboard/apps/${app.id}`)}
+                                    >
                                         <TableCell className="text-white text-[10px] font-normal">{app.name}</TableCell>
                                         <TableCell className="text-white text-[10px] font-normal">
-                                            {app.metrics?.requests_24h ?? '-'}
+                                            {appAnalytics?.total_requests_24h ?? '-'}
                                         </TableCell>
                                         <TableCell className="text-white text-[10px] font-normal">
-                                            {app.metrics?.failed_requests_24h ?? '-'}
+                                            {appAnalytics?.failed_requests_24h ?? '-'}
                                         </TableCell>
                                         <TableCell className="text-white text-[10px] font-normal">
                                             {formatDate(app.created_at)}
                                         </TableCell>
                                         <TableCell>
                                             <div className="flex items-center gap-1">
-                                                {displayNetworks.map((networkId, idx) => (
-                                                    <Badge
-                                                        key={idx}
-                                                        className="h-[10px] min-w-[6px] px-1 bg-gradient-to-r from-[#7f5ee3] to-[#46337d] text-white text-[8px] font-normal rounded-full flex items-center justify-center"
-                                                    >
-                                                        {networkId}
-                                                    </Badge>
-                                                ))}
-                                                {overflowCount > 0 && (
-                                                    <span className="text-white text-[8px] font-[681] lowercase">
-                                                        +{overflowCount}
-                                                    </span>
+                                                {app.allowed_chains.length > 0 ? (
+                                                    <>
+                                                        {app.allowed_chains.slice(0, 2).map((chainId, idx) => (
+                                                            <Badge
+                                                                key={idx}
+                                                                className="h-[10px] min-w-[6px] px-1 bg-gradient-to-r from-[#7f5ee3] to-[#46337d] text-white text-[8px] font-normal rounded-full flex items-center justify-center"
+                                                            >
+                                                                {chainId}
+                                                            </Badge>
+                                                        ))}
+                                                        {app.allowed_chains.length > 2 && (
+                                                            <span className="text-white text-[8px] font-[681] lowercase">
+                                                                +{app.allowed_chains.length - 2}
+                                                            </span>
+                                                        )}
+                                                    </>
+                                                ) : (
+                                                    <span className="text-white/50 text-[8px]">All</span>
                                                 )}
                                             </div>
                                         </TableCell>
                                         <TableCell>
                                             <Button
                                                 variant="outline"
+                                                onClick={(e) => {
+                                                    e.stopPropagation()
+                                                    router.push(`/dashboard/apps/${app.id}`)
+                                                }}
                                                 className="h-[26px] px-3 bg-transparent hover:bg-white/5 border-[0.5px] border-white/20 rounded-[5px] gap-[3.55px] text-white text-[8px] font-medium"
                                             >
                                                 <Link2 className="h-[11px] w-[11px]" strokeWidth={0.7} />

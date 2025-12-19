@@ -1,7 +1,6 @@
 
 import React from 'react'
 import { Card } from '@/components/ui/card'
-import Image from 'next/image'
 import { Button } from '@/components/ui/button'
 
 interface ChainCardProps {
@@ -23,15 +22,8 @@ export function ChainCard({
         <Card className="bg-[#111111] border-white/5 p-6 flex flex-col gap-4 hover:border-white/10 transition-colors">
             <div className="flex items-start justify-between">
                 <div className="size-12 rounded-full bg-white/5 flex items-center justify-center p-2.5">
-                    {/* Placeholder for icon if actual image not loaded/found, using the first letter */}
                     {icon ? (
-                        <Image
-                            src={icon}
-                            alt={name}
-                            width={28}
-                            height={28}
-                            className="object-contain"
-                        />
+                        <span className="text-2xl">{icon}</span>
                     ) : (
                         <span className="text-xl font-bold text-white">{name.charAt(0)}</span>
                     )}

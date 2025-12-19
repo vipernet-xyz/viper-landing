@@ -115,8 +115,8 @@ export function DashboardSidebar() {
                         😇
                     </div>
                     <div className="flex-1 grid text-left leading-tight">
-                        <span className="text-white text-sm font-normal">xyz123</span>
-                        <span className="text-white text-[13px] font-normal">xyz@gmail.com</span>
+                        <span className="text-white text-sm font-normal">{user?.username || 'User'}</span>
+                        <span className="text-white text-[13px] font-normal">{user?.email || 'user@example.com'}</span>
                     </div>
                 </div>
             </SidebarFooter>

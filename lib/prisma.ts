@@ -17,7 +17,11 @@ const prismaClientSingleton = () => {
 
     const pool = new Pool(poolConfig)
     const adapter = new PrismaPg(pool)
-    return new PrismaClient({ adapter })
+
+    return new PrismaClient({
+        adapter,
+        log: ['error', 'warn']
+    })
 }
 
 type PrismaClientSingleton = ReturnType<typeof prismaClientSingleton>

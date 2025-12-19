@@ -7,7 +7,7 @@ import { WhyChooseViper } from "@/components/sections/WhyChooseViper"
 import { RevenueSection } from "@/components/sections/RevenueSection"
 import { UpdatesSection } from "@/components/sections/UpdatesSection"
 import { CommunityBuzz } from "@/components/sections/CommunityBuzz"
-import { FooterCTA } from "@/components/sections/FooterCTA"
+import FooterCTA from "@/components/sections/FooterCTA"
 
 export default function ViperNetworkPage() {
   return (

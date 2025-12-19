@@ -2,20 +2,42 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
-import { Loader2, ArrowLeft } from 'lucide-react'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Loader2, ArrowLeft, Plus, X } from 'lucide-react'
 import { toast } from 'sonner'
+
+interface Chain {
+    id: number
+    name: string
+    description: string
+    icon?: string
+    status: string
+    type: string
+}
 
 export default function CreateAppPage() {
     const router = useRouter()
     const queryClient = useQueryClient()
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
+    const [allowedOrigins, setAllowedOrigins] = useState<string[]>([''])
+    const [selectedChains, setSelectedChains] = useState<number[]>([])
+
+    // Fetch available chains
+    const { data: chains = [] } = useQuery<Chain[]>({
+        queryKey: ['chains'],
+        queryFn: async () => {
+            const res = await fetch('/api/chains')
+            if (!res.ok) throw new Error('Failed to fetch chains')
+            return res.json()
+        },
+    })
 
     const mutation = useMutation({
         mutationFn: async (newApp: any) => {
@@ -43,15 +65,43 @@ export default function CreateAppPage() {
         },
     })
 
+    const addOriginField = () => {
+        setAllowedOrigins([...allowedOrigins, ''])
+    }
+
+    const removeOriginField = (index: number) => {
+        const newOrigins = allowedOrigins.filter((_, i) => i !== index)
+        setAllowedOrigins(newOrigins.length > 0 ? newOrigins : [''])
+    }
+
+    const updateOrigin = (index: number, value: string) => {
+        const newOrigins = [...allowedOrigins]
+        newOrigins[index] = value
+        setAllowedOrigins(newOrigins)
+    }
+
+    const toggleChain = (chainId: number) => {
+        setSelectedChains(prev =>
+            prev.includes(chainId)
+                ? prev.filter(id => id !== chainId)
+                : [...prev, chainId]
+        )
+    }
+
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault()
         if (!name.trim()) return
 
+        const filteredOrigins = allowedOrigins.filter(origin => origin.trim() !== '')
+
+        // Convert numeric chain IDs to 4-digit string format (e.g., 1 -> "0001")
+        const formattedChains = selectedChains.map(id => String(id).padStart(4, '0'))
+
         mutation.mutate({
             name,
             description,
-            allowedOrigins: [], // Default to empty/all for now, can add UI later
-            allowedChains: [],
+            allowedOrigins: filteredOrigins,
+            allowedChains: formattedChains,
         })
     }
 
@@ -74,9 +124,9 @@ export default function CreateAppPage() {
                             Enter the name and description for your application.
                         </CardDescription>
                     </CardHeader>
-                    <CardContent className="space-y-4">
+                    <CardContent className="space-y-6">
                         <div className="space-y-2">
-                            <Label htmlFor="name">App Name</Label>
+                            <Label htmlFor="name">App Name *</Label>
                             <Input
                                 id="name"
                                 placeholder="e.g., My DeFi Dashboard"
@@ -86,6 +136,7 @@ export default function CreateAppPage() {
                                 required
                             />
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="description">Description (Optional)</Label>
                             <Textarea
@@ -96,6 +147,67 @@ export default function CreateAppPage() {
                                 className="bg-zinc-950 border-zinc-800 resize-none"
                                 rows={4}
                             />
+                        </div>
+
+                        <div className="space-y-3">
+                            <Label>Allowed Origins (Optional)</Label>
+                            <p className="text-sm text-zinc-400">
+                                Enter domains that can use this API key. Leave empty to allow all origins.
+                            </p>
+                            {allowedOrigins.map((origin, index) => (
+                                <div key={index} className="flex gap-2">
+                                    <Input
+                                        placeholder="https://example.com"
+                                        value={origin}
+                                        onChange={(e) => updateOrigin(index, e.target.value)}
+                                        className="bg-zinc-950 border-zinc-800"
+                                    />
+                                    {allowedOrigins.length > 1 && (
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="icon"
+                                            onClick={() => removeOriginField(index)}
+                                            className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
+                                        >
+                                            <X className="h-4 w-4" />
+                                        </Button>
+                                    )}
+                                </div>
+                            ))}
+                            <Button
+                                type="button"
+                                variant="outline"
+                                onClick={addOriginField}
+                                className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
+                            >
+                                <Plus className="mr-2 h-4 w-4" />
+                                Add Origin
+                            </Button>
+                        </div>
+
+                        <div className="space-y-3">
+                            <Label>Allowed Chains (Optional)</Label>
+                            <p className="text-sm text-zinc-400">
+                                Select blockchain networks this app can access. Leave empty to allow all chains.
+                            </p>
+                            <div className="grid grid-cols-2 gap-3">
+                                {chains.map((chain) => (
+                                    <div key={chain.id} className="flex items-center space-x-2">
+                                        <Checkbox
+                                            id={`chain-${chain.id}`}
+                                            checked={selectedChains.includes(chain.id)}
+                                            onCheckedChange={() => toggleChain(chain.id)}
+                                        />
+                                        <Label
+                                            htmlFor={`chain-${chain.id}`}
+                                            className="text-sm font-normal cursor-pointer"
+                                        >
+                                            {chain.name}
+                                        </Label>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </CardContent>
                     <CardFooter className="flex justify-end gap-2">
