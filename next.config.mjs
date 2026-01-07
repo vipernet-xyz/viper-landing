@@ -1,5 +1,9 @@
 import path from "path";
 import fs from "fs";
+import webpack from "webpack";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 const nextConfig = {
   productionBrowserSourceMaps: process.env.NODE_ENV === "production",
@@ -28,6 +32,18 @@ const nextConfig = {
       ...config.resolve.alias,
       '@react-native-async-storage/async-storage': false,
     }
+
+    // Add fallbacks for node modules required by Particle Network
+    config.resolve.fallback = {
+      ...config.resolve.fallback,
+      buffer: require.resolve('buffer/'),
+      crypto: require.resolve('crypto-browserify'),
+      stream: require.resolve('stream-browserify'),
+      process: require.resolve('process/browser'),
+      vm: require.resolve('vm-browserify'),
+      util: require.resolve('util/'),
+    };
+
     config.devtool =
       process.env.NODE_ENV === "production" ? "source-map" : false;
     config.optimization = {
@@ -35,6 +51,15 @@ const nextConfig = {
       minimize: false,
     };
     config.plugins = config.plugins || [];
+
+    // Add ProvidePlugin to inject Buffer globally
+    config.plugins.push(
+      new webpack.ProvidePlugin({
+        Buffer: ['buffer', 'Buffer'],
+        process: 'process/browser',
+      })
+    );
+
     config.module = config.module || { rules: [] };
     config.module.rules = config.module.rules || [];
 

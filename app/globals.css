@@ -202,3 +202,48 @@
         font-family: "Inter", sans-serif;
     }
 }
+
+/* Cosmos Kit Modal Styling */
+[data-interchain-ui-kit] {
+    z-index: 9999 !important;
+}
+
+[data-interchain-ui-kit] [role="dialog"] {
+    background: var(--viper-bg-card) !important;
+    backdrop-filter: blur(16px) !important;
+    border: 1px solid var(--glass-border) !important;
+    border-radius: 12px !important;
+    max-width: 400px !important;
+    margin: auto !important;
+}
+
+[data-interchain-ui-kit] [data-modal-overlay] {
+    background: rgba(0, 0, 0, 0.8) !important;
+    backdrop-filter: blur(8px) !important;
+    z-index: 9998 !important;
+}
+
+/* Cosmos Kit Wallet List */
+[data-interchain-ui-kit] button[data-wallet-button] {
+    background: rgba(255, 255, 255, 0.05) !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+    border-radius: 8px !important;
+    padding: 12px !important;
+    transition: all 0.2s ease !important;
+}
+
+[data-interchain-ui-kit] button[data-wallet-button]:hover {
+    background: rgba(127, 94, 227, 0.1) !important;
+    border-color: var(--viper-purple) !important;
+}
+
+/* Cosmos Kit Text Colors */
+[data-interchain-ui-kit] {
+    color: white !important;
+}
+
+[data-interchain-ui-kit] h2,
+[data-interchain-ui-kit] h3,
+[data-interchain-ui-kit] p {
+    color: white !important;
+}

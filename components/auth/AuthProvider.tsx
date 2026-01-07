@@ -1,10 +1,11 @@
 'use client'
 
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
-import { Web3Auth } from '@web3auth/modal'
-import { CHAIN_NAMESPACES, IProvider, WEB3AUTH_NETWORK } from '@web3auth/base'
-import { EthereumPrivateKeyProvider } from '@web3auth/ethereum-provider'
-import { MetamaskAdapter } from '@web3auth/metamask-adapter'
+import type { IProvider } from '@web3auth/base'
+
+// Dynamic imports to avoid SSR issues
+type Web3Auth = any
+type MetamaskAdapter = any
 
 interface AuthContextType {
     web3auth: Web3Auth | null
@@ -35,8 +36,8 @@ interface AuthProviderProps {
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || 'test-client-id'
 console.log('Web3Auth Client ID:', clientId, 'Env:', process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID)
 
-const chainConfig = {
-    chainNamespace: CHAIN_NAMESPACES.EIP155,
+const getChainConfig = () => ({
+    chainNamespace: 'eip155',
     chainId: '0x1', // Please use 0x1 for Mainnet
     rpcTarget: 'https://eth.llamarpc.com',
     displayName: 'Ethereum Mainnet',
@@ -44,7 +45,7 @@ const chainConfig = {
     ticker: 'ETH',
     tickerName: 'Ethereum',
     skipLookupNetworkData: true,
-}
+})
 
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null)
@@ -54,10 +55,23 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
     useEffect(() => {
         const init = async () => {
+            // Only run on client side
+            if (typeof window === 'undefined') {
+                setIsLoading(false)
+                return
+            }
+
             try {
+                // Dynamic imports to avoid SSR issues
+                const { Web3Auth } = await import('@web3auth/modal')
+                const { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } = await import('@web3auth/base')
+                const { EthereumPrivateKeyProvider } = await import('@web3auth/ethereum-provider')
+                const { MetamaskAdapter } = await import('@web3auth/metamask-adapter')
+
+                const chainConfig = getChainConfig()
                 const privateKeyProvider = new EthereumPrivateKeyProvider({
                     config: {
-                        chainConfig: chainConfig
+                        chainConfig: chainConfig as any
                     }
                 })
 

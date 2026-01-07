@@ -3,26 +3,51 @@
 import { SidebarProvider, SidebarInset, SidebarTrigger } from '@/components/ui/sidebar'
 import { DashboardSidebar } from '@/components/dashboard/DashboardSidebar'
 import { useAuth } from '@/components/auth/AuthProvider'
-import { useRouter } from 'next/navigation'
-import { useEffect } from 'react'
-import { Loader2 } from 'lucide-react'
+import { useRouter, usePathname } from 'next/navigation'
+import { useEffect, useState } from 'react'
+import { Loader2, FileText, ExternalLink } from 'lucide-react'
 import { Separator } from '@/components/ui/separator'
+import { toast } from 'sonner'
+import { useChain } from '@cosmos-kit/react'
 
 export default function DashboardLayout({
     children,
 }: {
     children: React.ReactNode
 }) {
-    const { user, isLoading } = useAuth()
+    const { user, isLoading, provider } = useAuth()
+    const { isWalletConnected: cosmosConnected, address: cosmosAddress } = useChain('cosmoshub')
     const router = useRouter()
+    const pathname = usePathname()
+    const [walletAddress, setWalletAddress] = useState<string>('')
 
+    // Get EVM wallet address
     useEffect(() => {
-        if (!isLoading && !user) {
+        const getWalletAddress = async () => {
+            if (provider && user) {
+                try {
+                    const ethProvider = provider as any
+                    const accounts = await ethProvider.request({ method: 'eth_accounts' })
+                    if (accounts && accounts.length > 0) {
+                        setWalletAddress(accounts[0])
+                    }
+                } catch (error) {
+                    console.error('Error getting wallet address:', error)
+                }
+            }
+        }
+        getWalletAddress()
+    }, [provider, user])
+
+    // Redirect to login if neither wallet is connected
+    useEffect(() => {
+        if (!isLoading && !user && !cosmosConnected) {
             router.push('/login')
         }
-    }, [user, isLoading, router])
+    }, [user, isLoading, cosmosConnected, router])
 
-    if (isLoading || !user) {
+    // Show loading only if Web3Auth is still loading AND Cosmos is not connected
+    if (isLoading && !cosmosConnected) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-black">
                 <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />
@@ -30,35 +55,63 @@ export default function DashboardLayout({
         )
     }
 
+    // If neither authentication method is active, don't render
+    if (!user && !cosmosConnected) {
+        return null
+    }
+
+    // Determine which address to display (Cosmos takes priority if both are connected)
+    const displayAddress = cosmosAddress || walletAddress
+
     return (
         <SidebarProvider>
             <DashboardSidebar />
             <SidebarInset className="bg-viper-bg-primary">
-                <header className="flex h-20 shrink-0 items-center gap-2 border-b border-white px-6">
+                <header className="flex h-20 shrink-0 items-center gap-2 px-6 border-b border-white/10">
                     <div className="flex-1 flex items-center justify-between">
-                        <h1 className="text-xl font-medium text-white">Hi There!</h1>
-                        <div className="flex items-center gap-4">
-                            {/* VIPR Balance */}
-                            <div className="flex items-center gap-2 text-white/70 text-[10px] font-medium">
-                                <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
-                                    <circle cx="16" cy="16" r="16" fill="url(#vipr-gradient)" />
-                                    <defs>
-                                        <linearGradient id="vipr-gradient" x1="0" y1="0" x2="32" y2="32">
-                                            <stop offset="0%" stopColor="#7f5ee3" />
-                                            <stop offset="100%" stopColor="#46337d" />
-                                        </linearGradient>
-                                    </defs>
-                                </svg>
-                                <span>100 VIPR</span>
-                            </div>
-
-                            {/* Wallet Address */}
+                        {pathname === '/dashboard' && (
+                            <h1 className="text-xl font-medium text-white">Hi There!</h1>
+                        )}
+                        <div className={`flex items-center gap-4 ${pathname !== '/dashboard' ? 'ml-auto' : ''}`}>
+                            {/* User Wallet Address */}
                             <div className="flex items-center gap-2 h-8 px-3 bg-[#1c1b1b] border border-white/10 rounded text-white/70 text-[10px] font-medium">
-                                <span>viper7F69...61e46A</span>
-                                <button className="hover:opacity-80 transition-opacity">
+                                <span>
+                                    {displayAddress
+                                        ? displayAddress.startsWith('cosmos')
+                                            ? `${displayAddress.slice(0, 8)}...${displayAddress.slice(-6)}`
+                                            : `${displayAddress.slice(0, 6)}...${displayAddress.slice(-4)}`
+                                        : user?.email?.split('@')[0] || 'User'
+                                    }
+                                </span>
+                                <button
+                                    className="hover:opacity-80 transition-opacity"
+                                    onClick={() => {
+                                        const addressToCopy = displayAddress || user?.email || ''
+                                        if (addressToCopy) {
+                                            navigator.clipboard.writeText(addressToCopy)
+                                            toast.success('Address copied to clipboard!')
+                                        }
+                                    }}
+                                >
                                     <svg width="12" height="12" viewBox="0 0 12 12" fill="none">
                                         <path d="M10 4.5V2C10 1.44772 9.55228 1 9 1H2C1.44772 1 1 1.44772 1 2V9C1 9.55228 1.44772 10 2 10H4.5M7 11H10C10.5523 11 11 10.5523 11 10V7C11 6.44772 10.5523 6 10 6H7C6.44772 6 6 6.44772 6 7V10C6 10.5523 6.44772 11 7 11Z" stroke="rgba(255,255,255,0.7)" strokeWidth="1" strokeLinecap="round" strokeLinejoin="round"/>
                                     </svg>
+                                </button>
+                            </div>
+
+                            {/* Social/Docs Icons */}
+                            <div className="flex items-center gap-2">
+                                <button
+                                    className="flex items-center justify-center w-8 h-8 hover:bg-white/5 rounded transition-colors"
+                                    onClick={() => window.open('https://docs.vipernet.xyz', '_blank')}
+                                >
+                                    <FileText className="w-4 h-4 text-white/70" />
+                                </button>
+                                <button
+                                    className="flex items-center justify-center w-8 h-8 hover:bg-white/5 rounded transition-colors"
+                                    onClick={() => window.open('https://x.com/viper_network_', '_blank')}
+                                >
+                                    <ExternalLink className="w-4 h-4 text-white/70" />
                                 </button>
                             </div>
                         </div>

@@ -86,7 +86,7 @@ export default function AppsPage() {
         return `${d.getMonth() + 1}/${d.getDate()}/${d.getFullYear().toString().slice(-2)}`
     }
 
-    const filteredApps = apps.filter(app =>
+    const filteredApps = (Array.isArray(apps) ? apps : []).filter(app =>
         app.name.toLowerCase().includes(searchTerm.toLowerCase())
     )
 

@@ -52,11 +52,11 @@ export function DashboardStats() {
                     <h3 className="text-white text-[15px] font-normal">About Viper Network</h3>
                     <Button
                         size="sm"
-                        className="h-5 px-2 text-[8px] font-medium bg-viper-purple hover:bg-viper-purple-dark text-white border-0 rounded gap-1"
+                        className="h-7 px-3 text-[11px] font-medium bg-viper-purple hover:bg-viper-purple-dark text-white border-0 rounded gap-1"
                         onClick={() => router.push('/dashboard/apps')}
                     >
                         Apps
-                        <ChevronRight className="size-2.5" strokeWidth={2} />
+                        <ChevronRight className="size-3" strokeWidth={2} />
                     </Button>
                 </div>
             </div>
