@@ -27,7 +27,52 @@ const nextConfig = {
       },
     ],
   },
-  webpack: (config, options) => {
+webpack: (config, options) => {
+    // Suppress webpack cache serialization warnings
+    config.infrastructureLogging = {
+      level: 'error',
+    };
+
+    // Disable webpack cache to avoid ProvidedDependency serialization warnings
+    if (options.isServer === false && options.dev === true) {
+      config.cache = false;
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
+    config.resolve.alias = {
+      ...config.resolve.alias,
+      '@react-native-async-storage/async-storage': false,
+    }
+
     config.resolve.alias = {
       ...config.resolve.alias,
       '@react-native-async-storage/async-storage': false,
@@ -42,6 +87,7 @@ const nextConfig = {
       process: require.resolve('process/browser'),
       vm: require.resolve('vm-browserify'),
       util: require.resolve('util/'),
+      'pino-pretty': false,
     };
 
     config.devtool =
@@ -49,6 +95,8 @@ const nextConfig = {
     config.optimization = {
       ...config.optimization,
       minimize: false,
+      // Disable module concatenation to avoid serialization issues
+      concatenateModules: false,
     };
     config.plugins = config.plugins || [];
 

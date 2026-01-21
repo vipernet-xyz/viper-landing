@@ -123,14 +123,24 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             console.log('web3auth not initialized yet')
             return
         }
-        const web3authProvider = await web3auth.connect()
-        setProvider(web3authProvider)
-        if (web3auth.connected) {
-            const userInfo = await web3auth.getUserInfo()
-            setUser(userInfo)
 
-            // TODO: Call API to create/verify user in DB
-            await syncUserWithBackend(userInfo)
+        try {
+            // Connect with Web3Auth (supports Google and other providers)
+            const web3authProvider = await web3auth.connect()
+            setProvider(web3authProvider)
+
+            if (web3auth.connected) {
+                const userInfo = await web3auth.getUserInfo()
+                setUser(userInfo)
+
+                // After successful login, we can interact with chains
+                console.log('User logged in:', userInfo)
+
+                // Call API to create/verify user in DB
+                await syncUserWithBackend(userInfo)
+            }
+        } catch (error) {
+            console.error('Login failed:', error)
         }
     }
 

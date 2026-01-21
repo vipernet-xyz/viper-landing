@@ -14,18 +14,18 @@ export default function DashboardPage() {
     })
 
     return (
-        <div className="space-y-6">
-            <h2 className="text-xl font-medium text-white mb-6">Dashboard</h2>
-
+        <div className="w-full space-y-6 min-h-full">
             {/* Stats Section */}
-            <DashboardStats />
+            <div className="w-full">
+                <DashboardStats />
+            </div>
 
             {/* Your Overview and Active Apps Section */}
-            <div className="grid grid-cols-12 gap-6">
-                <div className="col-span-5">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                <div className="lg:col-span-5">
                     <YourOverview />
                 </div>
-                <div className="col-span-7">
+                <div className="lg:col-span-7">
                     <ActiveApps />
                 </div>
             </div>

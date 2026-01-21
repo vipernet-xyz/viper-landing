@@ -64,10 +64,15 @@ export default function DashboardLayout({
     const displayAddress = cosmosAddress || walletAddress
 
     return (
-        <SidebarProvider>
-            <DashboardSidebar />
-            <SidebarInset className="bg-viper-bg-primary">
-                <header className="flex h-20 shrink-0 items-center gap-2 px-6 border-b border-white/10">
+        <SidebarProvider
+            style={{
+                "--sidebar-width": "280px"
+            } as React.CSSProperties}
+        >
+            <div className="flex min-h-screen w-full">
+                <DashboardSidebar />
+                <SidebarInset className="bg-viper-bg-primary flex flex-col flex-1 min-h-screen ml-0">
+                    <header className="flex h-20 shrink-0 items-center gap-2 px-6 border-b border-white/10">
                     <div className="flex-1 flex items-center justify-between">
                         {pathname === '/dashboard' && (
                             <h1 className="text-xl font-medium text-white">Hi There!</h1>
@@ -117,10 +122,11 @@ export default function DashboardLayout({
                         </div>
                     </div>
                 </header>
-                <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
+                <div className="flex-1 w-full p-4 md:p-6 lg:p-8 pt-6 overflow-x-hidden">
                     {children}
                 </div>
-            </SidebarInset>
+                </SidebarInset>
+            </div>
         </SidebarProvider>
     )
 }
