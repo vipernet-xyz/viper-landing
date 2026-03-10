@@ -41,7 +41,7 @@ export function ActiveApps() {
     const { data: apps, isLoading } = useQuery<App[]>({
         queryKey: ['active-apps'],
         queryFn: async () => {
-            const res = await fetch('/api/apps')
+            const res = await fetch('/api/apps', { credentials: 'include' })
             if (!res.ok) throw new Error('Failed to fetch apps')
             return res.json()
         },

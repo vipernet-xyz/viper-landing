@@ -14,6 +14,16 @@ interface Web3AuthUserInfo {
     // Add other fields as needed based on Web3Auth response
 }
 
+function serializeUser(user: any) {
+    return {
+        ...user,
+        id: Number(user.id),
+        verifierId: user.provider_user_id,
+        daily_rate_limit: Number(user.daily_rate_limit),
+        app_limit: Number(user.app_limit),
+    }
+}
+
 export async function POST(req: NextRequest) {
     try {
         const body = await req.json()
@@ -46,6 +56,7 @@ export async function POST(req: NextRequest) {
                 email: email,
                 name: name,
                 user_type: 'free', // Default to free tier
+                created_at: new Date(),
             },
         })
 
@@ -53,6 +64,7 @@ export async function POST(req: NextRequest) {
         // In a real app, you might want to create a JWT or session token here
         // For now, we'll store the User ID signed or simple ID
         const cookieStore = await cookies()
+
         cookieStore.set('viper_user_id', user.id.toString(), {
             httpOnly: true,
             secure: process.env.NODE_ENV === 'production',
@@ -69,9 +81,9 @@ export async function POST(req: NextRequest) {
             maxAge: 60 * 60 * 24 * 7,
         })
 
-        return NextResponse.json({ user })
+        return NextResponse.json({ user: serializeUser(user) })
     } catch (error) {
-        console.error('Login error:', error)
+        console.error('❌ [AUTH/LOGIN] Login error:', error)
         return NextResponse.json(
             { error: 'Internal server error', details: error instanceof Error ? error.message : String(error) },
             { status: 500 }

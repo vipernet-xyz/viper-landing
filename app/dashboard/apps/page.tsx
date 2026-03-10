@@ -42,7 +42,7 @@ export default function AppsPage() {
     const { data: apps = [], isLoading } = useQuery<AppData[]>({
         queryKey: ['apps'],
         queryFn: async () => {
-            const res = await fetch('/api/apps')
+            const res = await fetch('/api/apps', { credentials: 'include' })
             if (!res.ok) throw new Error('Failed to fetch apps')
             return res.json()
         },
@@ -55,7 +55,7 @@ export default function AppsPage() {
             if (apps.length === 0) return {}
 
             const analyticsPromises = apps.map(async (app) => {
-                const res = await fetch(`/api/analytics?app_id=${app.id}`)
+                const res = await fetch(`/api/analytics?app_id=${app.id}`, { credentials: 'include' })
                 if (!res.ok) return null
                 const data = await res.json()
                 return {

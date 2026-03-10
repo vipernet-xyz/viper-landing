@@ -10,24 +10,29 @@ import { useQuery } from '@tanstack/react-query'
 
 const EXAMPLE_REQUESTS = {
   eth_blockNumber: {
+    jsonrpc: '2.0',
     method: 'eth_blockNumber',
     params: [],
-    id: 1,
-    jsonrpc: '2.0'
+    id: 1
   },
   eth_gasPrice: {
+    jsonrpc: '2.0',
     method: 'eth_gasPrice',
     params: [],
-    id: 1,
-    jsonrpc: '2.0'
+    id: 1
   },
   eth_chainId: {
+    jsonrpc: '2.0',
     method: 'eth_chainId',
     params: [],
-    id: 1,
-    jsonrpc: '2.0'
+    id: 1
   }
 }
+
+const RETRYABLE_RELAY_ERROR_CODES = new Set([
+  'SERVICER_SELECTION_FAILED',
+  'NO_SERVICERS_AVAILABLE',
+])
 
 export default function TestRelayPage() {
   const [chainId, setChainId] = useState('0002')
@@ -41,7 +46,7 @@ export default function TestRelayPage() {
   const { data: apps } = useQuery({
     queryKey: ['apps'],
     queryFn: async () => {
-      const res = await fetch('/api/apps')
+      const res = await fetch('/api/apps', { credentials: 'include' })
       if (!res.ok) throw new Error('Failed to fetch apps')
       return res.json()
     }
@@ -70,26 +75,47 @@ export default function TestRelayPage() {
         return
       }
 
-      console.log('Sending request:', { chainId, apiKey: apiKey.substring(0, 20) + '...', body: parsedBody })
-
-      const res = await fetch(`/api/relay/${chainId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': apiKey
-        },
-        body: JSON.stringify(parsedBody)
-      })
-
-      const data = await res.json()
-      console.log('Response:', { status: res.status, data })
-
-      if (!res.ok) {
-        // Show the full error response
-        setError(typeof data === 'string' ? data : JSON.stringify(data, null, 2))
-      } else {
-        setResponse(data)
+      const normalizedBody = {
+        jsonrpc: parsedBody.jsonrpc,
+        method: parsedBody.method,
+        params: parsedBody.params ?? [],
+        id: parsedBody.id,
+        ...Object.fromEntries(
+          Object.entries(parsedBody).filter(([key]) => !['jsonrpc', 'method', 'params', 'id'].includes(key))
+        ),
       }
+
+      console.log('Sending request:', { chainId, apiKey: apiKey.substring(0, 20) + '...', body: normalizedBody })
+
+      let lastError: any = null
+
+      for (let attempt = 1; attempt <= 3; attempt += 1) {
+        const res = await fetch(`/api/relay/${chainId}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'x-api-key': apiKey
+          },
+          body: JSON.stringify(normalizedBody)
+        })
+
+        const data = await res.json()
+        console.log('Response:', { attempt, status: res.status, data })
+
+        if (res.ok) {
+          setResponse(data)
+          return
+        }
+
+        lastError = data
+        if (!RETRYABLE_RELAY_ERROR_CODES.has(data?.error_code) || attempt === 3) {
+          break
+        }
+
+        await new Promise((resolve) => window.setTimeout(resolve, attempt * 750))
+      }
+
+      setError(typeof lastError === 'string' ? lastError : JSON.stringify(lastError, null, 2))
     } catch (err: any) {
       console.error('Request error:', err)
       setError(err.message || 'Failed to send relay request')

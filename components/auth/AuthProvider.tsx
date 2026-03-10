@@ -1,17 +1,39 @@
 'use client'
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react'
+import { useChain } from '@cosmos-kit/react'
 import type { IProvider } from '@web3auth/base'
 
-// Dynamic imports to avoid SSR issues
 type Web3Auth = any
-type MetamaskAdapter = any
+
+function normalizeUser(user: any) {
+    if (!user) {
+        return null
+    }
+
+    return {
+        ...user,
+        verifierId: user.verifierId ?? user.provider_user_id ?? null,
+    }
+}
+
+function mergeUsers(currentUser: any, nextUser: any) {
+    if (!nextUser) {
+        return currentUser
+    }
+
+    return {
+        ...(currentUser ?? {}),
+        ...normalizeUser(nextUser),
+    }
+}
 
 interface AuthContextType {
     web3auth: Web3Auth | null
     provider: IProvider | null
     user: any | null
     isLoading: boolean
+    authError: string | null
     login: () => Promise<void>
     logout: () => Promise<void>
     getUserInfo: () => Promise<any>
@@ -22,6 +44,7 @@ const AuthContext = createContext<AuthContextType>({
     provider: null,
     user: null,
     isLoading: true,
+    authError: null,
     login: async () => { },
     logout: async () => { },
     getUserInfo: async () => { },
@@ -33,12 +56,11 @@ interface AuthProviderProps {
     children: ReactNode
 }
 
-const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID || 'test-client-id'
-console.log('Web3Auth Client ID:', clientId, 'Env:', process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID)
+const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
 
 const getChainConfig = () => ({
     chainNamespace: 'eip155',
-    chainId: '0x1', // Please use 0x1 for Mainnet
+    chainId: '0x1',
     rpcTarget: 'https://eth.llamarpc.com',
     displayName: 'Ethereum Mainnet',
     blockExplorerUrl: 'https://etherscan.io/',
@@ -52,27 +74,55 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [provider, setProvider] = useState<IProvider | null>(null)
     const [user, setUser] = useState<any | null>(null)
     const [isLoading, setIsLoading] = useState(true)
+    const [authError, setAuthError] = useState<string | null>(null)
+    const { isWalletConnected: cosmosConnected, address: cosmosAddress, disconnect: disconnectCosmos } = useChain('cosmoshub')
+    const cosmosSyncAddressRef = useRef<string | null>(null)
 
     useEffect(() => {
-        const init = async () => {
-            // Only run on client side
+        let isMounted = true
+
+        const hydrateSession = async () => {
+            try {
+                const res = await fetch('/api/auth/me', {
+                    credentials: 'include',
+                })
+
+                if (!res.ok) {
+                    return
+                }
+
+                const data = await res.json()
+                if (isMounted && data.user) {
+                    setUser((currentUser: any) => mergeUsers(currentUser, data.user))
+                }
+            } catch (error) {
+                console.error('Failed to restore session:', error)
+            }
+        }
+
+        const initWeb3Auth = async () => {
             if (typeof window === 'undefined') {
-                setIsLoading(false)
+                return
+            }
+
+            if (!clientId) {
+                if (isMounted) {
+                    setAuthError('Google sign-in is unavailable because NEXT_PUBLIC_WEB3AUTH_CLIENT_ID is missing.')
+                    setIsLoading(false)
+                }
                 return
             }
 
             try {
-                // Dynamic imports to avoid SSR issues
                 const { Web3Auth } = await import('@web3auth/modal')
                 const { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } = await import('@web3auth/base')
                 const { EthereumPrivateKeyProvider } = await import('@web3auth/ethereum-provider')
                 const { MetamaskAdapter } = await import('@web3auth/metamask-adapter')
 
-                const chainConfig = getChainConfig()
                 const privateKeyProvider = new EthereumPrivateKeyProvider({
                     config: {
-                        chainConfig: chainConfig as any
-                    }
+                        chainConfig: getChainConfig() as any,
+                    },
                 })
 
                 const web3authInstance = new Web3Auth({
@@ -83,7 +133,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
                 const metamaskAdapter = new MetamaskAdapter({
                     clientId,
-                    sessionTime: 3600, // 1 hour in seconds
+                    sessionTime: 3600,
                     web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
                     chainConfig: {
                         chainNamespace: CHAIN_NAMESPACES.EIP155,
@@ -93,99 +143,155 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 })
 
                 web3authInstance.configureAdapter(metamaskAdapter)
+                await web3authInstance.initModal()
 
-                try {
-                    await web3authInstance.initModal()
-                    setWeb3auth(web3authInstance as unknown as Web3Auth)
-                } catch (initError) {
-                    console.error('Failed to initialize Web3Auth modal:', initError)
-                    // Try to initialize without modal for basic functionality
-                    setWeb3auth(web3authInstance as unknown as Web3Auth)
+                if (!isMounted) {
+                    return
                 }
+
+                setWeb3auth(web3authInstance as Web3Auth)
+                setAuthError(null)
 
                 if (web3authInstance.connected) {
                     setProvider(web3authInstance.provider)
-                    const userInfo = await web3authInstance.getUserInfo()
-                    setUser(userInfo)
+                    const userInfo = normalizeUser(await web3authInstance.getUserInfo())
+                    setUser((currentUser: any) => mergeUsers(currentUser, userInfo))
                 }
             } catch (error) {
-                console.error(error)
-            } finally {
+                if (!isMounted) {
+                    return
+                }
+
+                console.error('Failed to initialize Web3Auth:', error)
+                setWeb3auth(null)
+                setAuthError('Google sign-in is temporarily unavailable. Refresh to retry or use a Cosmos wallet.')
+            }
+        }
+
+        const init = async () => {
+            await Promise.allSettled([
+                hydrateSession(),
+                initWeb3Auth(),
+            ])
+
+            if (isMounted) {
                 setIsLoading(false)
             }
         }
 
         init()
+
+        return () => {
+            isMounted = false
+        }
     }, [])
-
-    const login = async () => {
-        if (!web3auth) {
-            console.log('web3auth not initialized yet')
-            return
-        }
-
-        try {
-            // Connect with Web3Auth (supports Google and other providers)
-            const web3authProvider = await web3auth.connect()
-            setProvider(web3authProvider)
-
-            if (web3auth.connected) {
-                const userInfo = await web3auth.getUserInfo()
-                setUser(userInfo)
-
-                // After successful login, we can interact with chains
-                console.log('User logged in:', userInfo)
-
-                // Call API to create/verify user in DB
-                await syncUserWithBackend(userInfo)
-            }
-        } catch (error) {
-            console.error('Login failed:', error)
-        }
-    }
 
     const syncUserWithBackend = async (userInfo: any) => {
         try {
+            if (!userInfo?.verifierId) {
+                return null
+            }
+
             const res = await fetch('/api/auth/login', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
+                credentials: 'include',
                 body: JSON.stringify({ userInfo })
             })
+
             if (!res.ok) {
                 console.error('Failed to sync user with backend')
+                return null
             }
+
+            const data = await res.json()
+            if (data.user) {
+                setUser((currentUser: any) => mergeUsers(currentUser, {
+                    ...data.user,
+                    verifier: userInfo.verifier,
+                    typeOfLogin: userInfo.typeOfLogin,
+                }))
+            }
+
+            return data.user ?? null
         } catch (e) {
             console.error('Error syncing user:', e)
+            return null
+        }
+    }
+
+    useEffect(() => {
+        if (!cosmosConnected || !cosmosAddress) {
+            cosmosSyncAddressRef.current = null
+            return
+        }
+
+        if (user || cosmosSyncAddressRef.current === cosmosAddress) {
+            return
+        }
+
+        cosmosSyncAddressRef.current = cosmosAddress
+
+        void syncUserWithBackend({
+            verifierId: cosmosAddress,
+            verifier: 'cosmos',
+            typeOfLogin: 'cosmos',
+            name: `Cosmos ${cosmosAddress.slice(0, 8)}...${cosmosAddress.slice(-6)}`,
+        })
+    }, [cosmosAddress, cosmosConnected, user])
+
+    const login = async () => {
+        if (!web3auth) {
+            setAuthError('Google sign-in is not ready yet. Refresh to retry or use a Cosmos wallet.')
+            return
+        }
+
+        try {
+            const web3authProvider = await web3auth.connect()
+            setProvider(web3authProvider)
+            setAuthError(null)
+
+            if (web3auth.connected) {
+                const userInfo = normalizeUser(await web3auth.getUserInfo())
+                setUser((currentUser: any) => mergeUsers(currentUser, userInfo))
+                await syncUserWithBackend(userInfo)
+            }
+        } catch (error) {
+            console.error('Login failed:', error)
+            setAuthError('Unable to complete Google sign-in. Please try again.')
         }
     }
 
     const logout = async () => {
-        if (!web3auth) {
-            console.log('web3auth not initialized yet')
-            return
-        }
-        await web3auth.logout()
-        setProvider(null)
-        setUser(null)
+        cosmosSyncAddressRef.current = cosmosAddress || '__logout__'
 
-        // Clear cookie via API
-        await fetch('/api/auth/logout', { method: 'POST' })
+        try {
+            await Promise.allSettled([
+                web3auth?.connected ? web3auth.logout() : Promise.resolve(),
+                cosmosConnected ? Promise.resolve(disconnectCosmos()) : Promise.resolve(),
+                fetch('/api/auth/logout', { method: 'POST', credentials: 'include' }),
+            ])
+        } finally {
+            setProvider(null)
+            setUser(null)
+            setAuthError(null)
+        }
     }
 
     const getUserInfo = async () => {
         if (!web3auth) {
-            console.log('web3auth not initialized yet')
-            return
+            return user
         }
-        const user = await web3auth.getUserInfo()
-        setUser(user)
-        return user
+
+        const nextUser = normalizeUser(await web3auth.getUserInfo())
+        setUser((currentUser: any) => mergeUsers(currentUser, nextUser))
+        return nextUser
     }
 
     return (
-        <AuthContext.Provider value={{ web3auth, provider, user, isLoading, login, logout, getUserInfo }}>
+        <AuthContext.Provider value={{ web3auth, provider, user, isLoading, authError, login, logout, getUserInfo }}>
             {children}
         </AuthContext.Provider>
     )

@@ -16,8 +16,9 @@ export default function PulseAnimation({ flip = false }) {
   return (
     <div className="pointer-events-none">
       <motion.svg
-        width="800px"
-        height="auto"
+        width={800}
+        height={143}
+        className="h-auto w-[800px] max-w-full"
         viewBox="0 0 509 143"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"

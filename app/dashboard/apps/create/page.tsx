@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card'
@@ -9,8 +9,9 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Textarea } from '@/components/ui/textarea'
 import { Checkbox } from '@/components/ui/checkbox'
-import { Loader2, ArrowLeft, Plus, X } from 'lucide-react'
+import { Loader2, ArrowLeft, Plus, X, AlertCircle } from 'lucide-react'
 import { toast } from 'sonner'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 interface Chain {
     id: number
@@ -24,19 +25,36 @@ interface Chain {
 export default function CreateAppPage() {
     const router = useRouter()
     const queryClient = useQueryClient()
+    const { user, isLoading } = useAuth()
     const [name, setName] = useState('')
     const [description, setDescription] = useState('')
     const [allowedOrigins, setAllowedOrigins] = useState<string[]>([''])
     const [selectedChains, setSelectedChains] = useState<number[]>([])
 
+    // Check authentication
+    useEffect(() => {
+        if (!isLoading && !user) {
+            toast.error('Please login to create apps', {
+                description: 'You need to be authenticated to access this page'
+            })
+            router.push('/login')
+        }
+    }, [user, isLoading, router])
+
     // Fetch available chains
-    const { data: chains = [] } = useQuery<Chain[]>({
+    const { data: chains = [], isError: chainsError } = useQuery<Chain[]>({
         queryKey: ['chains'],
         queryFn: async () => {
-            const res = await fetch('/api/chains')
-            if (!res.ok) throw new Error('Failed to fetch chains')
+            const res = await fetch('/api/chains', { credentials: 'include' })
+            if (!res.ok) {
+                // If we get an error, return empty array for better UX
+                console.warn('Failed to fetch chains, using empty array')
+                return []
+            }
             return res.json()
         },
+        retry: 2,
+        retryDelay: 1000,
     })
 
     const mutation = useMutation({
@@ -46,10 +64,20 @@ export default function CreateAppPage() {
                 headers: {
                     'Content-Type': 'application/json',
                 },
+                credentials: 'include',
                 body: JSON.stringify(newApp),
             })
 
             if (!res.ok) {
+                // Handle authentication errors
+                if (res.status === 401) {
+                    toast.error('Authentication required', {
+                        description: 'Please login to create apps'
+                    })
+                    router.push('/login')
+                    throw new Error('Unauthorized')
+                }
+
                 const error = await res.json()
                 throw new Error(error.error || 'Failed to create app')
             }
@@ -61,7 +89,9 @@ export default function CreateAppPage() {
             router.push('/dashboard/apps')
         },
         onError: (error: Error) => {
-            toast.error(error.message)
+            if (error.message !== 'Unauthorized') {
+                toast.error(error.message)
+            }
         },
     })
 

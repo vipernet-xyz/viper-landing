@@ -3,12 +3,23 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev --port 3020",
+    "dev": "env-cmd -f .env -- next dev --port 3020",
     "build": "prisma generate && next build",
     "postinstall": "prisma generate",
     "start": "next start",
     "lint": "next lint",
-    "preview": "next start"
+    "preview": "next start",
+    "test:e2e": "playwright test --project=pr-chromium",
+    "test:e2e:ui": "playwright test --project=pr-chromium --ui",
+    "test:e2e:headed": "playwright test --project=pr-chromium --headed",
+    "test:e2e:debug": "playwright test --project=pr-chromium --debug",
+    "test:e2e:nightly": "playwright test --project=nightly-chromium",
+    "test:e2e:real-google": "playwright test --project=real-google-chromium",
+    "test:e2e:real-wallet": "playwright test --project=real-cosmos-wallet-chromium",
+    "test:e2e:all": "playwright test --project=nightly-chromium --project=real-google-chromium --project=real-cosmos-wallet-chromium",
+    "capture:google-auth": "node scripts/capture-google-storage.mjs",
+    "capture:keplr-profile": "node scripts/capture-keplr-profile.mjs",
+    "test:install": "playwright install"
   },
   "dependencies": {
     "@chain-registry/keplr": "^2.0.132",
@@ -88,6 +99,7 @@
     "zustand": "^5.0.8"
   },
   "devDependencies": {
+    "@playwright/test": "^1.57.0",
     "@types/node": "^20.19.17",
     "@types/pg": "^8.16.0",
     "@types/react": "^19",

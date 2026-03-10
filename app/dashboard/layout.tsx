@@ -47,7 +47,7 @@ export default function DashboardLayout({
     }, [user, isLoading, cosmosConnected, router])
 
     // Show loading only if Web3Auth is still loading AND Cosmos is not connected
-    if (isLoading && !cosmosConnected) {
+    if (isLoading && !cosmosConnected && !user) {
         return (
             <div className="flex h-screen w-full items-center justify-center bg-black">
                 <Loader2 className="h-8 w-8 animate-spin text-indigo-500" />

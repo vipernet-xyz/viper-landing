@@ -17,36 +17,35 @@ export function HeroSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="relative w-full md:min-h-screen pt-18">
+      <div className="relative w-full pt-20 md:min-h-screen md:pt-24">
         <div className="relative flex w-full justify-center overflow-hidden overflow-clip">
         <div className="relative flex items-end justify-center overflow-hidden md:pb-32 w-screen min-w-[440px] md:min-w-[1280px] aspect-[440/420] md:aspect-[1280/550] bg-cover bg-center bg-[url('/assets/hero-section/top-section-mobile.png')] md:bg-[url('/assets/hero-section/top-section.png')]">
-            <div className="relative z-20 max-w-3xl text-center">
+            <div className="relative z-20 max-w-3xl px-4 text-center">
               <h1 className="mb-6 font-inter text-4xl md:text-5xl font-bold text-white md:text-7xl">
                 Viper Network
               </h1>
-              <p className="mb-8 font-space-grotesk text-xl text-white/80 text-xl md:text-2xl">
+              <p className="mb-3 font-space-grotesk text-xl text-white/80 md:text-2xl">
                 The Trustless Gateway to Web3.
               </p>
-              <div className="flex justify-center gap-4">
-                <Link href={'https://tally.so/r/wdrzdd'} target="_blank">
-        <Button
-          size="lg"
-          className="bg-white text-black hover:bg-[#9c7ff162] hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base w-36 cursor-pointer w-32"
-        >
-          Join Waitlist
-        </Button>
-        </Link>
-
-
-        <Link href={'https://discord.com/invite/eBDYH4Zxek'}  target="_blank">
+              <p className="mb-8 font-space-grotesk text-sm uppercase tracking-[0.24em] text-white/45">
+                Login in seconds. Relay across chains immediately.
+              </p>
+              <div className="flex flex-wrap justify-center gap-4">
                 <Button
+                  asChild
+                  size="lg"
+                  className="w-36 cursor-pointer border border-white bg-white font-space-grotesk text-base font-medium text-black hover:bg-white/80"
+                >
+                  <Link href="/login">Launch App</Link>
+                </Button>
+                <Button
+                  asChild
                   size="lg"
                   variant="outline"
-                  className="w-32 border border-white hover:border hover:bg-[#D1D1D1]/20 hover:text-white font-space-grotesk font-medium text-base cursor-pointer"
+                  className="w-36 border border-white bg-transparent font-space-grotesk text-base font-medium text-white hover:bg-[#D1D1D1]/20 hover:text-white"
                 >
-                  Join Us
+                  <Link href="/dashboard">Dashboard</Link>
                 </Button>
-                </Link>
               </div>
             </div>
           </div>
@@ -76,9 +75,9 @@ export function HeroSection() {
               <Image
                 src="/assets/hero-section/viper-chip.png"
                 alt="Hero Animation"
-                width={375}
-                height={250}
-                className="mx-auto scale-[0.75] md:scale-100"
+                width={544}
+                height={723}
+                className="mx-auto h-auto w-[281px] md:w-[375px]"
               />
             </motion.div>
 
@@ -98,9 +97,9 @@ export function HeroSection() {
               <Image
                 src="/assets/hero-section/viper-chip-glow.png"
                 alt="Hero Glow"
-                width={375}
-                className="mx-auto scale-[0.75] md:scale-100"
-                height={250}
+                width={544}
+                height={723}
+                className="mx-auto h-auto w-[281px] md:w-[375px]"
               />
             </motion.div>
           </div>
@@ -109,4 +108,3 @@ export function HeroSection() {
     </section>
   );
 }
-

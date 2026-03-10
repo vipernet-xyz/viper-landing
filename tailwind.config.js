@@ -17,6 +17,12 @@ export default {
       },
     },
     extend: {
+      fontFamily: {
+        inter: ["var(--font-inter)", "sans-serif"],
+        "space-grotesk": ["var(--font-space-grotesk)", "sans-serif"],
+        lato: ["var(--font-lato)", "sans-serif"],
+        "source-code-pro": ["var(--font-source-code-pro)", "monospace"],
+      },
       colors: {
         border: "hsl(var(--border) / <alpha-value>)",
         input: "hsl(var(--input) / <alpha-value>)",

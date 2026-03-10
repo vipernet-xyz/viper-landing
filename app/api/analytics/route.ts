@@ -2,6 +2,21 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
 
+function serializeRelayLog(log: any) {
+    return {
+        ...log,
+        id: Number(log.id),
+        app_id: Number(log.app_id),
+        response_time_ms: Number(log.response_time_ms),
+        session_height: log.session_height ? log.session_height.toString() : null,
+        bytes_transferred: Number(log.bytes_transferred),
+        app: log.app ? {
+            ...log.app,
+            id: Number(log.app.id),
+        } : null,
+    }
+}
+
 export async function GET(req: NextRequest) {
     try {
         const cookieStore = await cookies()
@@ -154,11 +169,7 @@ export async function GET(req: NextRequest) {
             })
         ])
 
-        // Convert BigInt to string for JSON serialization
-        const serializedLogs = relayLogs.map(log => ({
-            ...log,
-            session_height: log.session_height ? log.session_height.toString() : null
-        }))
+        const serializedLogs = relayLogs.map(serializeRelayLog)
 
         // Format hourly data for charts
         const chartData = hourlyData.map(row => ({

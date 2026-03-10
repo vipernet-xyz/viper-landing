@@ -21,7 +21,7 @@ export function DashboardStats() {
     const { data: stats, isLoading } = useQuery<NetworkStats>({
         queryKey: ['network-stats'],
         queryFn: async () => {
-            const res = await fetch('/api/stats/network')
+            const res = await fetch('/api/stats/network', { credentials: 'include' })
             if (!res.ok) throw new Error('Failed to fetch network stats')
             return res.json()
         },

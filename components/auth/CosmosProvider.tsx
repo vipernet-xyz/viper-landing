@@ -7,14 +7,13 @@ import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import '@interchain-ui/react/styles'
 import React from 'react'
 
-export function CosmosProvider({ children }: { children: React.ReactNode }) {
-    // Filter out any undefined wallets
-    const allWallets = [
-        ...(keplrWallets || []),
-        ...(leapWallets || []),
-        ...(cosmostationWallets || []),
-    ].filter(Boolean)
+const allWallets = [
+    ...keplrWallets,
+    ...leapWallets,
+    ...cosmostationWallets,
+].filter(Boolean)
 
+export function CosmosProvider({ children }: { children: React.ReactNode }) {
     // Minimal chain configuration for Cosmos Hub only
     const minimalChains = [
         {

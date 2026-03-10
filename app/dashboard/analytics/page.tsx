@@ -19,7 +19,7 @@ export default function AnalyticsPage() {
     const { data, isLoading } = useQuery<AnalyticsData>({
         queryKey: ['user-analytics'],
         queryFn: async () => {
-            const res = await fetch('/api/analytics')
+            const res = await fetch('/api/analytics', { credentials: 'include' })
             if (!res.ok) throw new Error('Failed to fetch analytics')
             return res.json()
         },

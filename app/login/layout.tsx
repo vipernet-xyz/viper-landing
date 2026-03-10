@@ -1,0 +1,14 @@
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Login | Viper Network',
+  description: 'Sign in to access the Viper Network dashboard.',
+}
+
+export default function LoginLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
+  return children
+}

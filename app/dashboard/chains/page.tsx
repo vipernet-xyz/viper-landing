@@ -35,7 +35,7 @@ export default function ChainsPage() {
     React.useEffect(() => {
         async function fetchChains() {
             try {
-                const response = await fetch('/api/chains')
+                const response = await fetch('/api/chains', { credentials: 'include' })
                 if (response.ok) {
                     const data = await response.json()
                     setChains(data)

@@ -75,7 +75,7 @@ export function RevenueSection() {
                 src="/assets/revenue/circles-bg.svg"
                 alt="Reliability Network"
                 fill
-                className="z-5 w-full h-auto object-cover object-center overflow-visible"
+                className="object-cover object-center"
               /> 
               </div>
             {/* Main reliability illustration */}

@@ -152,61 +152,84 @@ export async function PATCH(req: NextRequest) {
             return NextResponse.json({ error: 'App ID is required' }, { status: 400 })
         }
 
-        // Verify app belongs to user
-        const existingApps: any[] = await prisma.$queryRaw`
-            SELECT id FROM apps WHERE id = ${appId} AND user_id = ${userId}
-        `
+        // Prepare parameterized values - COALESCE keeps existing value when param is null
+        const chainsParam = allowed_chains !== undefined
+            ? JSON.stringify(Array.isArray(allowed_chains) ? allowed_chains.map(String) : [])
+            : null
+        const originsParam = allowed_origins !== undefined
+            ? JSON.stringify(Array.isArray(allowed_origins) ? allowed_origins : [])
+            : null
+        const rateLimitParam = rate_limit !== undefined ? parseInt(rate_limit) : null
+        const isActiveParam = is_active !== undefined ? is_active : null
 
-        if (existingApps.length === 0) {
-            return NextResponse.json({ error: 'App not found or unauthorized' }, { status: 404 })
-        }
-
-        // Build update query dynamically based on provided fields
-        const updates: string[] = []
-        const values: any[] = []
-
-        if (allowed_chains !== undefined) {
-            const chainsJson = JSON.stringify(Array.isArray(allowed_chains) ? allowed_chains.map(String) : [])
-            updates.push(`allowed_chains = '${chainsJson}'::jsonb`)
-        }
-
-        if (allowed_origins !== undefined) {
-            const originsJson = JSON.stringify(Array.isArray(allowed_origins) ? allowed_origins : [])
-            updates.push(`allowed_origins = '${originsJson}'::jsonb`)
-        }
-
-        if (rate_limit !== undefined) {
-            updates.push(`rate_limit = ${parseInt(rate_limit)}`)
-        }
-
-        if (is_active !== undefined) {
-            updates.push(`is_active = ${is_active ? 'true' : 'false'}`)
-        }
-
-        if (updates.length === 0) {
+        if (chainsParam === null && originsParam === null && rateLimitParam === null && isActiveParam === null) {
             return NextResponse.json({ error: 'No fields to update' }, { status: 400 })
         }
 
-        updates.push(`updated_at = NOW()`)
-
-        // Execute update using raw SQL
-        const updateQuery = `
+        // Fully parameterized query - no string interpolation
+        const result: any[] = await prisma.$queryRaw`
             UPDATE apps
-            SET ${updates.join(', ')}
+            SET
+                allowed_chains = COALESCE(${chainsParam}::jsonb, allowed_chains),
+                allowed_origins = COALESCE(${originsParam}::jsonb, allowed_origins),
+                rate_limit = COALESCE(${rateLimitParam}::bigint, rate_limit),
+                is_active = COALESCE(${isActiveParam}::boolean, is_active),
+                updated_at = NOW()
             WHERE id = ${appId} AND user_id = ${userId}
             RETURNING *
         `
 
-        const result: any[] = await prisma.$queryRawUnsafe(updateQuery)
-
         if (result.length === 0) {
-            return NextResponse.json({ error: 'Failed to update app' }, { status: 500 })
+            return NextResponse.json({ error: 'App not found or unauthorized' }, { status: 404 })
         }
 
         const serializedApp = serializeApp(result[0])
         return NextResponse.json(serializedApp, { status: 200 })
     } catch (error) {
         console.error('Update App error:', error)
+        return NextResponse.json(
+            { error: 'Internal server error', details: error instanceof Error ? error.message : String(error) },
+            { status: 500 }
+        )
+    }
+}
+
+export async function DELETE(req: NextRequest) {
+    try {
+        const cookieStore = await cookies()
+        const userIdCookie = cookieStore.get('viper_user_id')
+
+        if (!userIdCookie || !userIdCookie.value) {
+            return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+        }
+
+        const userId = parseInt(userIdCookie.value)
+        const { searchParams } = new URL(req.url)
+        const appId = searchParams.get('appId')
+
+        if (!appId) {
+            return NextResponse.json({ error: 'App ID is required' }, { status: 400 })
+        }
+
+        const appIdNum = parseInt(appId)
+
+        // Verify ownership
+        const existingApps: any[] = await prisma.$queryRaw`
+            SELECT id FROM apps WHERE id = ${appIdNum} AND user_id = ${userId}
+        `
+
+        if (existingApps.length === 0) {
+            return NextResponse.json({ error: 'App not found or unauthorized' }, { status: 404 })
+        }
+
+        // Delete child records first (FK constraints use onDelete: NoAction)
+        await prisma.$queryRaw`DELETE FROM relay_logs WHERE app_id = ${appIdNum}`
+        await prisma.$queryRaw`DELETE FROM web_socket_sessions WHERE app_id = ${appIdNum}`
+        await prisma.$queryRaw`DELETE FROM apps WHERE id = ${appIdNum} AND user_id = ${userId}`
+
+        return NextResponse.json({ success: true }, { status: 200 })
+    } catch (error) {
+        console.error('Delete App error:', error)
         return NextResponse.json(
             { error: 'Internal server error', details: error instanceof Error ? error.message : String(error) },
             { status: 500 }

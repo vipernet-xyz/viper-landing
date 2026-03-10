@@ -10,7 +10,7 @@ export default function DashboardPage() {
     const { user } = useAuth()
     const { data: apps } = useQuery({
         queryKey: ['apps'],
-        queryFn: async () => (await fetch('/api/apps')).json()
+        queryFn: async () => (await fetch('/api/apps', { credentials: 'include' })).json()
     })
 
     return (

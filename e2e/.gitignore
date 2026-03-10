@@ -1,0 +1,8 @@
+# Test artifacts
+screenshots/*.png
+reports/*.json
+test-results/
+playwright-report/
+playwright/.cache/
+auth-state/
+profiles/

@@ -1,12 +1,37 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
-import { useQuery } from '@tanstack/react-query'
-import { ArrowLeft, Copy, Check, Link2, Settings, Trash2 } from 'lucide-react'
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
+import { ArrowLeft, Copy, Check, Link2, Settings, Trash2, Loader2, Plus, X } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+    AlertDialog,
+    AlertDialogAction,
+    AlertDialogCancel,
+    AlertDialogContent,
+    AlertDialogDescription,
+    AlertDialogFooter,
+    AlertDialogHeader,
+    AlertDialogTitle,
+    AlertDialogTrigger,
+} from '@/components/ui/alert-dialog'
+import {
+    Dialog,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogHeader,
+    DialogTitle,
+    DialogTrigger,
+} from '@/components/ui/dialog'
+import { toast } from 'sonner'
 
 interface AppData {
     id: number
@@ -20,33 +45,118 @@ interface AppData {
     is_active: boolean
 }
 
+interface Chain {
+    id: number
+    name: string
+    description: string
+    icon?: string
+    status: string
+    type: string
+}
+
 export default function AppDetailsPage() {
     const params = useParams()
     const router = useRouter()
+    const queryClient = useQueryClient()
     const appId = params.id as string
     const [copied, setCopied] = useState(false)
+
+    // Settings dialog state
+    const [settingsOpen, setSettingsOpen] = useState(false)
+    const [settingsActive, setSettingsActive] = useState(true)
+    const [settingsRateLimit, setSettingsRateLimit] = useState('')
+    const [settingsOrigins, setSettingsOrigins] = useState<string[]>([''])
+    const [settingsChains, setSettingsChains] = useState<number[]>([])
 
     const { data: app, isLoading } = useQuery<AppData>({
         queryKey: ['app', appId],
         queryFn: async () => {
-            const res = await fetch('/api/apps')
-            if (!res.ok) throw new Error('Failed to fetch apps')
-            const apps = await res.json()
-            const foundApp = apps.find((a: AppData) => a.id === parseInt(appId))
-            if (!foundApp) throw new Error('App not found')
-            return foundApp
+            const res = await fetch(`/api/apps/${appId}`, { credentials: 'include' })
+            if (!res.ok) throw new Error('Failed to fetch app')
+            return res.json()
         },
     })
 
     const { data: analytics } = useQuery({
         queryKey: ['app-analytics', appId],
         queryFn: async () => {
-            const res = await fetch(`/api/analytics?app_id=${appId}`)
+            const res = await fetch(`/api/analytics?app_id=${appId}`, { credentials: 'include' })
             if (!res.ok) throw new Error('Failed to fetch analytics')
             const data = await res.json()
             return data.analytics
         },
         enabled: !!appId,
+    })
+
+    const { data: chains = [] } = useQuery<Chain[]>({
+        queryKey: ['chains'],
+        queryFn: async () => {
+            const res = await fetch('/api/chains', { credentials: 'include' })
+            if (!res.ok) return []
+            return res.json()
+        },
+    })
+
+    // Populate settings form when app data loads or dialog opens
+    useEffect(() => {
+        if (app && settingsOpen) {
+            setSettingsActive(app.is_active)
+            setSettingsRateLimit(String(app.rate_limit))
+            const origins = getAllowedOrigins()
+            setSettingsOrigins(origins.length > 0 ? origins : [''])
+            const chainIds = getAllowedChains().map((c: string) => {
+                const num = parseInt(c, 10)
+                return isNaN(num) ? 0 : num
+            }).filter((n: number) => n > 0)
+            setSettingsChains(chainIds)
+        }
+    }, [app, settingsOpen])
+
+    const deleteMutation = useMutation({
+        mutationFn: async () => {
+            const res = await fetch(`/api/apps?appId=${appId}`, {
+                method: 'DELETE',
+                credentials: 'include',
+            })
+            if (!res.ok) {
+                const err = await res.json()
+                throw new Error(err.error || 'Failed to delete app')
+            }
+            return res.json()
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['apps'] })
+            toast.success('App deleted successfully')
+            router.push('/dashboard/apps')
+        },
+        onError: (error: Error) => {
+            toast.error(error.message)
+        },
+    })
+
+    const updateMutation = useMutation({
+        mutationFn: async (updates: any) => {
+            const res = await fetch('/api/apps', {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                credentials: 'include',
+                body: JSON.stringify(updates),
+            })
+            if (!res.ok) {
+                const err = await res.json()
+                throw new Error(err.error || 'Failed to update app')
+            }
+            return res.json()
+        },
+        onSuccess: () => {
+            queryClient.invalidateQueries({ queryKey: ['app', appId] })
+            queryClient.invalidateQueries({ queryKey: ['apps'] })
+            toast.success('App settings updated')
+            setSettingsOpen(false)
+        },
+        onError: (error: Error) => {
+            toast.error(error.message)
+        },
     })
 
     const handleCopyApiKey = async () => {
@@ -68,16 +178,11 @@ export default function AppDetailsPage() {
         })
     }
 
-    // Parse allowed_chains and allowed_origins if they're JSON strings
     const getAllowedChains = () => {
         if (!app?.allowed_chains) return []
         if (Array.isArray(app.allowed_chains)) return app.allowed_chains
         if (typeof app.allowed_chains === 'string') {
-            try {
-                return JSON.parse(app.allowed_chains)
-            } catch {
-                return []
-            }
+            try { return JSON.parse(app.allowed_chains) } catch { return [] }
         }
         return []
     }
@@ -86,13 +191,43 @@ export default function AppDetailsPage() {
         if (!app?.allowed_origins) return []
         if (Array.isArray(app.allowed_origins)) return app.allowed_origins
         if (typeof app.allowed_origins === 'string') {
-            try {
-                return JSON.parse(app.allowed_origins)
-            } catch {
-                return []
-            }
+            try { return JSON.parse(app.allowed_origins) } catch { return [] }
         }
         return []
+    }
+
+    const handleSettingsSave = () => {
+        const filteredOrigins = settingsOrigins.filter(o => o.trim() !== '')
+        const formattedChains = settingsChains.map(id => String(id).padStart(4, '0'))
+
+        updateMutation.mutate({
+            appId: parseInt(appId),
+            is_active: settingsActive,
+            rate_limit: settingsRateLimit,
+            allowed_origins: filteredOrigins,
+            allowed_chains: formattedChains,
+        })
+    }
+
+    const addOriginField = () => setSettingsOrigins([...settingsOrigins, ''])
+
+    const removeOriginField = (index: number) => {
+        const newOrigins = settingsOrigins.filter((_, i) => i !== index)
+        setSettingsOrigins(newOrigins.length > 0 ? newOrigins : [''])
+    }
+
+    const updateOrigin = (index: number, value: string) => {
+        const newOrigins = [...settingsOrigins]
+        newOrigins[index] = value
+        setSettingsOrigins(newOrigins)
+    }
+
+    const toggleChain = (chainId: number) => {
+        setSettingsChains(prev =>
+            prev.includes(chainId)
+                ? prev.filter(id => id !== chainId)
+                : [...prev, chainId]
+        )
     }
 
     if (isLoading) {
@@ -134,20 +269,160 @@ export default function AppDetailsPage() {
                     </div>
                 </div>
                 <div className="flex items-center gap-2">
-                    <Button
-                        variant="outline"
-                        className="h-8 px-3 bg-transparent hover:bg-white/5 border-white/20 text-white text-xs"
-                    >
-                        <Settings className="h-3 w-3 mr-1.5" />
-                        Settings
-                    </Button>
-                    <Button
-                        variant="outline"
-                        className="h-8 px-3 bg-transparent hover:bg-red-500/10 border-red-500/20 text-red-400 text-xs"
-                    >
-                        <Trash2 className="h-3 w-3 mr-1.5" />
-                        Delete
-                    </Button>
+                    {/* Settings Dialog */}
+                    <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
+                        <DialogTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className="h-8 px-3 bg-transparent hover:bg-white/5 border-white/20 text-white text-xs"
+                            >
+                                <Settings className="h-3 w-3 mr-1.5" />
+                                Settings
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="bg-zinc-900 border-zinc-800 text-white max-w-lg max-h-[85vh] overflow-y-auto">
+                            <DialogHeader>
+                                <DialogTitle>App Settings</DialogTitle>
+                                <DialogDescription className="text-zinc-400">
+                                    Update configuration for {app.name}
+                                </DialogDescription>
+                            </DialogHeader>
+                            <div className="space-y-5 py-4">
+                                {/* Active Toggle */}
+                                <div className="flex items-center justify-between">
+                                    <Label htmlFor="is-active">Active</Label>
+                                    <Switch
+                                        id="is-active"
+                                        checked={settingsActive}
+                                        onCheckedChange={setSettingsActive}
+                                    />
+                                </div>
+
+                                {/* Rate Limit */}
+                                <div className="space-y-2">
+                                    <Label htmlFor="rate-limit">Daily Rate Limit</Label>
+                                    <Input
+                                        id="rate-limit"
+                                        type="number"
+                                        value={settingsRateLimit}
+                                        onChange={(e) => setSettingsRateLimit(e.target.value)}
+                                        className="bg-zinc-950 border-zinc-800"
+                                    />
+                                </div>
+
+                                {/* Allowed Origins */}
+                                <div className="space-y-3">
+                                    <Label>Allowed Origins</Label>
+                                    <p className="text-sm text-zinc-400">
+                                        Domains that can use this API key. Leave empty to allow all.
+                                    </p>
+                                    {settingsOrigins.map((origin, index) => (
+                                        <div key={index} className="flex gap-2">
+                                            <Input
+                                                placeholder="https://example.com"
+                                                value={origin}
+                                                onChange={(e) => updateOrigin(index, e.target.value)}
+                                                className="bg-zinc-950 border-zinc-800"
+                                            />
+                                            {settingsOrigins.length > 1 && (
+                                                <Button
+                                                    type="button"
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => removeOriginField(index)}
+                                                    className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700 shrink-0"
+                                                >
+                                                    <X className="h-4 w-4" />
+                                                </Button>
+                                            )}
+                                        </div>
+                                    ))}
+                                    <Button
+                                        type="button"
+                                        variant="outline"
+                                        onClick={addOriginField}
+                                        className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
+                                    >
+                                        <Plus className="mr-2 h-4 w-4" />
+                                        Add Origin
+                                    </Button>
+                                </div>
+
+                                {/* Allowed Chains */}
+                                <div className="space-y-3">
+                                    <Label>Allowed Chains</Label>
+                                    <p className="text-sm text-zinc-400">
+                                        Select blockchain networks. Leave empty to allow all.
+                                    </p>
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {chains.map((chain) => (
+                                            <div key={chain.id} className="flex items-center space-x-2">
+                                                <Checkbox
+                                                    id={`settings-chain-${chain.id}`}
+                                                    checked={settingsChains.includes(chain.id)}
+                                                    onCheckedChange={() => toggleChain(chain.id)}
+                                                />
+                                                <Label
+                                                    htmlFor={`settings-chain-${chain.id}`}
+                                                    className="text-sm font-normal cursor-pointer"
+                                                >
+                                                    {chain.name}
+                                                </Label>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                            <DialogFooter>
+                                <Button variant="ghost" onClick={() => setSettingsOpen(false)}>
+                                    Cancel
+                                </Button>
+                                <Button
+                                    onClick={handleSettingsSave}
+                                    disabled={updateMutation.isPending}
+                                    className="bg-indigo-600 hover:bg-indigo-700"
+                                >
+                                    {updateMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Save Changes
+                                </Button>
+                            </DialogFooter>
+                        </DialogContent>
+                    </Dialog>
+
+                    {/* Delete Confirmation */}
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button
+                                variant="outline"
+                                className="h-8 px-3 bg-transparent hover:bg-red-500/10 border-red-500/20 text-red-400 text-xs"
+                            >
+                                <Trash2 className="h-3 w-3 mr-1.5" />
+                                Delete
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent className="bg-zinc-900 border-zinc-800">
+                            <AlertDialogHeader>
+                                <AlertDialogTitle className="text-white">Delete App</AlertDialogTitle>
+                                <AlertDialogDescription className="text-zinc-400">
+                                    This will permanently delete <strong className="text-white">{app.name}</strong> and
+                                    all associated relay logs and sessions. This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel className="bg-zinc-800 border-zinc-700 text-white hover:bg-zinc-700">
+                                    Cancel
+                                </AlertDialogCancel>
+                                <AlertDialogAction
+                                    onClick={() => deleteMutation.mutate()}
+                                    disabled={deleteMutation.isPending}
+                                    className="bg-red-600 hover:bg-red-700 text-white"
+                                >
+                                    {deleteMutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                                    Delete App
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
                 </div>
             </div>
 

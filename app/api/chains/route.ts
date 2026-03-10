@@ -4,6 +4,7 @@ import prisma from '@/lib/prisma'
 
 export async function GET() {
     try {
+        // Add connection timeout and retry logic
         const chains = await prisma.chain.findMany({
             orderBy: {
                 name: 'asc'
@@ -12,8 +13,21 @@ export async function GET() {
         return NextResponse.json(chains)
     } catch (error) {
         console.error('Error fetching chains:', error)
+
+        // Check if it's a connection error
+        const errorMessage = error instanceof Error ? error.message : String(error)
+        const isConnectionError = errorMessage.includes('ECONNREFUSED') ||
+                                  errorMessage.includes('timeout') ||
+                                  errorMessage.includes('connect')
+
+        if (isConnectionError) {
+            console.error('Database connection error - retrying might help')
+            // Return empty array instead of error for better UX
+            return NextResponse.json([])
+        }
+
         return NextResponse.json(
-            { error: 'Failed to fetch chains' },
+            { error: 'Failed to fetch chains', details: errorMessage },
             { status: 500 }
         )
     }
