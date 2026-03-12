@@ -16,11 +16,13 @@ function unexpectedMessages(monitor: ConsoleMonitor) {
 test('landing page exposes app entry points without console errors', async ({ page }) => {
   const monitor = new ConsoleMonitor(page)
   const heroCopy = page.getByText('The Trustless Gateway to Web3.')
+  const featuresCopy = page.getByText("Point your app to Viper's RPC endpoint.").first()
   const launchAppLink = page.getByRole('link', { name: 'Launch App' }).first()
   const dashboardLink = page.getByRole('link', { name: 'Dashboard' }).first()
 
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   await expect(heroCopy).toBeVisible({ timeout: 20_000 })
+  await expect(featuresCopy).toBeVisible({ timeout: 20_000 })
 
   await expect(launchAppLink).toBeVisible()
   await expect(dashboardLink).toBeVisible()
