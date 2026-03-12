@@ -13,19 +13,19 @@ function unexpectedMessages(monitor: ConsoleMonitor) {
   })
 }
 
-test('landing page exposes app entry points without console errors', async ({ page }) => {
+test('landing page renders the intended hero and CTA copy without console errors', async ({ page }) => {
   const monitor = new ConsoleMonitor(page)
   const heroCopy = page.getByText('The Trustless Gateway to Web3.')
   const featuresCopy = page.getByText("Point your app to Viper's RPC endpoint.").first()
-  const launchAppLink = page.getByRole('link', { name: 'Launch App' }).first()
-  const dashboardLink = page.getByRole('link', { name: 'Dashboard' }).first()
+  const waitlistLink = page.getByRole('link', { name: 'Join Waitlist' }).first()
+  const joinUsLink = page.getByRole('link', { name: 'Join Us' }).first()
 
   await page.goto('/', { waitUntil: 'domcontentloaded' })
   await expect(heroCopy).toBeVisible({ timeout: 20_000 })
   await expect(featuresCopy).toBeVisible({ timeout: 20_000 })
 
-  await expect(launchAppLink).toBeVisible()
-  await expect(dashboardLink).toBeVisible()
+  await expect(waitlistLink).toBeVisible()
+  await expect(joinUsLink).toBeVisible()
 
   expect(unexpectedMessages(monitor)).toEqual([])
 })
@@ -45,7 +45,7 @@ test('login page renders ready auth actions without console errors', async ({ pa
   expect(unexpectedMessages(monitor)).toEqual([])
 })
 
-test('landing launch app CTA navigates to login', async ({ page }) => {
+test('footer launch app CTA still navigates to login', async ({ page }) => {
   const googleButton = page.getByRole('button', { name: /Continue with Google/i }).first()
   const launchAppLink = page.getByRole('link', { name: 'Launch App' }).first()
 

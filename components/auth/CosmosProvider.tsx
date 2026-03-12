@@ -8,6 +8,8 @@ import React from 'react'
 const supportedWallets = [...keplrWallets].filter(Boolean)
 
 export function CosmosProvider({ children }: { children: React.ReactNode }) {
+    const walletConnectProjectId = process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID?.trim()
+
     // Minimal chain configuration for Cosmos Hub only
     const minimalChains = [
         {
@@ -83,18 +85,20 @@ export function CosmosProvider({ children }: { children: React.ReactNode }) {
             chains={minimalChains}
             assetLists={minimalAssets}
             wallets={supportedWallets}
-            walletConnectOptions={{
-                signClient: {
-                    projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',
-                    relayUrl: 'wss://relay.walletconnect.org',
-                    metadata: {
-                        name: 'Viper Network',
-                        description: 'Viper Network - Multi-chain RPC Infrastructure',
-                        url: typeof window !== 'undefined' ? window.location.origin : '',
-                        icons: [typeof window !== 'undefined' ? `${window.location.origin}/icon.png` : ''],
+            walletConnectOptions={walletConnectProjectId
+                ? {
+                    signClient: {
+                        projectId: walletConnectProjectId,
+                        relayUrl: 'wss://relay.walletconnect.org',
+                        metadata: {
+                            name: 'Viper Network',
+                            description: 'Viper Network - Multi-chain RPC Infrastructure',
+                            url: typeof window !== 'undefined' ? window.location.origin : '',
+                            icons: [typeof window !== 'undefined' ? `${window.location.origin}/icon.png` : ''],
+                        },
                     },
-                },
-            }}
+                }
+                : undefined}
             throwErrors={false}
         // modalTheme={{ defaultTheme: 'dark' }} // modalTheme expects object, usually handled by interchain-ui styles
         >

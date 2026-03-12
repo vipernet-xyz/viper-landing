@@ -20,6 +20,20 @@ test('POST /api/auth/login rejects unverified client-supplied userInfo payloads'
   expect(response.status()).toBe(401)
 })
 
+test('POST /api/auth/login rejects invalid Web3Auth ID tokens without a server error', async ({ request }) => {
+  const response = await request.post('/api/auth/login', {
+    data: {
+      provider: 'web3auth',
+      idToken: 'invalid-token',
+    },
+  })
+
+  expect(response.status()).toBe(401)
+  expect(await response.json()).toMatchObject({
+    error: 'Unauthorized',
+  })
+})
+
 test('signed bootstrap sessions work, but forged raw cookies are rejected', async ({ browser }) => {
   const bootstrapContext = await browser.newContext()
 

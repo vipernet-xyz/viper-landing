@@ -3,6 +3,7 @@
 import { ChevronRight, Link } from 'lucide-react'
 import { useQuery } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 interface App {
     id: number
@@ -37,6 +38,7 @@ function AppCard({ id, name, requests }: AppCardProps) {
 
 export function ActiveApps() {
     const router = useRouter()
+    const { user } = useAuth()
 
     const { data: apps, isLoading } = useQuery<App[]>({
         queryKey: ['active-apps'],
@@ -45,7 +47,9 @@ export function ActiveApps() {
             if (!res.ok) throw new Error('Failed to fetch apps')
             return res.json()
         },
+        enabled: Boolean(user?.id),
         refetchInterval: 30000,
+        retry: false,
     })
 
     const activeApps = apps?.filter(app => app.is_active).slice(0, 4) || []
@@ -65,6 +69,8 @@ export function ActiveApps() {
 
             {isLoading ? (
                 <div className="text-white/50 text-sm text-center py-8">Loading apps...</div>
+            ) : !user?.id ? (
+                <div className="text-white/50 text-sm text-center py-8">Authentication required</div>
             ) : activeApps.length === 0 ? (
                 <div className="text-white/50 text-sm text-center py-8">No active apps yet</div>
             ) : (

@@ -8,10 +8,12 @@ import { RevenueSection } from "@/components/sections/RevenueSection";
 import { UpdatesSection } from "@/components/sections/UpdatesSection";
 import { CommunityBuzz } from "@/components/sections/CommunityBuzz";
 import Footer from "@/components/sections/Footer";
+import Navbar from "@/components/components/Navbar";
 
 export default function ViperNetworkPage() {
   return (
     <main className="min-h-screen bg-background">
+      <Navbar />
       <HeroSection />
       <TechShowcase />
       <FeaturesOverview />

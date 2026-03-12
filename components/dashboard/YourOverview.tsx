@@ -1,6 +1,7 @@
 'use client'
 
 import { useQuery } from '@tanstack/react-query'
+import { useAuth } from '@/components/auth/AuthProvider'
 
 interface AnalyticsData {
     analytics: {
@@ -9,6 +10,7 @@ interface AnalyticsData {
 }
 
 export function YourOverview() {
+    const { user } = useAuth()
     const { data, isLoading } = useQuery<AnalyticsData>({
         queryKey: ['user-overview'],
         queryFn: async () => {
@@ -16,7 +18,9 @@ export function YourOverview() {
             if (!res.ok) throw new Error('Failed to fetch analytics')
             return res.json()
         },
+        enabled: Boolean(user?.id),
         refetchInterval: 30000,
+        retry: false,
     })
 
     const totalRelays = data?.analytics?.total_requests_24h || 0
@@ -29,6 +33,8 @@ export function YourOverview() {
                 <div className="p-5 rounded-[10px] bg-[rgba(37,37,37,0.4)] backdrop-blur-sm">
                     {isLoading ? (
                         <div className="text-2xl font-normal text-white/50 mb-2 font-['Space_Grotesk']">Loading...</div>
+                    ) : !user?.id ? (
+                        <div className="text-sm font-normal text-white/50 mb-2">Authentication required</div>
                     ) : (
                         <div className="text-2xl font-normal text-white mb-2 font-['Space_Grotesk']">
                             {totalRelays.toLocaleString()}
@@ -40,6 +46,8 @@ export function YourOverview() {
                 <div className="p-5 rounded-[10px] bg-[rgba(37,37,37,0.4)] backdrop-blur-sm">
                     {isLoading ? (
                         <div className="text-2xl font-normal text-white/50 mb-2 font-['Space_Grotesk']">Loading...</div>
+                    ) : !user?.id ? (
+                        <div className="text-sm font-normal text-white/50 mb-2">Authentication required</div>
                     ) : (
                         <div className="text-2xl font-normal text-white mb-2 font-['Space_Grotesk']">
                             0

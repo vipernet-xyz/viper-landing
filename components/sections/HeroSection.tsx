@@ -1,133 +1,103 @@
 "use client";
 
 import Link from "next/link";
-import { Atom, Blocks, Diamond, Link2 } from "lucide-react";
+import Image from "next/image";
+import { motion } from "motion/react";
 import { Button } from "@/components/ui/button";
-import GradientPolygonIcon from "@/components/icons/GradientPolygonIcon";
-
-const navLinks = [
-  { href: "https://docs.vipernet.xyz/", label: "Docs" },
-  { href: "https://medium.com/@vipernet", label: "Blog" },
-  { href: "mailto:contact@vipernet.xyz", label: "Contact" },
-];
+import PulseAnimation from "../components/PulseAnimation";
 
 export function HeroSection() {
   return (
-    <section className="relative flex min-h-screen flex-col overflow-hidden">
-      <div className="absolute inset-0 gradient-purple-radial" />
-      <div className="absolute inset-0 flex items-center justify-center opacity-20">
-        <GradientPolygonIcon width={600} height={600} />
-      </div>
-
-      <nav className="relative z-10 mx-auto w-full max-w-7xl px-4 py-6 md:px-6 md:py-8">
-        <div className="glass-effect rounded-2xl px-5 py-4 md:px-8">
-          <div className="flex items-center justify-between gap-4">
-            <Link href="/" className="flex items-center gap-3">
-              <Blocks className="h-8 w-8 text-white" />
-              <span className="hidden font-inter text-sm font-medium uppercase tracking-[0.28em] text-white/75 sm:block">
+    <section
+      className="relative flex flex-col items-center overflow-hidden bg-black text-center"
+      style={{
+        backgroundImage: "url('/assets/hero-section/bg.png')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+      <div className="relative w-full pt-20 md:min-h-screen md:pt-24">
+        <div className="relative flex w-full justify-center overflow-hidden overflow-clip">
+          <div className="relative flex w-screen min-w-[440px] items-end justify-center overflow-hidden bg-cover bg-center pb-24 aspect-[440/420] md:min-w-[1280px] md:pb-32 md:aspect-[1280/550] bg-[url('/assets/hero-section/top-section-mobile.png')] md:bg-[url('/assets/hero-section/top-section.png')]">
+            <div className="relative z-20 max-w-3xl px-4 text-center">
+              <h1 className="mb-6 font-inter text-4xl font-bold text-white md:text-7xl">
                 Viper Network
-              </span>
-            </Link>
-
-            <div className="hidden items-center gap-8 md:flex">
-              {navLinks.map((link) => (
-                <Link
-                  key={link.label}
-                  href={link.href}
-                  target={link.href.startsWith("http") ? "_blank" : undefined}
-                  className="font-inter text-base text-white/80 transition-colors hover:text-white"
-                >
-                  {link.label}
+              </h1>
+              <p className="mb-3 font-space-grotesk text-xl text-white/80 md:text-2xl">
+                The Trustless Gateway to Web3.
+              </p>
+              <div className="flex justify-center gap-4">
+                <Link href="https://tally.so/r/wdrzdd" target="_blank">
+                  <Button
+                    size="lg"
+                    className="w-32 cursor-pointer border border-white bg-white font-space-grotesk text-base font-medium text-black hover:border-white hover:bg-[#9c7ff162] hover:text-white"
+                  >
+                    Join Waitlist
+                  </Button>
                 </Link>
-              ))}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <Button
-                asChild
-                variant="outline"
-                className="hidden border-white/30 bg-transparent font-space-grotesk text-white hover:bg-white/10 hover:text-white sm:inline-flex"
-              >
-                <Link href="/dashboard">Dashboard</Link>
-              </Button>
-              <Button
-                asChild
-                className="bg-white font-space-grotesk font-medium text-black hover:bg-white/90"
-              >
-                <Link href="/login">Launch App</Link>
-              </Button>
+                <Link href="https://discord.com/invite/eBDYH4Zxek" target="_blank">
+                  <Button
+                    size="lg"
+                    variant="outline"
+                    className="w-32 cursor-pointer border border-white font-space-grotesk text-base font-medium hover:border-white hover:bg-[#D1D1D1]/20 hover:text-white"
+                  >
+                    Join Us
+                  </Button>
+                </Link>
+              </div>
             </div>
           </div>
         </div>
-      </nav>
 
-      <div className="relative z-10 flex flex-1 items-center justify-center px-4 pb-12 pt-6 md:px-6">
-        <div className="relative mx-auto w-full max-w-4xl text-center">
-          <div className="floating-animation absolute -left-4 top-6 md:-left-16 md:-top-8">
-            <Diamond className="h-12 w-12 text-white/25 md:h-16 md:w-16" />
-          </div>
-          <div
-            className="floating-animation absolute -right-2 top-0 md:-right-12 md:-top-12"
-            style={{ animationDelay: "2s" }}
-          >
-            <Atom className="h-14 w-14 text-white/20 md:h-20 md:w-20" />
-          </div>
-          <div
-            className="floating-animation absolute -bottom-4 left-2 md:-bottom-8 md:-left-8"
-            style={{ animationDelay: "4s" }}
-          >
-            <Link2 className="h-10 w-10 text-white/25 md:h-12 md:w-12" />
-          </div>
-          <div
-            className="floating-animation absolute right-6 top-20 hidden md:block"
-            style={{ animationDelay: "1s" }}
-          >
-            <Blocks className="h-14 w-14 text-white/20" />
-          </div>
-          <div
-            className="floating-animation absolute bottom-10 right-10 hidden md:block"
-            style={{ animationDelay: "3s" }}
-          >
-            <Diamond className="h-10 w-10 text-white/25" />
-          </div>
+        <div className="relative z-10 flex w-full justify-center overflow-visible px-4 lg:-top-16">
+          <div className="relative h-[360px] w-[960px] min-w-[960px]">
+            <div className="absolute bottom-0 left-[calc(50%+2.5rem)]">
+              <PulseAnimation flip />
+            </div>
 
-          <h1 className="mb-5 font-inter text-5xl font-bold leading-none text-white sm:text-6xl md:mb-6 md:text-8xl">
-            Viper Network
-          </h1>
-          <p className="mb-4 font-space-grotesk text-xl text-white/80 md:text-2xl">
-            The Trustless Gateway to Web3.
-          </p>
-          <p className="mb-10 font-space-grotesk text-sm uppercase tracking-[0.32em] text-white/45 md:text-base">
-            Login in seconds. Relay across chains immediately.
-          </p>
+            <div className="absolute bottom-0 right-[calc(50%+2.5rem)] scale-x-[-1]">
+              <PulseAnimation flip />
+            </div>
 
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Button
-              asChild
-              size="lg"
-              className="bg-white font-space-grotesk font-medium text-black hover:bg-white/90"
+            <motion.div
+              className="absolute bottom-[72px] right-1/2 translate-x-1/2"
+              animate={{ y: [0, -12, 0] }}
+              transition={{
+                duration: 3.3,
+                ease: "easeInOut",
+                repeat: Infinity,
+              }}
             >
-              <Link href="/login">Launch App</Link>
-            </Button>
-            <Button
-              asChild
-              size="lg"
-              variant="outline"
-              className="border-white/30 bg-transparent font-space-grotesk text-white hover:bg-white/10 hover:text-white"
-            >
-              <Link href="/dashboard">Dashboard</Link>
-            </Button>
-          </div>
-        </div>
-      </div>
+              <Image
+                src="/assets/hero-section/viper-chip.png"
+                alt="Viper chip"
+                width={544}
+                height={723}
+                className="mx-auto h-auto w-[281px] md:w-[375px]"
+              />
+            </motion.div>
 
-      <div className="relative z-10 flex justify-center px-4 pb-16 md:pb-20">
-        <div className="relative h-[240px] w-[240px] md:h-[320px] md:w-[320px]">
-          <div className="gradient-purple absolute inset-0 rounded-[2rem] opacity-20 blur-[2px] md:rounded-[2.5rem]" />
-          <div className="absolute inset-0 rounded-[2rem] border-2 border-white/20 rotate-12 md:rounded-[2.5rem]" />
-          <div className="absolute inset-0 rounded-[2rem] border border-white/10 -rotate-6 md:rounded-[2.5rem]" />
-          <div className="absolute inset-5 flex items-center justify-center rounded-[1.5rem] bg-black/55 backdrop-blur-sm md:inset-6 md:rounded-[2rem]">
-            <Blocks className="h-16 w-16 text-white/60 md:h-20 md:w-20" />
+            <motion.div
+              className="absolute bottom-[72px] right-1/2 translate-x-1/2"
+              animate={{
+                opacity: [0, 0.5, 0.5, 0],
+                y: [0, -12, 0],
+              }}
+              transition={{
+                duration: 3.3,
+                ease: "easeInOut",
+                repeat: Infinity,
+              }}
+            >
+              <Image
+                src="/assets/hero-section/viper-chip-glow.png"
+                alt="Viper chip glow"
+                width={544}
+                height={723}
+                className="mx-auto h-auto w-[281px] md:w-[375px]"
+              />
+            </motion.div>
           </div>
         </div>
       </div>

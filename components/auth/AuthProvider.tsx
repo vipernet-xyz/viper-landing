@@ -192,9 +192,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 setAuthError(null)
 
                 if (web3authInstance.connected) {
-                    setProvider(web3authInstance.provider)
                     const userInfo = normalizeUser(await web3authInstance.getUserInfo())
-                    setUser((currentUser: any) => mergeUsers(currentUser, userInfo))
 
                     const authInfo = await web3authInstance.authenticateUser().catch((error: unknown) => {
                         console.error('Failed to authenticate existing Web3Auth session:', error)
@@ -202,7 +200,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     })
 
                     if (authInfo?.idToken) {
-                        await syncUserWithBackend(
+                        const syncedUser = await syncUserWithBackend(
                             {
                                 provider: 'web3auth',
                                 idToken: authInfo.idToken,
@@ -213,6 +211,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                                 typeOfLogin: userInfo?.typeOfLogin,
                             }
                         )
+
+                        if (syncedUser) {
+                            setProvider(web3authInstance.provider)
+                        } else {
+                            setUser(null)
+                            setProvider(null)
+                            setAuthError('Google sign-in was restored, but the server session could not be verified. Please sign in again.')
+                        }
+                    } else {
+                        setUser(null)
+                        setProvider(null)
                     }
                 }
             } catch (error) {
@@ -329,14 +338,21 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         try {
             const web3authProvider = await web3auth.connect()
-            setProvider(web3authProvider)
             setAuthError(null)
 
             if (web3auth.connected) {
                 const userInfo = normalizeUser(await web3auth.getUserInfo())
-                setUser((currentUser: any) => mergeUsers(currentUser, userInfo))
                 const authInfo = await web3auth.authenticateUser()
-                await syncUserWithBackend(
+
+                if (!authInfo?.idToken) {
+                    await web3auth.logout().catch(() => undefined)
+                    setProvider(null)
+                    setUser(null)
+                    setAuthError('Google sign-in did not return a valid identity token. Please try again.')
+                    return
+                }
+
+                const syncedUser = await syncUserWithBackend(
                     {
                         provider: 'web3auth',
                         idToken: authInfo.idToken,
@@ -347,6 +363,16 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                         typeOfLogin: userInfo?.typeOfLogin,
                     }
                 )
+
+                if (!syncedUser) {
+                    await web3auth.logout().catch(() => undefined)
+                    setProvider(null)
+                    setUser(null)
+                    setAuthError('Google sign-in succeeded, but the server session could not be created. Please try again.')
+                    return
+                }
+
+                setProvider(web3authProvider)
             }
         } catch (error) {
             console.error('Login failed:', error)

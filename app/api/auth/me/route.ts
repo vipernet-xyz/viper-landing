@@ -3,6 +3,8 @@ import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
 import { clearAuthCookies, readVerifiedSession } from '@/lib/auth/session'
 
+export const runtime = 'nodejs'
+
 function serializeUser(user: any) {
     return {
         ...user,

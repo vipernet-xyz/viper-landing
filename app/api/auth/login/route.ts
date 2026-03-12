@@ -1,15 +1,16 @@
 import crypto from 'crypto'
 import { NextRequest, NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
-import { verifyADR36Amino } from '@keplr-wallet/cosmos'
 import prisma from '@/lib/prisma'
+import { verifyWeb3AuthIdToken } from '@/lib/auth/web3auth'
 import {
   AUTH_CHALLENGE_COOKIE,
   clearAuthCookies,
   consumeCosmosChallenge,
   setSessionCookies,
 } from '@/lib/auth/session'
-import { verifyWeb3AuthIdToken } from '@/lib/auth/web3auth'
+
+export const runtime = 'nodejs'
 
 interface Web3AuthUserInfo {
   idToken?: string
@@ -142,7 +143,20 @@ async function handleWeb3AuthLogin(cookieStore: Awaited<ReturnType<typeof cookie
     )
   }
 
-  const verifiedIdentity = await verifyWeb3AuthIdToken(idToken, body.userInfo)
+  let verifiedIdentity: Awaited<ReturnType<typeof verifyWeb3AuthIdToken>>
+
+  try {
+    verifiedIdentity = await verifyWeb3AuthIdToken(idToken, body.userInfo)
+  } catch (error) {
+    const details = error instanceof Error ? error.message : 'Unable to verify the Web3Auth ID token.'
+    const status = details.startsWith('Failed to fetch Web3Auth JWKS') ? 502 : 401
+
+    return NextResponse.json(
+      { error: 'Unauthorized', details },
+      { status }
+    )
+  }
+
   const user = await upsertUser({
     providerUserId: verifiedIdentity.providerUserId,
     email: verifiedIdentity.email,
@@ -187,6 +201,7 @@ async function handleCosmosLogin(cookieStore: Awaited<ReturnType<typeof cookies>
     )
   }
 
+  const { verifyADR36Amino } = await import('@keplr-wallet/cosmos')
   const isValidSignature = verifyADR36Amino(
     addressPrefix,
     address,
