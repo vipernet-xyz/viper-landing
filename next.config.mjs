@@ -62,12 +62,6 @@ const nextConfig = {
     }
 
     config.devtool = process.env.NODE_ENV === "production" ? "source-map" : false;
-    config.optimization = {
-      ...config.optimization,
-      minimize: false,
-      concatenateModules: false,
-    };
-
     config.module = config.module || { rules: [] };
     config.module.rules = config.module.rules || [];
 

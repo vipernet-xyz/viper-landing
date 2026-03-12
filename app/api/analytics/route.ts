@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
+import { readVerifiedSession } from '@/lib/auth/session'
 
 function serializeRelayLog(log: any) {
     return {
@@ -20,13 +21,12 @@ function serializeRelayLog(log: any) {
 export async function GET(req: NextRequest) {
     try {
         const cookieStore = await cookies()
-        const userIdCookie = cookieStore.get('viper_user_id')
+        const session = readVerifiedSession(cookieStore)
 
-        if (!userIdCookie || !userIdCookie.value) {
+        if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
-
-        const userId = parseInt(userIdCookie.value)
+        const userId = session.userId
         const { searchParams } = new URL(req.url)
         const appId = searchParams.get('app_id')
         const page = parseInt(searchParams.get('page') || '1')

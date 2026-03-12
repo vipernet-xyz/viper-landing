@@ -1,5 +1,5 @@
 import { test, expect, type Page } from '@playwright/test'
-import { setViperUserCookie } from './utils/auth-session'
+import { bootstrapContextSession } from './utils/auth-session'
 
 /**
  * E2E tests for the Viper Dashboard CRUD operations.
@@ -26,6 +26,14 @@ test.describe.configure({ mode: 'serial' })
 let TEST_USER_ID: string
 const TEST_VERIFIER_ID = `e2e-playwright-crud-${Date.now()}@test.local`
 
+async function signInCrudUser(context: Parameters<typeof bootstrapContextSession>[0]) {
+    return bootstrapContextSession(context, {
+        verifierId: TEST_VERIFIER_ID,
+        email: TEST_VERIFIER_ID,
+        name: 'E2E Playwright CRUD',
+    })
+}
+
 async function isClientAuthGated(page: Page) {
     const url = page.url()
     const bodyText = ((await page.textContent('body')) || '').toLowerCase()
@@ -50,33 +58,18 @@ async function isClientAuthGated(page: Page) {
 test('bootstrap – create test user via login API', async ({ browser }) => {
     const context = await browser.newContext()
 
-    // Pre-warm: hit a lightweight endpoint to let the server finish compiling
-    // and establishing its initial DB connection before the login upsert.
-    await context.request.get('/api/apps').catch(() => {})
-    // Small pause so the pool settles after warm-up
-    await new Promise((r) => setTimeout(r, 2000))
-
-    // Retry loop — Supabase session-mode pooler can transiently reject
-    // connections while the dev-server compiles other routes.
-    let res: Awaited<ReturnType<typeof context.request.post>> | undefined
+    let body: any
     for (let attempt = 1; attempt <= 5; attempt++) {
-        res = await context.request.post('/api/auth/login', {
-            data: {
-                userInfo: {
-                    verifierId: TEST_VERIFIER_ID,
-                    email: TEST_VERIFIER_ID,
-                    name: 'E2E Playwright CRUD',
-                    typeOfLogin: 'google',
-                },
-            },
-        })
-        if (res.status() === 200) break
-        console.log(`  Bootstrap attempt ${attempt} returned ${res.status()}, retrying in 3s…`)
+        try {
+            body = await signInCrudUser(context)
+            break
+        } catch (error) {
+            console.log(`  Bootstrap attempt ${attempt} failed, retrying in 3s…`, error)
+        }
         await new Promise((r) => setTimeout(r, 3000))
     }
 
-    expect(res!.status()).toBe(200)
-    const body = await res!.json()
+    expect(body?.user?.id).toBeTruthy()
     TEST_USER_ID = String(body.user.id)
     console.log(`  Test user id=${TEST_USER_ID}`)
     expect(Number(TEST_USER_ID)).toBeGreaterThan(0)
@@ -123,7 +116,7 @@ let apiKey: string
 test('POST /api/apps – create app', async ({ browser }) => {
     expect(TEST_USER_ID).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.post('/api/apps', {
         data: {
@@ -151,7 +144,7 @@ test('POST /api/apps – create app', async ({ browser }) => {
 test('GET /api/apps – list includes new app', async ({ browser }) => {
     expect(appId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.get('/api/apps')
     expect(res.status()).toBe(200)
@@ -169,7 +162,7 @@ test('GET /api/apps – list includes new app', async ({ browser }) => {
 test('GET /api/apps/[id] – fetch single app', async ({ browser }) => {
     expect(appId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.get(`/api/apps/${appId}`)
     expect(res.status()).toBe(200)
@@ -184,7 +177,7 @@ test('GET /api/apps/[id] – fetch single app', async ({ browser }) => {
 
 test('GET /api/apps/[id] – 404 for non-existent app', async ({ browser }) => {
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.get('/api/apps/9999999')
     expect(res.status()).toBe(404)
@@ -194,7 +187,7 @@ test('GET /api/apps/[id] – 404 for non-existent app', async ({ browser }) => {
 
 test('GET /api/apps/[id] – 400 for invalid id', async ({ browser }) => {
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.get('/api/apps/notanumber')
     expect(res.status()).toBe(400)
@@ -205,7 +198,7 @@ test('GET /api/apps/[id] – 400 for invalid id', async ({ browser }) => {
 test('PATCH /api/apps – update app settings', async ({ browser }) => {
     expect(appId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.patch('/api/apps', {
         data: {
@@ -230,7 +223,7 @@ test('PATCH /api/apps – update app settings', async ({ browser }) => {
 test('PATCH /api/apps – no fields returns 400', async ({ browser }) => {
     expect(appId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.patch('/api/apps', { data: { appId } })
     expect(res.status()).toBe(400)
@@ -241,7 +234,7 @@ test('PATCH /api/apps – no fields returns 400', async ({ browser }) => {
 test('PATCH /api/apps – SQL injection attempt is safe', async ({ browser }) => {
     expect(appId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     // Attempt SQL injection via origins and rate_limit
     const res = await context.request.patch('/api/apps', {
@@ -270,7 +263,7 @@ test('PATCH /api/apps – SQL injection attempt is safe', async ({ browser }) =>
 test('DELETE /api/apps – delete app', async ({ browser }) => {
     expect(appId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.delete(`/api/apps?appId=${appId}`)
     expect(res.status()).toBe(200)
@@ -286,7 +279,7 @@ test('DELETE /api/apps – delete app', async ({ browser }) => {
 
 test('DELETE /api/apps – 404 for already-deleted app', async ({ browser }) => {
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     // Re-delete same app → should be 404 now
     const res = await context.request.delete(`/api/apps?appId=${appId}`)
@@ -297,7 +290,7 @@ test('DELETE /api/apps – 404 for already-deleted app', async ({ browser }) => 
 
 test('DELETE /api/apps – 400 without appId', async ({ browser }) => {
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.delete('/api/apps')
     expect(res.status()).toBe(400)
@@ -314,7 +307,7 @@ let uiAppId: number
 test('UI setup – create app for UI tests', async ({ browser }) => {
     expect(TEST_USER_ID).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.post('/api/apps', {
         data: {
@@ -336,7 +329,7 @@ test('UI setup – create app for UI tests', async ({ browser }) => {
 test('UI – app detail page renders with real data', async ({ browser }) => {
     expect(uiAppId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
     const page = await context.newPage()
 
     await page.goto(`/dashboard/apps/${uiAppId}`, { waitUntil: 'domcontentloaded' })
@@ -361,7 +354,7 @@ test('UI – app detail page renders with real data', async ({ browser }) => {
 test('UI – settings button exists on app detail page', async ({ browser }) => {
     expect(uiAppId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
     const page = await context.newPage()
 
     await page.goto(`/dashboard/apps/${uiAppId}`, { waitUntil: 'domcontentloaded' })
@@ -391,7 +384,7 @@ test('UI – settings button exists on app detail page', async ({ browser }) => 
 test('UI – delete button opens confirmation dialog', async ({ browser }) => {
     expect(uiAppId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
     const page = await context.newPage()
 
     await page.goto(`/dashboard/apps/${uiAppId}`, { waitUntil: 'domcontentloaded' })
@@ -420,7 +413,7 @@ test('UI – delete button opens confirmation dialog', async ({ browser }) => {
 test('UI cleanup – delete test app via API', async ({ browser }) => {
     expect(uiAppId).toBeTruthy()
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     const res = await context.request.delete(`/api/apps?appId=${uiAppId}`)
     expect(res.status()).toBe(200)
@@ -435,7 +428,7 @@ test('UI cleanup – delete test app via API', async ({ browser }) => {
 
 test('API responses do not contain debug log artifacts', async ({ browser }) => {
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
 
     // GET /api/apps
     const appsText = await (await context.request.get('/api/apps')).text()
@@ -466,7 +459,7 @@ test('API responses do not contain debug log artifacts', async ({ browser }) => 
 
 test('dashboard apps page loads without crashing', async ({ browser }) => {
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
     const page = await context.newPage()
 
     await page.goto('/dashboard/apps', { waitUntil: 'domcontentloaded' })
@@ -481,7 +474,7 @@ test('dashboard apps page loads without crashing', async ({ browser }) => {
 
 test('dashboard analytics page loads without crashing', async ({ browser }) => {
     const context = await browser.newContext()
-    await setViperUserCookie(context, TEST_USER_ID)
+    await signInCrudUser(context)
     const page = await context.newPage()
 
     await page.goto('/dashboard/analytics', { waitUntil: 'domcontentloaded' })

@@ -34,6 +34,28 @@ const RETRYABLE_RELAY_ERROR_CODES = new Set([
   'NO_SERVICERS_AVAILABLE',
 ])
 
+const RETRYABLE_RELAY_ERROR_MESSAGES = [
+  'no healthy servicers after refresh',
+]
+
+function shouldRetryRelayError(error: unknown) {
+  if (!error) return false
+
+  if (
+    typeof error === 'object' &&
+    error !== null &&
+    'error_code' in error &&
+    RETRYABLE_RELAY_ERROR_CODES.has(String((error as { error_code?: string }).error_code))
+  ) {
+    return true
+  }
+
+  const message = typeof error === 'string' ? error : JSON.stringify(error)
+  const normalizedMessage = message.toLowerCase()
+
+  return RETRYABLE_RELAY_ERROR_MESSAGES.some((entry) => normalizedMessage.includes(entry))
+}
+
 export default function TestRelayPage() {
   const [chainId, setChainId] = useState('0002')
   const [apiKey, setApiKey] = useState('')
@@ -89,7 +111,7 @@ export default function TestRelayPage() {
 
       let lastError: any = null
 
-      for (let attempt = 1; attempt <= 3; attempt += 1) {
+      for (let attempt = 1; attempt <= 5; attempt += 1) {
         const res = await fetch(`/api/relay/${chainId}`, {
           method: 'POST',
           headers: {
@@ -108,11 +130,11 @@ export default function TestRelayPage() {
         }
 
         lastError = data
-        if (!RETRYABLE_RELAY_ERROR_CODES.has(data?.error_code) || attempt === 3) {
+        if (!shouldRetryRelayError(data) || attempt === 5) {
           break
         }
 
-        await new Promise((resolve) => window.setTimeout(resolve, attempt * 750))
+        await new Promise((resolve) => window.setTimeout(resolve, attempt * 1_500))
       }
 
       setError(typeof lastError === 'string' ? lastError : JSON.stringify(lastError, null, 2))
@@ -307,8 +329,8 @@ export default function TestRelayPage() {
             4. <strong className="text-white">Send the request</strong> and see the response from Viper Network
           </p>
           <p className="pt-2 border-t border-white/10 mt-4">
-            The relay request is forwarded to the Go backend at{' '}
-            <code className="text-purple-400">http://localhost:8000/relay/:chainId</code>, which processes it and logs it to Supabase.
+            The dashboard sends requests to{' '}
+            <code className="text-purple-400">/api/relay/:chainId</code>, which forwards them to the configured relay backend.
           </p>
         </CardContent>
       </Card>

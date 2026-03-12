@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { useParams, useRouter } from 'next/navigation'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
-import { ArrowLeft, Copy, Check, Link2, Settings, Trash2, Loader2, Plus, X } from 'lucide-react'
+import { ArrowLeft, Copy, Check, Link2, Settings, Trash2, Loader2, Plus, X, FileText } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
@@ -11,6 +11,14 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from '@/components/ui/select'
 import {
     AlertDialog,
     AlertDialogAction,
@@ -54,12 +62,47 @@ interface Chain {
     type: string
 }
 
+const PUBLIC_RELAY_BASE_URL = 'http://node2.vipernet.xyz:8000'
+
+const EXAMPLE_REQUESTS = {
+    eth_blockNumber: {
+        label: 'Block Number',
+        payload: {
+            jsonrpc: '2.0',
+            method: 'eth_blockNumber',
+            params: [],
+            id: 1,
+        },
+    },
+    eth_gasPrice: {
+        label: 'Gas Price',
+        payload: {
+            jsonrpc: '2.0',
+            method: 'eth_gasPrice',
+            params: [],
+            id: 1,
+        },
+    },
+    eth_chainId: {
+        label: 'Chain ID',
+        payload: {
+            jsonrpc: '2.0',
+            method: 'eth_chainId',
+            params: [],
+            id: 1,
+        },
+    },
+} as const
+
+type ExampleRequestKey = keyof typeof EXAMPLE_REQUESTS
+type RequestType = 'http' | 'websocket'
+
 export default function AppDetailsPage() {
     const params = useParams()
     const router = useRouter()
     const queryClient = useQueryClient()
     const appId = params.id as string
-    const [copied, setCopied] = useState(false)
+    const [copiedField, setCopiedField] = useState<string | null>(null)
 
     // Settings dialog state
     const [settingsOpen, setSettingsOpen] = useState(false)
@@ -67,6 +110,9 @@ export default function AppDetailsPage() {
     const [settingsRateLimit, setSettingsRateLimit] = useState('')
     const [settingsOrigins, setSettingsOrigins] = useState<string[]>([''])
     const [settingsChains, setSettingsChains] = useState<number[]>([])
+    const [endpointChainId, setEndpointChainId] = useState('')
+    const [requestType, setRequestType] = useState<RequestType>('http')
+    const [exampleRequest, setExampleRequest] = useState<ExampleRequestKey>('eth_blockNumber')
 
     const { data: app, isLoading } = useQuery<AppData>({
         queryKey: ['app', appId],
@@ -159,12 +205,11 @@ export default function AppDetailsPage() {
         },
     })
 
-    const handleCopyApiKey = async () => {
-        if (app?.api_key) {
-            await navigator.clipboard.writeText(app.api_key)
-            setCopied(true)
-            setTimeout(() => setCopied(false), 2000)
-        }
+    const copyToClipboard = async (value: string, field: string, label: string) => {
+        await navigator.clipboard.writeText(value)
+        setCopiedField(field)
+        setTimeout(() => setCopiedField((current) => (current === field ? null : current)), 2000)
+        toast.success(`${label} copied to clipboard`)
     }
 
     const formatDate = (date: string): string => {
@@ -230,6 +275,22 @@ export default function AppDetailsPage() {
         )
     }
 
+    const allowedChains = getAllowedChains()
+    const allowedOrigins = getAllowedOrigins()
+    const chainOptions = chains.map((chain) => ({
+        ...chain,
+        relayChainId: String(chain.id).padStart(4, '0'),
+    }))
+    const endpointChains = allowedChains.length > 0
+        ? chainOptions.filter((chain) => allowedChains.includes(chain.relayChainId))
+        : chainOptions
+
+    useEffect(() => {
+        if (!endpointChainId && endpointChains.length > 0) {
+            setEndpointChainId(endpointChains[0].relayChainId)
+        }
+    }, [endpointChainId, endpointChains])
+
     if (isLoading) {
         return (
             <div className="flex items-center justify-center h-64">
@@ -246,8 +307,36 @@ export default function AppDetailsPage() {
         )
     }
 
-    const allowedChains = getAllowedChains()
-    const allowedOrigins = getAllowedOrigins()
+    const selectedEndpointChain = endpointChains.find((chain) => chain.relayChainId === endpointChainId)
+        ?? endpointChains[0]
+        ?? null
+    const selectedChainId = selectedEndpointChain?.relayChainId ?? endpointChainId ?? ''
+    const selectedExample = EXAMPLE_REQUESTS[exampleRequest]
+    const networkUrl = requestType === 'http'
+        ? `${PUBLIC_RELAY_BASE_URL}/relay/${selectedChainId || '0002'}`
+        : `${PUBLIC_RELAY_BASE_URL.replace(/^http/, 'ws')}/ws-relay?api_key=${app.api_key}`
+    const examplePayload = selectedExample.payload
+    const exampleRequestBody = JSON.stringify(examplePayload, null, 2)
+    const curlExample = `curl --location '${networkUrl}' \\
+  --header 'x-api-key: ${app.api_key}' \\
+  --header 'Content-Type: application/json' \\
+  --data '${JSON.stringify(examplePayload, null, 4)}'`
+    const websocketExample = `const ws = new WebSocket('${networkUrl}')
+
+ws.onopen = () => {
+  ws.send(JSON.stringify({
+    id: 'demo-request',
+    type: 'relay',
+    chain_id: '${selectedChainId || '0002'}',
+    data: ${JSON.stringify(examplePayload, null, 4)}
+  }))
+}`
+    const requestSnippet = requestType === 'http' ? curlExample : websocketExample
+    const totalRequests24h = analytics?.total_requests_24h ?? 0
+    const failedRequests24h = analytics?.failed_requests_24h ?? 0
+    const successRate24h = totalRequests24h > 0
+        ? (((totalRequests24h - failedRequests24h) / totalRequests24h) * 100).toFixed(2)
+        : null
 
     return (
         <div className="space-y-6">
@@ -437,11 +526,11 @@ export default function AppDetailsPage() {
                             {app.api_key}
                         </code>
                         <Button
-                            onClick={handleCopyApiKey}
+                            onClick={() => copyToClipboard(app.api_key, 'api-key', 'API key')}
                             variant="ghost"
                             className="h-8 w-8 p-0 hover:bg-white/5 shrink-0"
                         >
-                            {copied ? (
+                            {copiedField === 'api-key' ? (
                                 <Check className="h-4 w-4 text-green-400" />
                             ) : (
                                 <Copy className="h-4 w-4 text-white/50" />
@@ -454,41 +543,238 @@ export default function AppDetailsPage() {
                 </CardContent>
             </Card>
 
-            {/* Stats Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-xs font-normal text-white/50">Requests (24h)</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-semibold text-white">
-                            {analytics?.total_requests_24h?.toLocaleString() ?? '-'}
-                        </p>
-                    </CardContent>
-                </Card>
+            <Tabs defaultValue="endpoints" className="space-y-5">
+                <TabsList className="h-10 rounded-xl border border-white/10 bg-[rgba(18,18,18,0.9)] p-1">
+                    <TabsTrigger
+                        value="endpoints"
+                        className="rounded-lg px-4 text-xs text-white/65 data-[state=active]:bg-white/8 data-[state=active]:text-white"
+                    >
+                        Endpoints
+                    </TabsTrigger>
+                    <TabsTrigger
+                        value="analytics"
+                        className="rounded-lg px-4 text-xs text-white/65 data-[state=active]:bg-white/8 data-[state=active]:text-white"
+                    >
+                        Analytics
+                    </TabsTrigger>
+                </TabsList>
 
-                <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-xs font-normal text-white/50">Failed Requests (24h)</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-semibold text-white">
-                            {analytics?.failed_requests_24h?.toLocaleString() ?? '-'}
-                        </p>
-                    </CardContent>
-                </Card>
+                <TabsContent value="endpoints" className="mt-0">
+                    <div className="grid gap-6 xl:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]">
+                        <Card className="border-white/10 bg-[linear-gradient(180deg,rgba(34,34,34,0.95),rgba(18,18,18,0.9))] shadow-[inset_0_1px_0_rgba(255,255,255,0.04)]">
+                            <CardContent className="space-y-6 p-7">
+                                <div className="space-y-1">
+                                    <h3 className="text-2xl font-medium text-white">Connect Your App</h3>
+                                    <p className="text-sm text-white/45">
+                                        Pick a chain, copy the endpoint, and send a ready-made request with this app key.
+                                    </p>
+                                </div>
 
-                <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
-                    <CardHeader className="pb-2">
-                        <CardTitle className="text-xs font-normal text-white/50">Avg Response Time</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                        <p className="text-2xl font-semibold text-white">
-                            {analytics?.avg_response_time ? `${analytics.avg_response_time}ms` : '-'}
-                        </p>
-                    </CardContent>
-                </Card>
-            </div>
+                                <div className="space-y-2.5">
+                                    <Label className="text-sm text-white">Chain</Label>
+                                    {endpointChains.length > 0 ? (
+                                        <Select value={selectedChainId} onValueChange={setEndpointChainId}>
+                                            <SelectTrigger className="h-11 border-white/10 bg-white/[0.04] text-white">
+                                                <SelectValue placeholder="Select chain" />
+                                            </SelectTrigger>
+                                            <SelectContent className="border-zinc-800 bg-zinc-950 text-white">
+                                                {endpointChains.map((chain) => (
+                                                    <SelectItem key={chain.relayChainId} value={chain.relayChainId}>
+                                                        {chain.name} ({chain.relayChainId})
+                                                    </SelectItem>
+                                                ))}
+                                            </SelectContent>
+                                        </Select>
+                                    ) : (
+                                        <Input
+                                            readOnly
+                                            value="No relay-enabled chains available"
+                                            className="h-11 border-white/10 bg-white/[0.04] text-white/45"
+                                        />
+                                    )}
+                                </div>
+
+                                <div className="space-y-2.5">
+                                    <Label className="text-sm text-white">Network</Label>
+                                    <Select value="mainnet" disabled>
+                                        <SelectTrigger className="h-11 border-white/10 bg-white/[0.04] text-white">
+                                            <SelectValue placeholder="Mainnet" />
+                                        </SelectTrigger>
+                                        <SelectContent className="border-zinc-800 bg-zinc-950 text-white">
+                                            <SelectItem value="mainnet">Mainnet</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <div className="space-y-2.5">
+                                    <Label className="text-sm text-white">Request Type</Label>
+                                    <Select value={requestType} onValueChange={(value) => setRequestType(value as RequestType)}>
+                                        <SelectTrigger className="h-11 border-white/10 bg-white/[0.04] text-white">
+                                            <SelectValue placeholder="Select request type" />
+                                        </SelectTrigger>
+                                        <SelectContent className="border-zinc-800 bg-zinc-950 text-white">
+                                            <SelectItem value="http">HTTP</SelectItem>
+                                            <SelectItem value="websocket">WebSocket</SelectItem>
+                                        </SelectContent>
+                                    </Select>
+                                </div>
+
+                                <Button
+                                    type="button"
+                                    variant="outline"
+                                    onClick={() => router.push('/dashboard/docs')}
+                                    className="h-10 border-white/15 bg-white/[0.04] text-white hover:bg-white/[0.08]"
+                                >
+                                    <FileText className="mr-2 h-4 w-4" />
+                                    Docs
+                                </Button>
+                            </CardContent>
+                        </Card>
+
+                        <div className="space-y-5">
+                            <Card className="border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(123,92,255,0.2),transparent_40%),rgba(18,18,18,0.92)]">
+                                <CardContent className="space-y-4 p-7">
+                                    <div className="space-y-1">
+                                        <p className="text-xs uppercase tracking-[0.24em] text-white/35">Network URL</p>
+                                        <h3 className="text-xl font-medium text-white">
+                                            {selectedEndpointChain?.name ?? 'Relay endpoint'}
+                                        </h3>
+                                        <p className="text-sm text-white/45">
+                                            {requestType === 'http' ? 'Send signed JSON-RPC requests directly to the relay.' : 'Open a relay socket and send chain-specific payloads.'}
+                                        </p>
+                                    </div>
+
+                                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
+                                        <div className="mb-2 flex items-center justify-between gap-4">
+                                            <span className="text-[11px] uppercase tracking-[0.22em] text-white/35">
+                                                {requestType === 'http' ? 'HTTP endpoint' : 'WebSocket endpoint'}
+                                            </span>
+                                            <Button
+                                                type="button"
+                                                variant="ghost"
+                                                onClick={() => copyToClipboard(networkUrl, 'network-url', 'Network URL')}
+                                                className="h-8 w-8 p-0 hover:bg-white/5"
+                                            >
+                                                {copiedField === 'network-url' ? (
+                                                    <Check className="h-4 w-4 text-green-400" />
+                                                ) : (
+                                                    <Copy className="h-4 w-4 text-white/55" />
+                                                )}
+                                            </Button>
+                                        </div>
+                                        <code className="block break-all text-sm text-white/80">{networkUrl}</code>
+                                    </div>
+
+                                    <div className="grid gap-4 sm:grid-cols-2">
+                                        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                                            <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">Chain</p>
+                                            <p className="mt-2 text-base text-white">
+                                                {selectedEndpointChain ? `${selectedEndpointChain.name} (${selectedChainId})` : 'Unavailable'}
+                                            </p>
+                                        </div>
+                                        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
+                                            <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">Auth Header</p>
+                                            <p className="mt-2 text-base text-white">x-api-key</p>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+
+                            <Card className="border-white/10 bg-[rgba(10,10,10,0.96)] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
+                                <CardContent className="space-y-5 p-0">
+                                    <div className="flex flex-wrap items-center gap-2 border-b border-white/10 px-5 py-4">
+                                        {Object.entries(EXAMPLE_REQUESTS).map(([key, config]) => (
+                                            <Button
+                                                key={key}
+                                                type="button"
+                                                size="sm"
+                                                variant="outline"
+                                                onClick={() => setExampleRequest(key as ExampleRequestKey)}
+                                                className={`h-8 border-white/15 text-xs ${
+                                                    exampleRequest === key
+                                                        ? 'bg-white text-black hover:bg-white/90'
+                                                        : 'bg-transparent text-white hover:bg-white/[0.08]'
+                                                }`}
+                                            >
+                                                {config.label}
+                                            </Button>
+                                        ))}
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={() => copyToClipboard(requestSnippet, 'request-snippet', requestType === 'http' ? 'cURL command' : 'WebSocket example')}
+                                            className="ml-auto h-8 w-8 p-0 hover:bg-white/[0.06]"
+                                        >
+                                            {copiedField === 'request-snippet' ? (
+                                                <Check className="h-4 w-4 text-green-400" />
+                                            ) : (
+                                                <Copy className="h-4 w-4 text-white/55" />
+                                            )}
+                                        </Button>
+                                    </div>
+
+                                    <div className="space-y-3 px-5 pb-5">
+                                        <div className="flex items-center gap-2 px-1 pt-2">
+                                            <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56]" />
+                                            <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
+                                            <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
+                                            <p className="ml-2 text-[11px] uppercase tracking-[0.22em] text-white/35">
+                                                {requestType === 'http' ? 'cURL example' : 'WebSocket example'}
+                                            </p>
+                                        </div>
+                                        <pre className="overflow-x-auto rounded-2xl border border-white/8 bg-[#050505] p-5 text-[13px] leading-6 text-white/84">
+                                            <code>{requestSnippet}</code>
+                                        </pre>
+                                        <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
+                                            <p className="mb-2 text-[11px] uppercase tracking-[0.22em] text-white/35">JSON-RPC payload</p>
+                                            <pre className="overflow-x-auto text-[13px] leading-6 text-white/72">
+                                                <code>{exampleRequestBody}</code>
+                                            </pre>
+                                        </div>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        </div>
+                    </div>
+                </TabsContent>
+
+                <TabsContent value="analytics" className="mt-0">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                        <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-normal text-white/50">Requests (24h)</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-2xl font-semibold text-white">
+                                    {totalRequests24h.toLocaleString()}
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-normal text-white/50">Success Rate (24h)</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-2xl font-semibold text-white">
+                                    {successRate24h ? `${successRate24h}%` : '-'}
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-normal text-white/50">Avg Response Time</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-2xl font-semibold text-white">
+                                    {analytics?.avg_response_time ? `${analytics.avg_response_time}ms` : '-'}
+                                </p>
+                            </CardContent>
+                        </Card>
+                    </div>
+                </TabsContent>
+            </Tabs>
 
             {/* Configuration Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

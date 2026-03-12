@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
 import crypto from 'crypto'
+import { readVerifiedSession } from '@/lib/auth/session'
 
 // Helper to generate API Key
 function generateAPIKey() {
@@ -22,13 +23,12 @@ function serializeApp(app: any) {
 export async function GET(req: NextRequest) {
     try {
         const cookieStore = await cookies()
-        const userIdCookie = cookieStore.get('viper_user_id')
+        const session = readVerifiedSession(cookieStore)
 
-        if (!userIdCookie || !userIdCookie.value) {
+        if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
-
-        const userId = parseInt(userIdCookie.value)
+        const userId = session.userId
 
         // Use raw SQL to properly handle JSONB columns with pg adapter
         const apps: any[] = await prisma.$queryRaw`
@@ -53,13 +53,12 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
     try {
         const cookieStore = await cookies()
-        const userIdCookie = cookieStore.get('viper_user_id')
+        const session = readVerifiedSession(cookieStore)
 
-        if (!userIdCookie || !userIdCookie.value) {
+        if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
-
-        const userId = parseInt(userIdCookie.value)
+        const userId = session.userId
 
         const body = await req.json()
         const { name, description, allowedOrigins, allowedChains, rateLimit } = body
@@ -138,13 +137,12 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
     try {
         const cookieStore = await cookies()
-        const userIdCookie = cookieStore.get('viper_user_id')
+        const session = readVerifiedSession(cookieStore)
 
-        if (!userIdCookie || !userIdCookie.value) {
+        if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
-
-        const userId = parseInt(userIdCookie.value)
+        const userId = session.userId
         const body = await req.json()
         const { appId, allowed_chains, allowed_origins, rate_limit, is_active } = body
 
@@ -197,13 +195,12 @@ export async function PATCH(req: NextRequest) {
 export async function DELETE(req: NextRequest) {
     try {
         const cookieStore = await cookies()
-        const userIdCookie = cookieStore.get('viper_user_id')
+        const session = readVerifiedSession(cookieStore)
 
-        if (!userIdCookie || !userIdCookie.value) {
+        if (!session) {
             return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
         }
-
-        const userId = parseInt(userIdCookie.value)
+        const userId = session.userId
         const { searchParams } = new URL(req.url)
         const appId = searchParams.get('appId')
 

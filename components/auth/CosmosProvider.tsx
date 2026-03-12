@@ -2,16 +2,10 @@
 
 import { ChainProvider } from '@cosmos-kit/react'
 import { wallets as keplrWallets } from '@cosmos-kit/keplr'
-import { wallets as leapWallets } from '@cosmos-kit/leap'
-import { wallets as cosmostationWallets } from '@cosmos-kit/cosmostation'
 import '@interchain-ui/react/styles'
 import React from 'react'
 
-const allWallets = [
-    ...keplrWallets,
-    ...leapWallets,
-    ...cosmostationWallets,
-].filter(Boolean)
+const supportedWallets = [...keplrWallets].filter(Boolean)
 
 export function CosmosProvider({ children }: { children: React.ReactNode }) {
     // Minimal chain configuration for Cosmos Hub only
@@ -88,7 +82,7 @@ export function CosmosProvider({ children }: { children: React.ReactNode }) {
         <ChainProvider
             chains={minimalChains}
             assetLists={minimalAssets}
-            wallets={allWallets}
+            wallets={supportedWallets}
             walletConnectOptions={{
                 signClient: {
                     projectId: process.env.NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID || '',

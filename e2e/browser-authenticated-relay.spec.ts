@@ -27,21 +27,44 @@ async function selectAppOption(page: Page, appName: string) {
 test('browser session can send a relay request from the dashboard UI', async ({ page }) => {
   const healthcheck = await page.request.get(relayHealthcheckURL).catch(() => null)
   test.skip(!healthcheck || !healthcheck.ok(), `Relay backend unavailable at ${relayHealthcheckURL}`)
+  const verifierId = `relay-ui-${Date.now()}@test.local`
+  const appName = `Relay UI ${Date.now()}`
+  let appId: number | null = null
 
   await bootstrapSessionFromLogin(page, {
-    verifierId: 'relay_spammer_user',
-    email: 'spammer@vipernet.xyz',
+    verifierId,
+    email: verifierId,
     name: 'Relay Spammer User',
   })
 
-  await page.goto('/dashboard/test-relay', { waitUntil: 'domcontentloaded' })
-  await expect(page.getByRole('heading', { name: 'Test Relay Endpoint' })).toBeVisible()
+  try {
+    const createAppResponse = await page.context().request.post('/api/apps', {
+      data: {
+        name: appName,
+        description: 'Created by the browser relay Playwright suite',
+        allowedOrigins: ['https://relay-ui.test'],
+        allowedChains: ['0002'],
+        rateLimit: 5000,
+      },
+    })
 
-  await selectAppOption(page, 'Relay Spammer App')
-  await page.getByPlaceholder('0002').fill('0001')
-  await page.getByRole('button', { name: 'Send Relay Request' }).click()
+    expect(createAppResponse.status()).toBe(201)
+    const createdApp = await createAppResponse.json()
+    appId = createdApp.id
 
-  await expect(page.getByText('✓ Success')).toBeVisible({ timeout: 20_000 })
-  await expect(page.locator('pre').first()).toContainText('"response"')
-  await expect(page.locator('pre').first()).toContainText('"strategyUsed": "free_user_portal"')
+    await page.goto('/dashboard/test-relay', { waitUntil: 'domcontentloaded' })
+    await expect(page.getByRole('heading', { name: 'Test Relay Endpoint' })).toBeVisible()
+
+    await selectAppOption(page, appName)
+    await page.getByPlaceholder('0002').fill('0002')
+    await page.getByRole('button', { name: 'Send Relay Request' }).click()
+
+    await expect(page.getByText('✓ Success')).toBeVisible({ timeout: 45_000 })
+    await expect(page.locator('pre').first()).toContainText('"response"')
+    await expect(page.locator('pre').first()).toContainText('"strategyUsed": "free_user_portal"')
+  } finally {
+    if (appId) {
+      await page.context().request.delete(`/api/apps?appId=${appId}`).catch(() => null)
+    }
+  }
 })

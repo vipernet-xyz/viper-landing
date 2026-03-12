@@ -4,15 +4,23 @@ import { defineConfig, devices } from '@playwright/test'
 
 const macChromePath = '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome'
 const localChromeExecutable = fs.existsSync(macChromePath) ? macChromePath : undefined
+process.env.VIPER_E2E_BOOTSTRAP_SECRET =
+  process.env.VIPER_E2E_BOOTSTRAP_SECRET || 'viper-playwright-bootstrap'
 const baseURL = process.env.PLAYWRIGHT_BASE_URL || 'http://localhost:3020'
 const shouldStartLocalWebServer = /^http:\/\/localhost:3020\/?$/.test(baseURL)
 const prSpecs = [
+  '**/auth-security.spec.ts',
   '**/frontend-smoke.spec.ts',
   '**/app-creation.spec.ts',
   '**/app-creation-with-auth.spec.ts',
   '**/browser-authenticated-flow.spec.ts',
 ]
-const nightlySpecs = [...prSpecs, '**/browser-authenticated-relay.spec.ts', '**/dashboard-crud.spec.ts']
+const nightlySpecs = [
+  ...prSpecs,
+  '**/browser-authenticated-relay.spec.ts',
+  '**/app-api-key-relay.spec.ts',
+  '**/dashboard-crud.spec.ts',
+]
 
 function resolveOptionalPath(envName: string) {
   const value = process.env[envName]?.trim()

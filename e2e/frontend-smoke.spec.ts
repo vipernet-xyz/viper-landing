@@ -15,13 +15,15 @@ function unexpectedMessages(monitor: ConsoleMonitor) {
 
 test('landing page exposes app entry points without console errors', async ({ page }) => {
   const monitor = new ConsoleMonitor(page)
+  const heroCopy = page.getByText('The Trustless Gateway to Web3.')
+  const launchAppLink = page.getByRole('link', { name: 'Launch App' }).first()
+  const dashboardLink = page.getByRole('link', { name: 'Dashboard' }).first()
 
   await page.goto('/', { waitUntil: 'domcontentloaded' })
-  await page.waitForTimeout(2000)
+  await expect(heroCopy).toBeVisible({ timeout: 20_000 })
 
-  await expect(page.getByRole('link', { name: 'Launch App' }).first()).toBeVisible()
-  await expect(page.getByRole('link', { name: 'Dashboard' }).first()).toBeVisible()
-  await expect(page.getByText('The Trustless Gateway to Web3.')).toBeVisible()
+  await expect(launchAppLink).toBeVisible()
+  await expect(dashboardLink).toBeVisible()
 
   expect(unexpectedMessages(monitor)).toEqual([])
 })
@@ -43,9 +45,11 @@ test('login page renders ready auth actions without console errors', async ({ pa
 
 test('landing launch app CTA navigates to login', async ({ page }) => {
   const googleButton = page.getByRole('button', { name: /Continue with Google/i }).first()
+  const launchAppLink = page.getByRole('link', { name: 'Launch App' }).first()
 
   await page.goto('/', { waitUntil: 'domcontentloaded' })
-  await page.getByRole('link', { name: 'Launch App' }).first().click()
+  await expect(launchAppLink).toBeVisible({ timeout: 20_000 })
+  await launchAppLink.click()
   await page.waitForURL('**/login')
 
   await expect(googleButton).toBeVisible({ timeout: 15_000 })

@@ -1,4 +1,4 @@
-import { expect, type BrowserContext, type Page } from '@playwright/test'
+import { expect, type APIRequestContext, type BrowserContext, type Page } from '@playwright/test'
 
 type BootstrapSessionInput = {
   verifierId: string
@@ -7,8 +7,11 @@ type BootstrapSessionInput = {
   typeOfLogin?: string
 }
 
-export async function bootstrapSessionFromLogin(
-  page: Page,
+const e2eBootstrapSecret =
+  process.env.VIPER_E2E_BOOTSTRAP_SECRET || 'viper-playwright-bootstrap'
+
+async function bootstrapRequestSession(
+  request: APIRequestContext,
   {
     verifierId,
     email,
@@ -16,7 +19,10 @@ export async function bootstrapSessionFromLogin(
     typeOfLogin = 'google',
   }: BootstrapSessionInput
 ) {
-  const response = await page.context().request.post('/api/auth/login', {
+  const response = await request.post('/api/auth/login', {
+    headers: {
+      'x-viper-e2e-secret': e2eBootstrapSecret,
+    },
     data: {
       userInfo: {
         verifierId,
@@ -31,16 +37,10 @@ export async function bootstrapSessionFromLogin(
   return response.json()
 }
 
-export async function setViperUserCookie(context: BrowserContext, userId: string) {
-  await context.addCookies([
-    {
-      name: 'viper_user_id',
-      value: userId,
-      domain: 'localhost',
-      path: '/',
-      httpOnly: true,
-      secure: false,
-      sameSite: 'Lax',
-    },
-  ])
+export async function bootstrapSessionFromLogin(page: Page, input: BootstrapSessionInput) {
+  return bootstrapRequestSession(page.context().request, input)
+}
+
+export async function bootstrapContextSession(context: BrowserContext, input: BootstrapSessionInput) {
+  return bootstrapRequestSession(context.request, input)
 }

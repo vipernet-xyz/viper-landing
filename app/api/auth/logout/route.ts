@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
+import { clearAuthCookies } from '@/lib/auth/session'
 
 export async function POST() {
     const cookieStore = await cookies()
-    cookieStore.delete('viper_user_id')
-    cookieStore.delete('viper_wallet')
+    clearAuthCookies(cookieStore)
 
     return NextResponse.json({ success: true })
 }

@@ -75,8 +75,46 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [user, setUser] = useState<any | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [authError, setAuthError] = useState<string | null>(null)
-    const { isWalletConnected: cosmosConnected, address: cosmosAddress, disconnect: disconnectCosmos } = useChain('cosmoshub')
+    const {
+        isWalletConnected: cosmosConnected,
+        address: cosmosAddress,
+        disconnect: disconnectCosmos,
+        getAccount,
+        signArbitrary,
+    } = useChain('cosmoshub')
     const cosmosSyncAddressRef = useRef<string | null>(null)
+
+    const syncUserWithBackend = async (payload: Record<string, unknown>, userFields: Record<string, unknown> = {}) => {
+        try {
+            const res = await fetch('/api/auth/login', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                credentials: 'include',
+                body: JSON.stringify(payload)
+            })
+
+            if (!res.ok) {
+                const errorBody = await res.json().catch(() => null)
+                console.error('Failed to sync user with backend', errorBody)
+                return null
+            }
+
+            const data = await res.json()
+            if (data.user) {
+                setUser((currentUser: any) => mergeUsers(currentUser, {
+                    ...data.user,
+                    ...userFields,
+                }))
+            }
+
+            return data.user ?? null
+        } catch (e) {
+            console.error('Error syncing user:', e)
+            return null
+        }
+    }
 
     useEffect(() => {
         let isMounted = true
@@ -88,15 +126,17 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 })
 
                 if (!res.ok) {
-                    return
+                    return null
                 }
 
                 const data = await res.json()
                 if (isMounted && data.user) {
                     setUser((currentUser: any) => mergeUsers(currentUser, data.user))
                 }
+                return data.user ?? null
             } catch (error) {
                 console.error('Failed to restore session:', error)
+                return null
             }
         }
 
@@ -108,7 +148,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (!clientId) {
                 if (isMounted) {
                     setAuthError('Google sign-in is unavailable because NEXT_PUBLIC_WEB3AUTH_CLIENT_ID is missing.')
-                    setIsLoading(false)
                 }
                 return
             }
@@ -156,6 +195,25 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     setProvider(web3authInstance.provider)
                     const userInfo = normalizeUser(await web3authInstance.getUserInfo())
                     setUser((currentUser: any) => mergeUsers(currentUser, userInfo))
+
+                    const authInfo = await web3authInstance.authenticateUser().catch((error: unknown) => {
+                        console.error('Failed to authenticate existing Web3Auth session:', error)
+                        return null
+                    })
+
+                    if (authInfo?.idToken) {
+                        await syncUserWithBackend(
+                            {
+                                provider: 'web3auth',
+                                idToken: authInfo.idToken,
+                                userInfo,
+                            },
+                            {
+                                verifier: userInfo?.verifier,
+                                typeOfLogin: userInfo?.typeOfLogin,
+                            }
+                        )
+                    }
                 }
             } catch (error) {
                 if (!isMounted) {
@@ -169,10 +227,12 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
 
         const init = async () => {
-            await Promise.allSettled([
-                hydrateSession(),
-                initWeb3Auth(),
-            ])
+            const initWeb3AuthPromise = initWeb3Auth()
+            const restoredUser = await hydrateSession()
+
+            if (!restoredUser) {
+                await initWeb3AuthPromise
+            }
 
             if (isMounted) {
                 setIsLoading(false)
@@ -186,42 +246,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
         }
     }, [])
 
-    const syncUserWithBackend = async (userInfo: any) => {
-        try {
-            if (!userInfo?.verifierId) {
-                return null
-            }
-
-            const res = await fetch('/api/auth/login', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                credentials: 'include',
-                body: JSON.stringify({ userInfo })
-            })
-
-            if (!res.ok) {
-                console.error('Failed to sync user with backend')
-                return null
-            }
-
-            const data = await res.json()
-            if (data.user) {
-                setUser((currentUser: any) => mergeUsers(currentUser, {
-                    ...data.user,
-                    verifier: userInfo.verifier,
-                    typeOfLogin: userInfo.typeOfLogin,
-                }))
-            }
-
-            return data.user ?? null
-        } catch (e) {
-            console.error('Error syncing user:', e)
-            return null
-        }
-    }
-
     useEffect(() => {
         if (!cosmosConnected || !cosmosAddress) {
             cosmosSyncAddressRef.current = null
@@ -234,13 +258,68 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
         cosmosSyncAddressRef.current = cosmosAddress
 
-        void syncUserWithBackend({
-            verifierId: cosmosAddress,
-            verifier: 'cosmos',
-            typeOfLogin: 'cosmos',
-            name: `Cosmos ${cosmosAddress.slice(0, 8)}...${cosmosAddress.slice(-6)}`,
-        })
-    }, [cosmosAddress, cosmosConnected, user])
+        const syncCosmosSession = async () => {
+            try {
+                const challengeRes = await fetch('/api/auth/challenge', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    credentials: 'include',
+                    body: JSON.stringify({
+                        provider: 'cosmos',
+                        address: cosmosAddress,
+                    }),
+                })
+
+                if (!challengeRes.ok) {
+                    console.error('Failed to request Cosmos auth challenge')
+                    cosmosSyncAddressRef.current = null
+                    return
+                }
+
+                const challengeData = await challengeRes.json()
+                const signature = await signArbitrary(cosmosAddress, challengeData.message)
+                const account = await getAccount()
+                const fallbackPubKey =
+                    account?.pubkey instanceof Uint8Array
+                        ? btoa(String.fromCharCode(...account.pubkey))
+                        : undefined
+
+                const syncedUser = await syncUserWithBackend(
+                    {
+                        provider: 'cosmos',
+                        address: cosmosAddress,
+                        challengeToken: challengeData.challengeToken,
+                        signature: {
+                            ...signature,
+                            pub_key: signature?.pub_key?.value
+                                ? signature.pub_key
+                                : fallbackPubKey
+                                    ? {
+                                        type: 'tendermint/PubKeySecp256k1',
+                                        value: fallbackPubKey,
+                                    }
+                                    : undefined,
+                        },
+                    },
+                    {
+                        verifier: 'cosmos',
+                        typeOfLogin: 'cosmos',
+                    }
+                )
+
+                if (!syncedUser) {
+                    cosmosSyncAddressRef.current = null
+                }
+            } catch (error) {
+                console.error('Failed to sync Cosmos wallet with backend:', error)
+                cosmosSyncAddressRef.current = null
+            }
+        }
+
+        void syncCosmosSession()
+    }, [cosmosAddress, cosmosConnected, getAccount, signArbitrary, user])
 
     const login = async () => {
         if (!web3auth) {
@@ -256,7 +335,18 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             if (web3auth.connected) {
                 const userInfo = normalizeUser(await web3auth.getUserInfo())
                 setUser((currentUser: any) => mergeUsers(currentUser, userInfo))
-                await syncUserWithBackend(userInfo)
+                const authInfo = await web3auth.authenticateUser()
+                await syncUserWithBackend(
+                    {
+                        provider: 'web3auth',
+                        idToken: authInfo.idToken,
+                        userInfo,
+                    },
+                    {
+                        verifier: userInfo?.verifier,
+                        typeOfLogin: userInfo?.typeOfLogin,
+                    }
+                )
             }
         } catch (error) {
             console.error('Login failed:', error)

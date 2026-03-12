@@ -120,7 +120,7 @@ test.describe('App Creation Flow - With Authentication Context', () => {
     console.log('1. Navigate to /login')
     console.log('2. Click "Continue with Google" button')
     console.log('   OR')
-    console.log('3. Use "Cosmos Wallet" for Cosmos wallets (Keplr, Leap, Cosmostation)')
+    console.log('3. Use "Cosmos Wallet" for the supported Keplr wallet flow')
     console.log('\nExpected errors without authentication:')
     console.log('- 401 Unauthorized when calling /api/apps')
     console.log('- 500 errors from /api/chains if database is unreachable')

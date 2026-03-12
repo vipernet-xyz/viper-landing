@@ -2,6 +2,27 @@ import { NextRequest, NextResponse } from 'next/server'
 
 const GO_BACKEND_URL = process.env.GO_BACKEND_URL || 'http://localhost:8000'
 
+async function relayToBackend(backendUrl: string, apiKey: string, body: unknown) {
+  const response = await fetch(backendUrl, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'x-api-key': apiKey,
+    },
+    body: JSON.stringify(body),
+  })
+
+  let data: unknown = null
+
+  try {
+    data = await response.json()
+  } catch (error) {
+    console.error('[Relay Proxy] Failed to decode backend response:', { backendUrl, error })
+  }
+
+  return { response, data }
+}
+
 export async function POST(
   req: NextRequest,
   { params }: { params: Promise<{ chainId: string }> }
@@ -22,18 +43,18 @@ export async function POST(
 
     console.log('[Relay Proxy] Request:', { chainId, body })
 
-    // Forward request to Go backend
-    const backendUrl = `${GO_BACKEND_URL}/relay/${chainId}`
-    const response = await fetch(backendUrl, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'x-api-key': apiKey,
-      },
-      body: JSON.stringify(body),
-    })
+    const primaryBackendUrl = `${GO_BACKEND_URL}/relay/${chainId}`
+    let { response, data } = await relayToBackend(primaryBackendUrl, apiKey, body)
 
-    const data = await response.json()
+    if (response.status === 404) {
+      const compatibilityBackendUrl = `${GO_BACKEND_URL}/api/relay/${chainId}`
+      console.warn('[Relay Proxy] Primary relay endpoint missing, retrying compatibility path:', {
+        primaryBackendUrl,
+        compatibilityBackendUrl,
+      })
+      ;({ response, data } = await relayToBackend(compatibilityBackendUrl, apiKey, body))
+    }
+
     console.log('[Relay Proxy] Response:', { status: response.status, data })
 
     if (!response.ok) {

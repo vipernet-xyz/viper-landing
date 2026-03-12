@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import prisma from '@/lib/prisma'
 import { cookies } from 'next/headers'
+import { clearAuthCookies, readVerifiedSession } from '@/lib/auth/session'
 
 function serializeUser(user: any) {
     return {
@@ -14,26 +15,18 @@ function serializeUser(user: any) {
 
 export async function GET() {
     const cookieStore = await cookies()
-    const userIdCookie = cookieStore.get('viper_user_id')
+    const session = readVerifiedSession(cookieStore)
 
-    if (!userIdCookie?.value) {
-        return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userId = Number.parseInt(userIdCookie.value, 10)
-    if (!Number.isInteger(userId)) {
-        cookieStore.delete('viper_user_id')
-        cookieStore.delete('viper_wallet')
+    if (!session) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
     const user = await prisma.user.findUnique({
-        where: { id: userId },
+        where: { id: session.userId },
     })
 
     if (!user) {
-        cookieStore.delete('viper_user_id')
-        cookieStore.delete('viper_wallet')
+        clearAuthCookies(cookieStore)
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
