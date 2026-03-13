@@ -137,7 +137,14 @@ export async function verifyWeb3AuthIdToken(
   const header = decodeJwtPart<{ alg?: string; kid?: string }>(encodedHeader)
   const claims = decodeJwtPart<Web3AuthJwtClaims>(encodedPayload)
 
-  if (header.alg !== 'RS256' || !header.kid) {
+  const SUPPORTED_ALGS: Record<string, string> = {
+    RS256: 'RSA-SHA256',
+    ES256: 'SHA256',
+  }
+
+  const verifyAlgorithm = header.alg ? SUPPORTED_ALGS[header.alg] : undefined
+
+  if (!verifyAlgorithm || !header.kid) {
     throw new Error('Unsupported Web3Auth token header.')
   }
 
@@ -148,15 +155,17 @@ export async function verifyWeb3AuthIdToken(
     throw new Error('No matching Web3Auth signing key was found.')
   }
 
-  const verifier = crypto.createVerify('RSA-SHA256')
+  const publicKey = crypto.createPublicKey({
+    key: jwk,
+    format: 'jwk',
+  })
+
+  const verifier = crypto.createVerify(verifyAlgorithm)
   verifier.update(`${encodedHeader}.${encodedPayload}`)
   verifier.end()
 
   const isValidSignature = verifier.verify(
-    crypto.createPublicKey({
-      key: jwk,
-      format: 'jwk',
-    }),
+    publicKey,
     decodeBase64Url(encodedSignature)
   )
 

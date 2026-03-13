@@ -6,6 +6,19 @@ const require = createRequire(import.meta.url);
 const nextConfig = {
   productionBrowserSourceMaps: process.env.NODE_ENV === "production",
   reactStrictMode: false,
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin-allow-popups",
+          },
+        ],
+      },
+    ];
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
