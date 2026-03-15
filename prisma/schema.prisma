@@ -1,0 +1,157 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model User {
+  id               BigInt   @id @default(autoincrement())
+  provider_user_id String   @unique @map("provider_user_id") @db.VarChar
+  email            String?  @unique @db.VarChar
+  name             String?  @db.VarChar
+  user_type        String   @default("free") @map("user_type") @db.VarChar
+  daily_rate_limit BigInt   @default(10000) @map("daily_rate_limit")
+  app_limit        BigInt   @default(5) @map("app_limit")
+  created_at       DateTime @map("created_at") @db.Timestamptz(6)
+  updated_at       DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  apps             App[]
+
+  @@map("users")
+}
+
+model App {
+  id                 BigInt             @id @default(autoincrement())
+  api_key            String             @unique @map("api_key") @db.VarChar
+  name               String             @db.VarChar
+  description        String?
+  allowed_origins    Json?              @map("allowed_origins")
+  allowed_chains     Json?              @map("allowed_chains")
+  rate_limit         BigInt             @default(10000) @map("rate_limit")
+  is_active          Boolean            @default(true) @map("is_active")
+  created_at         DateTime           @map("created_at") @db.Timestamptz(6)
+  updated_at         DateTime           @updatedAt @map("updated_at") @db.Timestamptz(6)
+  user_id            BigInt             @map("user_id")
+  user               User               @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "apps_users_apps")
+  relay_logs         RelayLog[]
+  websocket_sessions WebSocketSession[]
+
+  @@map("apps")
+}
+
+model Requestor {
+  id            BigInt          @id @default(autoincrement())
+  public_key    String          @unique @map("public_key") @db.VarChar
+  address       String          @db.VarChar
+  chain_ids     Json?           @map("chain_ids")
+  created_at    DateTime        @map("created_at") @db.Timestamptz(6)
+  updated_at    DateTime        @updatedAt @map("updated_at") @db.Timestamptz(6)
+  rpc_endpoints rpc_endpoints[]
+
+  @@map("requestors")
+}
+
+model Chain {
+  id          Int       @id @default(autoincrement())
+  name        String    @unique @db.VarChar(255)
+  description String
+  icon        String?   @db.VarChar(255)
+  status      String?   @default("active") @db.VarChar(50)
+  type        String?   @default("tunnel") @db.VarChar(50)
+  created_at  DateTime? @default(now()) @map("created_at") @db.Timestamp(6)
+  updated_at  DateTime? @default(now()) @updatedAt @map("updated_at") @db.Timestamp(6)
+
+  @@map("chains")
+}
+
+model RelayLog {
+  id                BigInt   @id @default(autoincrement())
+  chain_id          String   @map("chain_id") @db.VarChar
+  servicer_address  String   @map("servicer_address")
+  request_type      String   @default("http") @map("request_type") @db.VarChar
+  method            String   @db.VarChar
+  response_time_ms  BigInt   @default(0) @map("response_time_ms")
+  success           Boolean  @default(false)
+  session_height    BigInt?  @map("session_height")
+  bytes_transferred BigInt   @default(0) @map("bytes_transferred")
+  geo_zone          String?  @map("geo_zone") @db.VarChar
+  error_code        String?  @map("error_code") @db.VarChar
+  created_at        DateTime @map("created_at") @db.Timestamptz(6)
+  updated_at        DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  app_id            BigInt   @map("app_id")
+  app               App      @relation(fields: [app_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "relay_logs_apps_relay_logs")
+
+  @@map("relay_logs")
+}
+
+model WebSocketSession {
+  id                       BigInt    @id @default(autoincrement())
+  connection_id            String    @map("connection_id") @db.VarChar
+  chain_id                 String    @map("chain_id") @db.VarChar
+  servicer_address         String    @map("servicer_address")
+  connected_at             DateTime  @map("connected_at") @db.Timestamptz(6)
+  disconnected_at          DateTime? @map("disconnected_at") @db.Timestamptz(6)
+  state                    String    @default("active") @db.VarChar
+  subscription_type        String?   @map("subscription_type") @db.VarChar
+  subscription_params      String?   @map("subscription_params")
+  subscribed_at            DateTime? @map("subscribed_at") @db.Timestamptz(6)
+  messages_sent            BigInt    @default(0) @map("messages_sent")
+  messages_received        BigInt    @default(0) @map("messages_received")
+  session_duration_seconds Float?    @map("session_duration_seconds")
+  created_at               DateTime  @map("created_at") @db.Timestamptz(6)
+  updated_at               DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  app_id                   BigInt    @map("app_id")
+  app                      App       @relation(fields: [app_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "web_socket_sessions_apps_websocket_sessions")
+
+  @@map("web_socket_sessions")
+}
+
+model ApiLog {
+  id         BigInt   @id @default(autoincrement())
+  endpoint   String   @db.VarChar
+  api_key    String   @map("api_key") @db.VarChar
+  chain_id   BigInt   @map("chain_id")
+  created_at DateTime @map("created_at") @db.Timestamptz(6)
+  updated_at DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+
+  @@map("api_logs")
+}
+
+model chain_statics {
+  id                 BigInt          @id @default(autoincrement())
+  chain_id           String          @unique @db.VarChar
+  name               String          @db.VarChar
+  symbol             String          @db.VarChar
+  network_type       String          @db.VarChar
+  chain_details      Json?
+  no_of_servicers    BigInt?
+  ms_threshold       BigInt?
+  block_height_delta BigInt?
+  json_rpc_request   Json?
+  created_at         DateTime        @db.Timestamptz(6)
+  updated_at         DateTime        @db.Timestamptz(6)
+  rpc_endpoints      rpc_endpoints[]
+}
+
+model rpc_endpoints {
+  id                         BigInt        @id @default(autoincrement())
+  geozone                    String?       @db.VarChar
+  endpoint_url               String
+  websocket_url              String?
+  address                    String
+  public_key                 String
+  is_active                  Boolean       @default(true)
+  health_status              String?       @db.VarChar
+  response_time_ms           BigInt
+  block_height_reported      BigInt
+  signer_private_key         String        @db.VarChar
+  session_height             String        @db.VarChar
+  hits                       BigInt        @default(0)
+  created_at                 DateTime      @db.Timestamptz(6)
+  updated_at                 DateTime      @db.Timestamptz(6)
+  chain_static_rpc_endpoints BigInt
+  requestor_rpc_endpoints    BigInt?
+  chain_statics              chain_statics @relation(fields: [chain_static_rpc_endpoints], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "rpc_endpoints_chain_statics_rpc_endpoints")
+  requestors                 Requestor?    @relation(fields: [requestor_rpc_endpoints], references: [id], onUpdate: NoAction, map: "rpc_endpoints_requestors_rpc_endpoints")
+}

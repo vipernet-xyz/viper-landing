@@ -1,9 +1,24 @@
-import path from "path";
-import fs from "fs";
+import webpack from "webpack";
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
 
 const nextConfig = {
   productionBrowserSourceMaps: process.env.NODE_ENV === "production",
   reactStrictMode: false,
+  async headers() {
+    return [
+      {
+        source: "/:path*",
+        headers: [
+          {
+            key: "Cross-Origin-Opener-Policy",
+            value: "same-origin-allow-popups",
+          },
+        ],
+      },
+    ];
+  },
   typescript: {
     ignoreBuildErrors: true,
   },
@@ -24,13 +39,42 @@ const nextConfig = {
     ],
   },
   webpack: (config, options) => {
-    config.devtool =
-      process.env.NODE_ENV === "production" ? "source-map" : false;
-    config.optimization = {
-      ...config.optimization,
-      minimize: false,
+    config.infrastructureLogging = {
+      level: "error",
     };
-    config.plugins = config.plugins || [];
+
+    if (!options.isServer && options.dev) {
+      config.cache = false;
+    }
+
+    config.resolve = config.resolve || {};
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      "@react-native-async-storage/async-storage": false,
+    };
+
+    if (!options.isServer) {
+      config.resolve.fallback = {
+        ...(config.resolve.fallback || {}),
+        buffer: require.resolve("buffer/"),
+        crypto: require.resolve("crypto-browserify"),
+        stream: require.resolve("stream-browserify"),
+        process: require.resolve("process/browser"),
+        vm: require.resolve("vm-browserify"),
+        util: require.resolve("util/"),
+        "pino-pretty": false,
+      };
+
+      config.plugins = config.plugins || [];
+      config.plugins.push(
+        new webpack.ProvidePlugin({
+          Buffer: ["buffer", "Buffer"],
+          process: "process/browser",
+        })
+      );
+    }
+
+    config.devtool = process.env.NODE_ENV === "production" ? "source-map" : false;
     config.module = config.module || { rules: [] };
     config.module.rules = config.module.rules || [];
 
@@ -41,22 +85,16 @@ const nextConfig = {
         rule.test instanceof RegExp &&
         rule.test.test(".svg"),
     );
+
     if (fileLoaderRule && typeof fileLoaderRule === "object") {
       fileLoaderRule.exclude = /\.svg$/i;
     }
-    config.module.rules.push(
-      {
-        test: /\.svg$/i,
-        resourceQuery: /url/,
-        type: "asset/resource",
-      },
-      //      {
-      //        test: /\.svg$/i,
-      //        issuer: /\.[jt]sx?$/,
-      //        resourceQuery: { not: [/url/] },
-      //        use: ["@svgr/webpack"],
-      //      }
-    );
+
+    config.module.rules.push({
+      test: /\.svg$/i,
+      resourceQuery: /url/,
+      type: "asset/resource",
+    });
 
     return config;
   },

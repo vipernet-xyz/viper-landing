@@ -12,12 +12,12 @@ export default function FooterCTA() {
       </h2>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center px-8">
-        <Link href={'https://tally.so/r/wdrzdd'} target="_blank">
+        <Link href="/login">
         <Button
-          size="lg" 
+          size="lg"
           className="bg-white cursor-pointer text-black hover:bg-[#9c7ff162] hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base w-36"
         >
-          Join Waitlist
+          Launch App
         </Button>
         </Link>
         <Link href={'https://discord.com/invite/eBDYH4Zxek'}  target="_blank">
