@@ -12,13 +12,14 @@ export default function FooterCTA() {
       </h2>
 
       <div className="flex flex-col sm:flex-row gap-4 justify-center px-8">
+        <Link href="/login">
         <Button
-          asChild
           size="lg"
-          className="w-36 cursor-pointer border border-white bg-white font-space-grotesk text-base font-medium text-black hover:bg-white/80"
+          className="bg-white cursor-pointer text-black hover:bg-[#9c7ff162] hover:text-white hover:border border-white border-[1px] font-space-grotesk font-medium text-base w-36"
         >
-          <Link href="/login">Launch App</Link>
+          Launch App
         </Button>
+        </Link>
         <Link href={'https://discord.com/invite/eBDYH4Zxek'}  target="_blank">
 
         <Button

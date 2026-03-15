@@ -1,5 +1,5 @@
 import FooterBottom from "../components/FooterBottom";
-import FooterCTA from "./FooterCTA";
+import FooterCTA from "../components/FooterCTA";
 import FooterLinks from "../components/FooterLinks";
 
 export default function Footer() {
@@ -32,7 +32,7 @@ export default function Footer() {
           <FooterLinks />
           <FooterBottom />
           <div
-            className="mt-12 h-12 w-full bg-black lg:h-24"
+            className="h-12 lg:h-24 w-full bg-black mt-12 bg-red-500"
             style={{
               background: "url('/assets/footer/viper-network.svg')",
               backgroundRepeat: "no-repeat",

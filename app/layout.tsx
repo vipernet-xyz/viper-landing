@@ -48,7 +48,7 @@ export default function RootLayout({
       lang="en"
       className={`${inter.variable} ${spaceGrotesk.variable} ${lato.variable} ${sourceCodePro.variable}`}
     >
-      <body className="dark antialiased">
+      <body>
         <Providers>{children}</Providers>
       </body>
     </html>

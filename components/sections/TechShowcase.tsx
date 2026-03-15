@@ -30,13 +30,7 @@ export function TechShowcase() {
           {/* Desktop Layout: absolutely center the mask, let sides auto size */}
           <div className="hidden lg:flex relative items-center justify-between mx-auto min-h-[360px] px-6">
             <div className="flex-none flex justify-end z-10">
-              <Image
-                src={nodesMesh}
-                width={183}
-                height={211}
-                alt=""
-                className="h-auto w-[180px]"
-              />
+              <Image src={nodesMesh} height={180} width={180} alt="" />
             </div>
             <div className="w-full px-4 py-16 overflow-hidden flex items-center justify-center">
               <StraightPulseLine />
@@ -53,13 +47,7 @@ export function TechShowcase() {
           {/* Mobile Layout: stacked visuals with vertical pulse */}
           <div className="lg:hidden flex flex-col items-center gap-4">
             <div className="flex flex-col items-center">
-              <Image
-                src={nodesMesh}
-                width={183}
-                height={211}
-                alt=""
-                className="h-auto w-[140px]"
-              />
+              <Image src={nodesMesh} height={140} width={140} alt="" />
             </div>
             <div className="relative w-full max-w-xs h-72 overflow-hidden flex items-center justify-center">
               <StraightPulseLine
