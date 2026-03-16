@@ -346,18 +346,37 @@ ws.onopen = () => {
                     <Button
                         variant="ghost"
                         onClick={() => router.push('/dashboard/apps')}
-                        className="h-8 w-8 p-0 hover:bg-white/5"
+                        className="h-10 w-10 p-0 hover:bg-white/5"
                     >
-                        <ArrowLeft className="h-4 w-4 text-white" />
+                        <ArrowLeft className="h-5 w-5 text-white" />
                     </Button>
                     <div>
-                        <h2 className="text-xl font-medium text-white">{app.name}</h2>
+                        <div className="flex items-center gap-2">
+                            <h2 className="text-xl font-medium text-white">{app.name}</h2>
+                            <span className="text-white/30 cursor-pointer hover:text-white/50">✎</span>
+                        </div>
                         {app.description && (
                             <p className="text-xs text-white/50 mt-1">{app.description}</p>
                         )}
                     </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3">
+                    {/* Inline API Key */}
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-white/50">API Key</span>
+                        <code className="text-xs text-white/70 font-mono">{app.api_key.slice(0, 20)}...</code>
+                        <Button
+                            onClick={() => copyToClipboard(app.api_key, 'api-key', 'API key')}
+                            variant="ghost"
+                            className="h-7 w-7 p-0 hover:bg-white/5"
+                        >
+                            {copiedField === 'api-key' ? (
+                                <Check className="h-3.5 w-3.5 text-green-400" />
+                            ) : (
+                                <Copy className="h-3.5 w-3.5 text-white/50" />
+                            )}
+                        </Button>
+                    </div>
                     {/* Settings Dialog */}
                     <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
                         <DialogTrigger asChild>
@@ -515,45 +534,17 @@ ws.onopen = () => {
                 </div>
             </div>
 
-            {/* API Key Card */}
-            <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
-                <CardHeader className="pb-3">
-                    <CardTitle className="text-sm font-medium text-white">API Key</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                    <div className="flex items-center gap-2 p-3 bg-black/40 rounded-lg border border-white/5">
-                        <code className="flex-1 text-xs text-white/70 font-mono break-all">
-                            {app.api_key}
-                        </code>
-                        <Button
-                            onClick={() => copyToClipboard(app.api_key, 'api-key', 'API key')}
-                            variant="ghost"
-                            className="h-8 w-8 p-0 hover:bg-white/5 shrink-0"
-                        >
-                            {copiedField === 'api-key' ? (
-                                <Check className="h-4 w-4 text-green-400" />
-                            ) : (
-                                <Copy className="h-4 w-4 text-white/50" />
-                            )}
-                        </Button>
-                    </div>
-                    <p className="text-[10px] text-white/40">
-                        Include this API key in your requests using the <code className="px-1 py-0.5 bg-white/5 rounded text-white/60">x-api-key</code> header.
-                    </p>
-                </CardContent>
-            </Card>
-
             <Tabs defaultValue="endpoints" className="space-y-5">
-                <TabsList className="h-10 rounded-xl border border-white/10 bg-[rgba(18,18,18,0.9)] p-1">
+                <TabsList className="h-10 rounded-lg border border-white/10 bg-[rgba(18,18,18,0.9)] p-1">
                     <TabsTrigger
                         value="endpoints"
-                        className="rounded-lg px-4 text-xs text-white/65 data-[state=active]:bg-white/8 data-[state=active]:text-white"
+                        className="rounded-lg px-4 text-xs text-white/65 data-[state=active]:bg-[#7B5CFF] data-[state=active]:text-white"
                     >
                         Endpoints
                     </TabsTrigger>
                     <TabsTrigger
                         value="analytics"
-                        className="rounded-lg px-4 text-xs text-white/65 data-[state=active]:bg-white/8 data-[state=active]:text-white"
+                        className="rounded-lg px-4 text-xs text-white/65 data-[state=active]:bg-[#7B5CFF] data-[state=active]:text-white"
                     >
                         Analytics
                     </TabsTrigger>
@@ -565,9 +556,6 @@ ws.onopen = () => {
                             <CardContent className="space-y-6 p-7">
                                 <div className="space-y-1">
                                     <h3 className="text-2xl font-medium text-white">Connect Your App</h3>
-                                    <p className="text-sm text-white/45">
-                                        Pick a chain, copy the endpoint, and send a ready-made request with this app key.
-                                    </p>
                                 </div>
 
                                 <div className="space-y-2.5">
@@ -631,106 +619,60 @@ ws.onopen = () => {
                             </CardContent>
                         </Card>
 
-                        <div className="space-y-5">
-                            <Card className="border-white/10 bg-[radial-gradient(circle_at_top_right,rgba(123,92,255,0.2),transparent_40%),rgba(18,18,18,0.92)]">
-                                <CardContent className="space-y-4 p-7">
-                                    <div className="space-y-1">
-                                        <p className="text-xs uppercase tracking-[0.24em] text-white/35">Network URL</p>
-                                        <h3 className="text-xl font-medium text-white">
-                                            {selectedEndpointChain?.name ?? 'Relay endpoint'}
-                                        </h3>
-                                        <p className="text-sm text-white/45">
-                                            {requestType === 'http' ? 'Send signed JSON-RPC requests directly to the relay.' : 'Open a relay socket and send chain-specific payloads.'}
-                                        </p>
-                                    </div>
+                        <div className="space-y-5 relative">
+                            {/* Purple V circle - decorative */}
+                            <div className="absolute -top-2 right-6 h-12 w-12 rounded-full bg-[#7B5CFF] flex items-center justify-center text-white font-bold text-lg z-10 shadow-lg shadow-purple-500/20">V</div>
 
-                                    <div className="rounded-2xl border border-white/10 bg-black/30 p-4">
-                                        <div className="mb-2 flex items-center justify-between gap-4">
-                                            <span className="text-[11px] uppercase tracking-[0.22em] text-white/35">
-                                                {requestType === 'http' ? 'HTTP endpoint' : 'WebSocket endpoint'}
-                                            </span>
-                                            <Button
-                                                type="button"
-                                                variant="ghost"
-                                                onClick={() => copyToClipboard(networkUrl, 'network-url', 'Network URL')}
-                                                className="h-8 w-8 p-0 hover:bg-white/5"
-                                            >
-                                                {copiedField === 'network-url' ? (
-                                                    <Check className="h-4 w-4 text-green-400" />
-                                                ) : (
-                                                    <Copy className="h-4 w-4 text-white/55" />
-                                                )}
-                                            </Button>
-                                        </div>
-                                        <code className="block break-all text-sm text-white/80">{networkUrl}</code>
-                                    </div>
-
-                                    <div className="grid gap-4 sm:grid-cols-2">
-                                        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                                            <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">Chain</p>
-                                            <p className="mt-2 text-base text-white">
-                                                {selectedEndpointChain ? `${selectedEndpointChain.name} (${selectedChainId})` : 'Unavailable'}
-                                            </p>
-                                        </div>
-                                        <div className="rounded-2xl border border-white/10 bg-white/[0.03] p-4">
-                                            <p className="text-[11px] uppercase tracking-[0.22em] text-white/35">Auth Header</p>
-                                            <p className="mt-2 text-base text-white">x-api-key</p>
-                                        </div>
+                            {/* Network URL - simple inline style matching Figma */}
+                            <Card className="border-white/10 bg-[rgba(18,18,18,0.92)]">
+                                <CardContent className="space-y-1.5 p-5">
+                                    <p className="text-xs text-white/50">Network URL</p>
+                                    <div className="flex items-center gap-2 rounded-lg border border-white/10 bg-black/30 px-3 py-2.5">
+                                        <span className="shrink-0 text-[10px] uppercase tracking-wider text-white/40 border border-white/10 rounded px-2 py-0.5">URL</span>
+                                        <code className="flex-1 text-sm text-white/80 break-all">{networkUrl}</code>
+                                        <Button
+                                            type="button"
+                                            variant="ghost"
+                                            onClick={() => copyToClipboard(networkUrl, 'network-url', 'Network URL')}
+                                            className="h-7 w-7 p-0 hover:bg-white/5 shrink-0"
+                                        >
+                                            {copiedField === 'network-url' ? (
+                                                <Check className="h-3.5 w-3.5 text-green-400" />
+                                            ) : (
+                                                <Copy className="h-3.5 w-3.5 text-white/55" />
+                                            )}
+                                        </Button>
                                     </div>
                                 </CardContent>
                             </Card>
 
-                            <Card className="border-white/10 bg-[rgba(10,10,10,0.96)] shadow-[inset_0_1px_0_rgba(255,255,255,0.03)]">
-                                <CardContent className="space-y-5 p-0">
-                                    <div className="flex flex-wrap items-center gap-2 border-b border-white/10 px-5 py-4">
-                                        {Object.entries(EXAMPLE_REQUESTS).map(([key, config]) => (
-                                            <Button
-                                                key={key}
-                                                type="button"
-                                                size="sm"
-                                                variant="outline"
-                                                onClick={() => setExampleRequest(key as ExampleRequestKey)}
-                                                className={`h-8 border-white/15 text-xs ${
-                                                    exampleRequest === key
-                                                        ? 'bg-white text-black hover:bg-white/90'
-                                                        : 'bg-transparent text-white hover:bg-white/[0.08]'
-                                                }`}
-                                            >
-                                                {config.label}
-                                            </Button>
-                                        ))}
+                            {/* Example Request - clean code block matching Figma */}
+                            <Card className="border-white/10 bg-[rgba(10,10,10,0.96)]">
+                                <CardContent className="p-5 space-y-4">
+                                    <div className="flex items-center justify-between">
+                                        <p className="text-xs text-white/50">Example Request</p>
                                         <Button
                                             type="button"
                                             variant="ghost"
-                                            onClick={() => copyToClipboard(requestSnippet, 'request-snippet', requestType === 'http' ? 'cURL command' : 'WebSocket example')}
-                                            className="ml-auto h-8 w-8 p-0 hover:bg-white/[0.06]"
+                                            onClick={() => copyToClipboard(requestSnippet, 'request-snippet', 'Example request')}
+                                            className="h-7 w-7 p-0 hover:bg-white/5"
                                         >
                                             {copiedField === 'request-snippet' ? (
-                                                <Check className="h-4 w-4 text-green-400" />
+                                                <Check className="h-3.5 w-3.5 text-green-400" />
                                             ) : (
-                                                <Copy className="h-4 w-4 text-white/55" />
+                                                <Copy className="h-3.5 w-3.5 text-white/55" />
                                             )}
                                         </Button>
                                     </div>
-
-                                    <div className="space-y-3 px-5 pb-5">
-                                        <div className="flex items-center gap-2 px-1 pt-2">
+                                    <div className="rounded-xl border border-white/8 bg-[#050505] p-5">
+                                        <div className="flex items-center gap-1.5 mb-4">
                                             <span className="h-2.5 w-2.5 rounded-full bg-[#ff5f56]" />
                                             <span className="h-2.5 w-2.5 rounded-full bg-[#ffbd2e]" />
                                             <span className="h-2.5 w-2.5 rounded-full bg-[#27c93f]" />
-                                            <p className="ml-2 text-[11px] uppercase tracking-[0.22em] text-white/35">
-                                                {requestType === 'http' ? 'cURL example' : 'WebSocket example'}
-                                            </p>
                                         </div>
-                                        <pre className="overflow-x-auto rounded-2xl border border-white/8 bg-[#050505] p-5 text-[13px] leading-6 text-white/84">
+                                        <pre className="overflow-x-auto text-[12px] leading-6 text-white/80">
                                             <code>{requestSnippet}</code>
                                         </pre>
-                                        <div className="rounded-2xl border border-white/8 bg-white/[0.03] p-4">
-                                            <p className="mb-2 text-[11px] uppercase tracking-[0.22em] text-white/35">JSON-RPC payload</p>
-                                            <pre className="overflow-x-auto text-[13px] leading-6 text-white/72">
-                                                <code>{exampleRequestBody}</code>
-                                            </pre>
-                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
@@ -739,10 +681,10 @@ ws.onopen = () => {
                 </TabsContent>
 
                 <TabsContent value="analytics" className="mt-0">
-                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
                         <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-normal text-white/50">Requests (24h)</CardTitle>
+                                <CardTitle className="text-xs font-normal text-white/50">Total Requests (24 Hours)</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-2xl font-semibold text-white">
@@ -753,7 +695,7 @@ ws.onopen = () => {
 
                         <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-normal text-white/50">Success Rate (24h)</CardTitle>
+                                <CardTitle className="text-xs font-normal text-white/50">Success Rate (24 Hours)</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-2xl font-semibold text-white">
@@ -764,11 +706,22 @@ ws.onopen = () => {
 
                         <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
                             <CardHeader className="pb-2">
-                                <CardTitle className="text-xs font-normal text-white/50">Avg Response Time</CardTitle>
+                                <CardTitle className="text-xs font-normal text-white/50">Average Response Time (24 Hours)</CardTitle>
                             </CardHeader>
                             <CardContent>
                                 <p className="text-2xl font-semibold text-white">
                                     {analytics?.avg_response_time ? `${analytics.avg_response_time}ms` : '-'}
+                                </p>
+                            </CardContent>
+                        </Card>
+
+                        <Card className="border-white/10 bg-[rgba(22,22,22,0.85)]">
+                            <CardHeader className="pb-2">
+                                <CardTitle className="text-xs font-normal text-white/50">Invalid Requests (24 Hours)</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <p className="text-2xl font-semibold text-white">
+                                    {failedRequests24h.toLocaleString()}
                                 </p>
                             </CardContent>
                         </Card>

@@ -78,6 +78,10 @@ export default function DashboardLayout({
                             <h1 className="text-xl font-medium text-white">Hi There!</h1>
                         )}
                         <div className={`flex items-center gap-4 ${pathname !== '/dashboard' ? 'ml-auto' : ''}`}>
+                            {/* VIPR Token Badge */}
+                            <div className="flex items-center h-8 px-3 bg-[#1c1b1b] border border-white/10 rounded text-white/70 text-[10px] font-medium">
+                                100 VIPR
+                            </div>
                             {/* User Wallet Address */}
                             <div className="flex items-center gap-2 h-8 px-3 bg-[#1c1b1b] border border-white/10 rounded text-white/70 text-[10px] font-medium">
                                 <span>

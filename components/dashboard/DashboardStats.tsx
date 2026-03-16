@@ -74,7 +74,7 @@ export function DashboardStats() {
             <div className="relative px-6 pb-6 z-10">
                 <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
                     {/* Left Column Stats */}
-                    <div className="lg:col-span-7 grid grid-cols-2 gap-4">
+                    <div className="lg:col-span-5 grid grid-cols-2 gap-4">
                         {/* Large Stat - Total Relays */}
                         <div className="col-span-2 p-5 rounded-[10px] bg-[rgba(37,37,37,0.6)] backdrop-blur-sm">
                             <div className="text-[28px] font-normal text-white mb-1.5 font-['Space_Grotesk']">
@@ -115,7 +115,7 @@ export function DashboardStats() {
                     </div>
 
                     {/* Right Column - Connect CTA */}
-                    <div className="lg:col-span-2 bg-gradient-to-br from-[rgba(37,37,37,0.6)] to-[rgba(45,37,60,0.6)] rounded-[10px] p-5 flex flex-col justify-between relative overflow-hidden min-h-[200px] lg:min-h-[240px]">
+                    <div className="lg:col-span-4 bg-gradient-to-br from-[rgba(37,37,37,0.6)] to-[rgba(45,37,60,0.6)] rounded-[10px] p-5 flex flex-col justify-between relative overflow-hidden min-h-[200px] lg:min-h-[240px]">
                         <div className="flex items-center justify-center flex-1">
                             <div className="relative size-20">
                                 <Image
@@ -131,7 +131,7 @@ export function DashboardStats() {
                         <div className="relative z-10 cursor-pointer">
                             <h4 className="text-lg font-medium text-white mb-2">Connect To Viper</h4>
                             <p className="text-[11px] text-white/60 leading-relaxed font-normal">
-                                Get fast, reliable RPC relays across multiple blockchains.
+                                Get fast, reliable RPC relays across multiple blockchains with a single connection.
                             </p>
                         </div>
                     </div>

@@ -43,7 +43,7 @@ test('browser session hydrates, creates an app, deletes the app, and logs out', 
     await expect(page.getByRole('tab', { name: 'Analytics' })).toBeVisible()
     await expect(page.getByRole('heading', { name: 'Connect Your App' })).toBeVisible()
     await expect(page.getByText('Network URL')).toBeVisible()
-    await expect(page.getByText('cURL example')).toBeVisible()
+    await expect(page.getByText('Example Request')).toBeVisible()
     await expect(page.getByText('x-api-key', { exact: true }).first()).toBeVisible()
     await expect(page.getByText('http://node2.vipernet.xyz:8000/relay/0001', { exact: true })).toBeVisible()
 

@@ -2,7 +2,7 @@
 'use client'
 
 import React from 'react'
-import { Search, Plus } from 'lucide-react'
+import { Search, Plus, ChevronRight } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { Button } from '@/components/ui/button'
 import { ChainCard } from '@/components/dashboard/chains/ChainCard'
@@ -71,7 +71,7 @@ export default function ChainsPage() {
             </div>
 
             {/* Banner */}
-            <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-[#1A1A1A] via-[#1A1A1A] to-[#252525] border border-white/10 p-8">
+            <div className="relative overflow-hidden rounded-xl bg-gradient-to-r from-[#1a1040] via-[#1c1445] to-[#252060] border border-white/10 p-8">
                 <div className="relative z-10 max-w-2xl space-y-4">
                     <h2 className="text-3xl font-medium text-white">Root Network is Live!</h2>
                     <p className="text-white/60 text-sm leading-relaxed max-w-lg">
@@ -81,7 +81,7 @@ export default function ChainsPage() {
                         variant="secondary"
                         className="bg-white text-black hover:bg-white/90 font-medium px-6"
                     >
-                        Enable &gt;
+                        Enable <ChevronRight className="h-3 w-3 ml-0.5 inline" />
                     </Button>
                 </div>
                 {/* decorative background elements could go here */}
@@ -92,7 +92,7 @@ export default function ChainsPage() {
                 <div className="relative flex-1 max-w-md">
                     <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
                     <Input
-                        placeholder="Search Chain"
+                        placeholder="Search Chains"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
                         className="pl-10 bg-[#111111] border-white/10 text-white placeholder:text-white/40 h-10"
@@ -101,7 +101,7 @@ export default function ChainsPage() {
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-white text-black hover:bg-white/90 gap-2 h-10 px-4">
+                        <Button className="bg-transparent border border-white/20 text-white hover:bg-white/10 gap-2 h-10 px-4">
                             <Plus className="h-4 w-4" />
                             Request Chain
                         </Button>

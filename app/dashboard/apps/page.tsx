@@ -93,24 +93,24 @@ export default function AppsPage() {
     return (
         <div className="space-y-6">
             {/* Page Title */}
-            <h2 className="text-xl font-medium text-white">My Apps</h2>
+            <h2 className="text-2xl font-medium text-white">My Apps</h2>
 
             {/* Search Bar and Add Button */}
             <div className="flex items-center justify-between gap-4">
                 <div className="relative w-[300px]">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-[11px] w-[11px] text-white/55" />
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/55" />
                     <Input
                         placeholder="Search Apps"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="h-8 pl-9 pr-3 bg-viper-bg-card border-white/10 rounded-[7px] text-[10px] font-medium text-white/60 placeholder:text-white/60"
+                        className="h-10 pl-4 pr-10 bg-viper-bg-card border-white/10 rounded-lg text-sm text-white/60 placeholder:text-white/60"
                     />
                 </div>
                 <Button
                     onClick={() => router.push('/dashboard/apps/create')}
-                    className="h-8 px-4 bg-white hover:bg-white/90 text-black text-[10px] font-medium rounded-[5px] border-[0.575px] border-white/20 gap-1"
+                    className="h-10 px-5 bg-transparent hover:bg-white/5 text-white text-sm font-medium rounded-lg border border-white/20 gap-2"
                 >
-                    <Plus className="h-2 w-2" />
+                    <Plus className="h-4 w-4" />
                     Add Application
                 </Button>
             </div>
@@ -120,24 +120,24 @@ export default function AppsPage() {
                 <Table>
                     <TableHeader>
                         <TableRow className="bg-[#1e1e1e] border-b-0 hover:bg-[#1e1e1e]">
-                            <TableHead className="text-white text-[10px] font-normal h-[41px]">App Name</TableHead>
-                            <TableHead className="text-white text-[10px] font-normal">Requests (24h)</TableHead>
-                            <TableHead className="text-white text-[10px] font-normal">Failed Requests (24h)</TableHead>
-                            <TableHead className="text-white text-[10px] font-normal">Created On</TableHead>
-                            <TableHead className="text-white text-[10px] font-normal">Networks</TableHead>
-                            <TableHead className="text-white text-[10px] font-normal">Actions</TableHead>
+                            <TableHead className="text-white text-sm font-normal h-[41px]">App Name</TableHead>
+                            <TableHead className="text-white text-sm font-normal">Requests (24h)</TableHead>
+                            <TableHead className="text-white text-sm font-normal">Failed Requests (24h)</TableHead>
+                            <TableHead className="text-white text-sm font-normal">Created On</TableHead>
+                            <TableHead className="text-white text-sm font-normal">Networks</TableHead>
+                            <TableHead className="text-white text-sm font-normal">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {isLoading ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center text-white/50 text-[10px] h-20">
+                                <TableCell colSpan={6} className="text-center text-white/50 text-sm h-20">
                                     Loading...
                                 </TableCell>
                             </TableRow>
                         ) : filteredApps.length === 0 ? (
                             <TableRow>
-                                <TableCell colSpan={6} className="text-center text-white/50 text-[10px] h-20">
+                                <TableCell colSpan={6} className="text-center text-white/50 text-sm h-20">
                                     {searchTerm ? 'No apps found' : 'No apps created yet'}
                                 </TableCell>
                             </TableRow>
@@ -150,50 +150,50 @@ export default function AppsPage() {
                                         className="border-b-[0.5px] border-white/10 hover:bg-white/5 cursor-pointer"
                                         onClick={() => router.push(`/dashboard/apps/${app.id}`)}
                                     >
-                                        <TableCell className="text-white text-[10px] font-normal">{app.name}</TableCell>
-                                        <TableCell className="text-white text-[10px] font-normal">
+                                        <TableCell className="py-3 text-white text-sm font-normal">{app.name}</TableCell>
+                                        <TableCell className="py-3 text-white text-sm font-normal">
                                             {appAnalytics?.total_requests_24h ?? '-'}
                                         </TableCell>
-                                        <TableCell className="text-white text-[10px] font-normal">
+                                        <TableCell className="py-3 text-white text-sm font-normal">
                                             {appAnalytics?.failed_requests_24h ?? '-'}
                                         </TableCell>
-                                        <TableCell className="text-white text-[10px] font-normal">
+                                        <TableCell className="py-3 text-white text-sm font-normal">
                                             {formatDate(app.created_at)}
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="py-3">
                                             <div className="flex items-center gap-1">
                                                 {app.allowed_chains.length > 0 ? (
                                                     <>
                                                         {app.allowed_chains.slice(0, 2).map((chainId, idx) => (
                                                             <Badge
                                                                 key={idx}
-                                                                className="h-[10px] min-w-[6px] px-1 bg-gradient-to-r from-[#7f5ee3] to-[#46337d] text-white text-[8px] font-normal rounded-full flex items-center justify-center"
+                                                                className="h-7 w-7 p-0 bg-gradient-to-r from-[#7f5ee3] to-[#46337d] text-white text-[9px] font-normal rounded-full flex items-center justify-center border-0"
                                                             >
                                                                 {chainId}
                                                             </Badge>
                                                         ))}
                                                         {app.allowed_chains.length > 2 && (
-                                                            <span className="text-white text-[8px] font-[681] lowercase">
+                                                            <span className="text-white text-xs font-[681] lowercase">
                                                                 +{app.allowed_chains.length - 2}
                                                             </span>
                                                         )}
                                                     </>
                                                 ) : (
-                                                    <span className="text-white/50 text-[8px]">All</span>
+                                                    <span className="text-white/50 text-xs">All</span>
                                                 )}
                                             </div>
                                         </TableCell>
-                                        <TableCell>
+                                        <TableCell className="py-3">
                                             <Button
                                                 variant="outline"
                                                 onClick={(e) => {
                                                     e.stopPropagation()
                                                     router.push(`/dashboard/apps/${app.id}`)
                                                 }}
-                                                className="h-[26px] px-3 bg-transparent hover:bg-white/5 border-[0.5px] border-white/20 rounded-[5px] gap-[3.55px] text-white text-[8px] font-medium"
+                                                className="h-8 px-4 bg-transparent hover:bg-white/5 border border-white/20 rounded-md gap-1.5 text-white text-sm font-medium"
                                             >
-                                                <Link2 className="h-[11px] w-[11px]" strokeWidth={0.7} />
-                                                Endpoint
+                                                <Link2 className="h-4 w-4" strokeWidth={1.5} />
+                                                Endpoints
                                             </Button>
                                         </TableCell>
                                     </TableRow>

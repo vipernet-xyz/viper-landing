@@ -15,6 +15,12 @@ interface AnalyticsData {
     }
 }
 
+function formatCompact(num: number): string {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M+`
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}k+`
+    return num.toString()
+}
+
 export default function AnalyticsPage() {
     const { data, isLoading } = useQuery<AnalyticsData>({
         queryKey: ['user-analytics'],
@@ -63,17 +69,17 @@ export default function AnalyticsPage() {
     return (
         <div className="space-y-6">
             {/* Page Title */}
-            <h2 className="text-xl font-medium text-white">Analytics Overview</h2>
+            <h2 className="text-2xl font-medium text-white">Analytics Overview</h2>
 
             {/* Metrics Cards */}
-            <div className="grid grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Total Requests */}
                 <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-60px_60px_rgba(127,94,227,0.2)]">
                     <div className="space-y-4">
                         <div className="text-[30px] font-normal text-white font-['Space_Grotesk']">
-                            {analytics?.total_requests_24h?.toLocaleString() || '0'}
+                            {analytics?.total_requests_24h ? formatCompact(analytics.total_requests_24h) : '0'}
                         </div>
-                        <div className="text-[11px] font-normal text-white">
+                        <div className="text-[11px] font-normal text-white/60">
                             Total Requests
                         </div>
                     </div>
@@ -86,13 +92,13 @@ export default function AnalyticsPage() {
                             {successRate}%
                         </div>
                         <div className="flex items-center justify-between">
-                            <div className="text-[11px] font-normal text-white">
+                            <div className="text-[11px] font-normal text-white/60">
                                 Success Rate
                             </div>
                             {parseFloat(successRate) >= 99 && (
-                                <div className="flex items-center gap-1 h-[18px] px-2 bg-[#1e1e1e] border-[0.527px] border-white/20 rounded-[4px]">
+                                <div className="flex items-center gap-1 h-[18px] px-2 bg-[#1e1e1e] border-[0.527px] border-green-400/30 rounded-[4px]">
                                     <TrendingUp className="h-2 w-2 text-green-400" />
-                                    <span className="text-[6px] font-normal text-green-400">High</span>
+                                    <span className="text-[8px] font-normal text-green-400">High</span>
                                 </div>
                             )}
                         </div>
@@ -105,7 +111,7 @@ export default function AnalyticsPage() {
                         <div className="text-[30px] font-normal text-white font-['Space_Grotesk']">
                             {analytics?.avg_response_time || 0} ms
                         </div>
-                        <div className="text-[11px] font-normal text-white">
+                        <div className="text-[11px] font-normal text-white/60">
                             Average Response Time
                         </div>
                     </div>
@@ -117,7 +123,7 @@ export default function AnalyticsPage() {
                         <div className="text-[30px] font-normal text-white font-['Space_Grotesk']">
                             {analytics?.failed_requests_24h || 0}
                         </div>
-                        <div className="text-[11px] font-normal text-white">
+                        <div className="text-[11px] font-normal text-white/60">
                             Invalid Requests
                         </div>
                     </div>
@@ -160,7 +166,7 @@ export default function AnalyticsPage() {
                                 fontSize={10}
                                 tickLine={false}
                                 axisLine={false}
-                                tickFormatter={(value) => `${value}`}
+                                tickFormatter={(value) => String(value).padStart(2, '0')}
                             />
                             <ChartTooltip content={<ChartTooltipContent />} />
                             <Area

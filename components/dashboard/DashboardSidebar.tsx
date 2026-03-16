@@ -87,7 +87,7 @@ export function DashboardSidebar() {
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title} className="relative">
                                     {pathname === item.url && (
-                                        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#4169E1] rounded-r z-10" />
+                                        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#7f5ee3] rounded-r z-10" />
                                     )}
                                     <SidebarMenuButton
                                         asChild
@@ -114,9 +114,7 @@ export function DashboardSidebar() {
 
             <SidebarFooter className="border-t-0 bg-transparent p-4 space-y-2">
                 <div className="flex items-center gap-3 px-3 py-2 rounded-[7px] bg-white/5 border border-white/10">
-                    <div className="flex items-center justify-center size-6 text-xl">
-                        😇
-                    </div>
+                    <div className="flex items-center justify-center size-8 rounded-full bg-gradient-to-br from-[#7f5ee3] via-[#e36f5e] to-[#5ee3c8] text-white text-xs font-bold">U</div>
                     <div className="flex-1 grid text-left leading-tight">
                         <span className="text-white text-sm font-normal truncate">
                             {user?.name || user?.email?.split('@')[0] || 'User'}
