@@ -83,7 +83,7 @@ export function DashboardSidebar() {
             <SidebarContent className="pt-5">
                 <SidebarGroup>
                     <SidebarGroupContent>
-                        <SidebarMenu className="space-y-3 px-1">
+                        <SidebarMenu className="space-y-2">
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title} className="relative">
                                     <SidebarMenuButton
@@ -101,14 +101,14 @@ export function DashboardSidebar() {
                                             }
                                             router.push(item.url)
                                         }}
-                                        className={`h-11 transition-all duration-200 rounded-[8px] cursor-pointer ${
+                                        className={`h-11 transition-all duration-200 rounded-[10px] cursor-pointer ${
                                             pathname === item.url
-                                                ? 'bg-gradient-to-r from-[rgba(127,94,227,0.2)] to-[rgba(127,94,227,0.05)] text-white'
-                                                : 'text-white/40 hover:text-white hover:bg-white/5'
+                                                ? 'bg-[rgba(255,255,255,0.06)] text-white'
+                                                : 'text-white/40 hover:text-white/70 hover:bg-white/[0.03]'
                                         }`}
                                     >
-                                        <button className="flex items-center gap-3 px-3 w-full cursor-pointer">
-                                            <item.icon className="size-5" />
+                                        <button className="flex items-center gap-3.5 px-3 w-full cursor-pointer">
+                                            <item.icon className="size-[18px]" />
                                             <span className="font-normal text-[15px]">{item.title}</span>
                                         </button>
                                     </SidebarMenuButton>
