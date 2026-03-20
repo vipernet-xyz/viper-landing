@@ -158,30 +158,36 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 setAuthError(null)
 
                 if (web3authInstance.connected) {
-                    const userInfo = normalizeUser(await web3authInstance.getUserInfo())
-                    const idToken = web3authInstance.idToken
+                    try {
+                        const userInfo = normalizeUser(await web3authInstance.getUserInfo())
+                        const idToken = web3authInstance.idToken
 
-                    if (idToken) {
-                        const syncedUser = await syncUserWithBackend(
-                            {
-                                provider: 'web3auth',
-                                idToken,
-                                userInfo,
-                            },
-                            {
-                                verifier: userInfo?.verifier,
-                                typeOfLogin: userInfo?.typeOfLogin,
+                        if (idToken) {
+                            const syncedUser = await syncUserWithBackend(
+                                {
+                                    provider: 'web3auth',
+                                    idToken,
+                                    userInfo,
+                                },
+                                {
+                                    verifier: userInfo?.verifier,
+                                    typeOfLogin: userInfo?.typeOfLogin,
+                                }
+                            )
+
+                            if (syncedUser) {
+                                setProvider(web3authInstance.provider)
+                            } else {
+                                setUser(null)
+                                setProvider(null)
                             }
-                        )
-
-                        if (syncedUser) {
-                            setProvider(web3authInstance.provider)
                         } else {
                             setUser(null)
                             setProvider(null)
-                            setAuthError('Google sign-in was restored, but the server session could not be verified. Please sign in again.')
                         }
-                    } else {
+                    } catch {
+                        // Stale session from previous SDK version — clear it
+                        await web3authInstance.logout().catch(() => undefined)
                         setUser(null)
                         setProvider(null)
                     }
