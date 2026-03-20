@@ -136,66 +136,66 @@ export default function CreateAppPage() {
     }
 
     return (
-        <div className="max-w-2xl mx-auto space-y-6">
-            <Button variant="ghost" className="pl-0 hover:bg-transparent text-zinc-400 hover:text-white" onClick={() => router.back()}>
-                <ArrowLeft className="mr-2 h-4 w-4" /> Back to Apps
+        <div className="max-w-2xl mx-auto space-y-4">
+            <Button variant="ghost" className="pl-0 h-8 hover:bg-transparent text-white/40 hover:text-white text-sm" onClick={() => router.back()}>
+                <ArrowLeft className="mr-1.5 h-3.5 w-3.5" /> Back to Apps
             </Button>
 
             <div>
-                <h2 className="text-3xl font-bold tracking-tight text-white">Create New App</h2>
-                <p className="text-zinc-400">Generate a new API Key for your project</p>
+                <h2 className="text-2xl font-semibold text-white">Create New App</h2>
+                <p className="text-white/40 text-sm mt-0.5">Generate a new API Key for your project</p>
             </div>
 
             <Card className="bg-[#111111] border-white/10 rounded-xl">
                 <form onSubmit={handleSubmit}>
-                    <CardHeader>
-                        <div className="flex items-center gap-3 mb-2">
-                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#7f5ee3] to-[#46337d] flex items-center justify-center">
-                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                    <CardContent className="space-y-4 pt-6">
+                        {/* App Name + Description side by side */}
+                        <div className="grid grid-cols-2 gap-4">
+                            <div className="space-y-1.5">
+                                <Label htmlFor="name" className="text-[13px]">App Name *</Label>
+                                <Input
+                                    id="name"
+                                    placeholder="e.g., My DeFi Dashboard"
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
+                                    className="h-9 bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40 text-sm"
+                                    required
+                                />
+                            </div>
+                            <div className="space-y-1.5">
+                                <Label htmlFor="description" className="text-[13px]">Description (Optional)</Label>
+                                <Input
+                                    id="description"
+                                    placeholder="Brief description of your app..."
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
+                                    className="h-9 bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40 text-sm"
+                                />
                             </div>
                         </div>
-                        <CardTitle className="text-white text-lg">App Details</CardTitle>
-                        <CardDescription className="text-white/50">
-                            Enter the name and description for your application.
-                        </CardDescription>
-                    </CardHeader>
-                    <CardContent className="space-y-6">
-                        <div className="space-y-2">
-                            <Label htmlFor="name">App Name *</Label>
-                            <Input
-                                id="name"
-                                placeholder="e.g., My DeFi Dashboard"
-                                value={name}
-                                onChange={(e) => setName(e.target.value)}
-                                className="bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40"
-                                required
-                            />
-                        </div>
 
+                        {/* Allowed Origins */}
                         <div className="space-y-2">
-                            <Label htmlFor="description">Description (Optional)</Label>
-                            <Textarea
-                                id="description"
-                                placeholder="Brief description of your app..."
-                                value={description}
-                                onChange={(e) => setDescription(e.target.value)}
-                                className="bg-zinc-950 border-zinc-800 resize-none"
-                                rows={4}
-                            />
-                        </div>
-
-                        <div className="space-y-3">
-                            <Label>Allowed Origins (Optional)</Label>
-                            <p className="text-sm text-zinc-400">
-                                Enter domains that can use this API key. Leave empty to allow all origins.
-                            </p>
+                            <div className="flex items-center justify-between">
+                                <Label className="text-[13px]">Allowed Origins (Optional)</Label>
+                                <Button
+                                    type="button"
+                                    variant="ghost"
+                                    size="sm"
+                                    onClick={addOriginField}
+                                    className="h-7 px-2 text-white/40 hover:text-white text-xs"
+                                >
+                                    <Plus className="mr-1 h-3 w-3" />
+                                    Add
+                                </Button>
+                            </div>
                             {allowedOrigins.map((origin, index) => (
                                 <div key={index} className="flex gap-2">
                                     <Input
                                         placeholder="https://example.com"
                                         value={origin}
                                         onChange={(e) => updateOrigin(index, e.target.value)}
-                                        className="bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40"
+                                        className="h-9 bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40 text-sm"
                                     />
                                     {allowedOrigins.length > 1 && (
                                         <Button
@@ -203,51 +203,42 @@ export default function CreateAppPage() {
                                             variant="outline"
                                             size="icon"
                                             onClick={() => removeOriginField(index)}
-                                            className="bg-transparent border-white/20 text-white hover:bg-white/5"
+                                            className="h-9 w-9 bg-transparent border-white/10 text-white/40 hover:bg-white/5 hover:text-white shrink-0"
                                         >
-                                            <X className="h-4 w-4" />
+                                            <X className="h-3.5 w-3.5" />
                                         </Button>
                                     )}
                                 </div>
                             ))}
-                            <Button
-                                type="button"
-                                variant="outline"
-                                onClick={addOriginField}
-                                className="bg-transparent border-white/20 text-white hover:bg-white/5"
-                            >
-                                <Plus className="mr-2 h-4 w-4" />
-                                Add Origin
-                            </Button>
                         </div>
 
-                        <div className="space-y-3">
-                            <Label>Allowed Chains (Optional)</Label>
-                            <p className="text-sm text-zinc-400">
-                                Select blockchain networks this app can access. Leave empty to allow all chains.
-                            </p>
-                            <div className="grid grid-cols-2 gap-3">
-                                {chains.map((chain) => (
-                                    <div key={chain.id} className="flex items-center space-x-2">
-                                        <Checkbox
-                                            id={`chain-${chain.id}`}
-                                            checked={selectedChains.includes(chain.id)}
-                                            onCheckedChange={() => toggleChain(chain.id)}
-                                        />
-                                        <Label
-                                            htmlFor={`chain-${chain.id}`}
-                                            className="text-sm font-normal cursor-pointer"
-                                        >
-                                            {chain.name}
-                                        </Label>
-                                    </div>
-                                ))}
+                        {/* Allowed Chains */}
+                        {chains.length > 0 && (
+                            <div className="space-y-2">
+                                <Label className="text-[13px]">Allowed Chains (Optional)</Label>
+                                <div className="grid grid-cols-4 gap-2">
+                                    {chains.map((chain) => (
+                                        <div key={chain.id} className="flex items-center space-x-2">
+                                            <Checkbox
+                                                id={`chain-${chain.id}`}
+                                                checked={selectedChains.includes(chain.id)}
+                                                onCheckedChange={() => toggleChain(chain.id)}
+                                            />
+                                            <Label
+                                                htmlFor={`chain-${chain.id}`}
+                                                className="text-[13px] font-normal cursor-pointer"
+                                            >
+                                                {chain.name}
+                                            </Label>
+                                        </div>
+                                    ))}
+                                </div>
                             </div>
-                        </div>
+                        )}
                     </CardContent>
-                    <CardFooter className="flex justify-end gap-3 pt-2">
-                        <Button type="button" variant="ghost" onClick={() => router.back()} className="text-white/60 hover:text-white hover:bg-white/5">Cancel</Button>
-                        <Button type="submit" disabled={mutation.isPending} className="bg-viper-purple hover:bg-viper-purple-dark text-white font-medium px-6">
+                    <CardFooter className="flex justify-end gap-3 pb-5">
+                        <Button type="button" variant="ghost" onClick={() => router.back()} className="h-9 text-white/50 hover:text-white hover:bg-white/5 text-sm">Cancel</Button>
+                        <Button type="submit" disabled={mutation.isPending} className="h-9 bg-viper-purple hover:bg-viper-purple-dark text-white font-medium px-6 text-sm">
                             {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Create App
                         </Button>
