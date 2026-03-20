@@ -55,7 +55,7 @@ export function ActiveApps() {
     const activeApps = apps?.filter(app => app.is_active).slice(0, 4) || []
 
     return (
-        <div className="p-6 rounded-[12px] bg-gradient-to-br from-[rgba(37,37,37,0.6)] to-[rgba(50,30,70,0.3)] backdrop-blur-sm min-h-[200px]">
+        <div className="p-6 rounded-[12px] bg-[rgba(30,30,30,0.6)] border border-white/5 min-h-[220px]">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white text-base font-medium">Active Apps</h3>
                 <button

@@ -26,7 +26,7 @@ export function YourOverview() {
     const totalRelays = data?.analytics?.total_requests_24h || 0
 
     return (
-        <div className="relative overflow-hidden rounded-[12px] min-h-[200px] bg-[rgba(37,37,37,0.5)] p-6">
+        <div className="relative overflow-hidden rounded-[12px] min-h-[220px] bg-[rgba(30,30,30,0.6)] border border-white/5 p-6">
             <h3 className="text-white text-base font-medium mb-6">Your Overview</h3>
 
             <div className="relative overflow-hidden rounded-[10px] bg-gradient-to-br from-[rgba(127,94,227,0.12)] to-[rgba(75,0,130,0.08)] p-5">
