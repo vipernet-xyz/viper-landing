@@ -159,17 +159,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
                 if (web3authInstance.connected) {
                     const userInfo = normalizeUser(await web3authInstance.getUserInfo())
+                    const idToken = web3authInstance.idToken
 
-                    const authInfo = await web3authInstance.authenticateUser().catch((error: unknown) => {
-                        console.error('Failed to authenticate existing Web3Auth session:', error)
-                        return null
-                    })
-
-                    if (authInfo?.idToken) {
+                    if (idToken) {
                         const syncedUser = await syncUserWithBackend(
                             {
                                 provider: 'web3auth',
-                                idToken: authInfo.idToken,
+                                idToken,
                                 userInfo,
                             },
                             {
@@ -308,9 +304,9 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
             if (web3auth.connected) {
                 const userInfo = normalizeUser(await web3auth.getUserInfo())
-                const authInfo = await web3auth.authenticateUser()
+                const idToken = web3auth.idToken
 
-                if (!authInfo?.idToken) {
+                if (!idToken) {
                     await web3auth.logout().catch(() => undefined)
                     setProvider(null)
                     setUser(null)
@@ -321,7 +317,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 const syncedUser = await syncUserWithBackend(
                     {
                         provider: 'web3auth',
-                        idToken: authInfo.idToken,
+                        idToken,
                         userInfo,
                     },
                     {
