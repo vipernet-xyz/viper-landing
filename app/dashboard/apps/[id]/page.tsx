@@ -566,13 +566,13 @@ ws.onmessage = (event) => {
                                 </div>
 
                                 <div className="space-y-2.5">
-                                    <Label className="text-sm text-white">Chain</Label>
+                                    <Label className="text-sm font-medium text-white">Chain</Label>
                                     {endpointChains.length > 0 ? (
                                         <Select value={selectedChainId} onValueChange={setEndpointChainId}>
-                                            <SelectTrigger className="h-11 border-white/10 bg-white/[0.04] text-white">
-                                                <SelectValue placeholder="Select chain" />
+                                            <SelectTrigger className="w-full h-11 border-white/10 bg-white/[0.04] text-white rounded-lg">
+                                                <SelectValue placeholder="Select Chain" />
                                             </SelectTrigger>
-                                            <SelectContent className="border-zinc-800 bg-zinc-950 text-white">
+                                            <SelectContent className="border-white/10 bg-[#111] text-white">
                                                 {endpointChains.map((chain) => (
                                                     <SelectItem key={chain.relayChainId} value={chain.relayChainId}>
                                                         {chain.name} ({chain.relayChainId})
@@ -590,24 +590,24 @@ ws.onmessage = (event) => {
                                 </div>
 
                                 <div className="space-y-2.5">
-                                    <Label className="text-sm text-white">Network</Label>
+                                    <Label className="text-sm font-medium text-white">Network</Label>
                                     <Select value="mainnet" disabled>
-                                        <SelectTrigger className="h-11 border-white/10 bg-white/[0.04] text-white">
-                                            <SelectValue placeholder="Mainnet" />
+                                        <SelectTrigger className="w-full h-11 border-white/10 bg-white/[0.04] text-white rounded-lg">
+                                            <SelectValue placeholder="Select Network" />
                                         </SelectTrigger>
-                                        <SelectContent className="border-zinc-800 bg-zinc-950 text-white">
+                                        <SelectContent className="border-white/10 bg-[#111] text-white">
                                             <SelectItem value="mainnet">Mainnet</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
 
                                 <div className="space-y-2.5">
-                                    <Label className="text-sm text-white">Request Type</Label>
+                                    <Label className="text-sm font-medium text-white">Request Type</Label>
                                     <Select value={requestType} onValueChange={(value) => setRequestType(value as RequestType)}>
-                                        <SelectTrigger className="h-11 border-white/10 bg-white/[0.04] text-white">
-                                            <SelectValue placeholder="Select request type" />
+                                        <SelectTrigger className="w-full h-11 border-white/10 bg-white/[0.04] text-white rounded-lg">
+                                            <SelectValue placeholder="Select Request Type" />
                                         </SelectTrigger>
-                                        <SelectContent className="border-zinc-800 bg-zinc-950 text-white">
+                                        <SelectContent className="border-white/10 bg-[#111] text-white">
                                             <SelectItem value="http">HTTP</SelectItem>
                                             <SelectItem value="websocket">WebSocket</SelectItem>
                                         </SelectContent>
