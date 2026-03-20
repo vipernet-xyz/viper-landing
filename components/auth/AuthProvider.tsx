@@ -160,7 +160,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                 if (web3authInstance.connected) {
                     try {
                         const userInfo = normalizeUser(await web3authInstance.getUserInfo())
-                        const idToken = web3authInstance.idToken
+                        const idToken = web3authInstance.idToken || userInfo?.idToken
 
                         if (idToken) {
                             const syncedUser = await syncUserWithBackend(
@@ -310,7 +310,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
 
             if (web3auth.connected) {
                 const userInfo = normalizeUser(await web3auth.getUserInfo())
-                const idToken = web3auth.idToken
+                const idToken = web3auth.idToken || userInfo?.idToken
 
                 if (!idToken) {
                     await web3auth.logout().catch(() => undefined)
