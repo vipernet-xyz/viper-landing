@@ -62,12 +62,16 @@ export default function LoginPage() {
 
                 <div className="flex-1 px-4 pt-4">
                     <div className="space-y-1">
-                        {menuItems.map((item) => (
+                        {menuItems.map((item, idx) => (
                             <div
                                 key={item.title}
-                                className="flex h-8 items-center gap-3 rounded-[7px] px-3 text-sm font-normal text-white/50"
+                                className={`flex h-10 items-center gap-3 rounded-[8px] px-3 text-[13px] font-normal ${
+                                    idx === 0
+                                        ? 'bg-gradient-to-r from-[rgba(127,94,227,0.25)] to-[rgba(127,94,227,0.08)] text-white'
+                                        : 'text-white/50'
+                                }`}
                             >
-                                <item.icon className="size-3.5" />
+                                <item.icon className="size-4" />
                                 <span>{item.title}</span>
                             </div>
                         ))}

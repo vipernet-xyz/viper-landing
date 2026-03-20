@@ -55,12 +55,12 @@ export function ActiveApps() {
     const activeApps = apps?.filter(app => app.is_active).slice(0, 4) || []
 
     return (
-        <div className="p-6 rounded-[12px] bg-[rgba(37,37,37,0.5)] backdrop-blur-sm min-h-[240px]">
+        <div className="p-6 rounded-[12px] bg-gradient-to-br from-[rgba(37,37,37,0.6)] to-[rgba(50,30,70,0.3)] backdrop-blur-sm min-h-[200px]">
             <div className="flex items-center justify-between mb-6">
                 <h3 className="text-white text-base font-medium">Active Apps</h3>
                 <button
                     onClick={() => router.push('/dashboard/apps')}
-                    className="flex items-center gap-1.5 text-white text-sm font-normal font-['Space_Grotesk'] hover:opacity-80 transition-opacity cursor-pointer"
+                    className="flex items-center gap-1 text-white/80 text-sm font-normal font-['Space_Grotesk'] hover:text-white transition-colors cursor-pointer px-3 py-1.5 rounded-lg hover:bg-white/5"
                 >
                     See More
                     <ChevronRight className="size-4" strokeWidth={2} />

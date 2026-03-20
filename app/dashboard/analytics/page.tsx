@@ -74,7 +74,7 @@ export default function AnalyticsPage() {
             {/* Metrics Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {/* Total Requests */}
-                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-60px_60px_rgba(127,94,227,0.2)]">
+                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-40px_40px_rgba(127,94,227,0.15)]">
                     <div className="space-y-4">
                         <div className="text-[30px] font-normal text-white font-['Space_Grotesk']">
                             {analytics?.total_requests_24h ? formatCompact(analytics.total_requests_24h) : '0'}
@@ -86,7 +86,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Success Rate */}
-                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-60px_60px_rgba(127,94,227,0.2)]">
+                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-40px_40px_rgba(127,94,227,0.15)]">
                     <div className="space-y-4">
                         <div className="text-[30px] font-normal text-white font-['Space_Grotesk']">
                             {successRate}%
@@ -106,7 +106,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Average Response Time */}
-                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-60px_60px_rgba(127,94,227,0.2)]">
+                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-40px_40px_rgba(127,94,227,0.15)]">
                     <div className="space-y-4">
                         <div className="text-[30px] font-normal text-white font-['Space_Grotesk']">
                             {analytics?.avg_response_time || 0} ms
@@ -118,7 +118,7 @@ export default function AnalyticsPage() {
                 </div>
 
                 {/* Invalid Requests */}
-                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-60px_60px_rgba(127,94,227,0.2)]">
+                <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[#1e1e1e] p-6 shadow-[inset_0px_-40px_40px_rgba(127,94,227,0.15)]">
                     <div className="space-y-4">
                         <div className="text-[30px] font-normal text-white font-['Space_Grotesk']">
                             {analytics?.failed_requests_24h || 0}

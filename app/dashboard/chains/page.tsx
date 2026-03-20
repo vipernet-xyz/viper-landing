@@ -24,11 +24,24 @@ interface Chain {
     icon: string
     status: 'active' | 'inactive'
     type: 'tunnel' | 'bridge'
+    chainId?: string
+    tags?: string[]
 }
 
+const DEFAULT_CHAINS: Chain[] = [
+    { id: 1, name: 'Ethereum', description: 'The decentralized L1', icon: '/assets/chains/ethereum.png', status: 'active', type: 'tunnel', chainId: '0001', tags: ['Mainnet', 'Testnet'] },
+    { id: 2, name: 'Solana', description: 'Fast, low-cost network for digital assets', icon: '/assets/chains/solana.png', status: 'active', type: 'tunnel', tags: ['Mainnet', 'Testnet'] },
+    { id: 3, name: 'Polygon', description: 'Low-fee, high-throughput', icon: '/assets/chains/polygon.png', status: 'active', type: 'tunnel', tags: ['Mainnet', 'Testnet'] },
+    { id: 4, name: 'Sui', description: 'Network with apps of web3', icon: '/assets/chains/sui.png', status: 'active', type: 'tunnel', tags: ['Mainnet', 'Testnet'] },
+    { id: 5, name: 'Avalanche', description: 'Blazingly fast smart contracts', icon: '/assets/chains/avalanche.png', status: 'active', type: 'tunnel', tags: ['Mainnet'] },
+    { id: 6, name: 'Arbitrum', description: 'Ethereum L2 scaling solution', icon: '/assets/chains/arbitrum.png', status: 'active', type: 'tunnel', tags: ['Mainnet'] },
+    { id: 7, name: 'Optimism', description: 'Low-cost Ethereum L2', icon: '/assets/chains/optimism.png', status: 'active', type: 'tunnel', tags: ['Mainnet'] },
+    { id: 8, name: 'Base', description: 'Built on the OP Stack', icon: '/assets/chains/base.png', status: 'active', type: 'tunnel', tags: ['Mainnet'] },
+]
+
 export default function ChainsPage() {
-    const [chains, setChains] = React.useState<Chain[]>([])
-    const [isLoading, setIsLoading] = React.useState(true)
+    const [chains, setChains] = React.useState<Chain[]>(DEFAULT_CHAINS)
+    const [isLoading, setIsLoading] = React.useState(false)
     const [searchQuery, setSearchQuery] = React.useState('')
     const [isDialogOpen, setIsDialogOpen] = React.useState(false)
 
@@ -38,12 +51,10 @@ export default function ChainsPage() {
                 const response = await fetch('/api/chains', { credentials: 'include' })
                 if (response.ok) {
                     const data = await response.json()
-                    setChains(data)
+                    if (data.length > 0) setChains(data)
                 }
             } catch (error) {
                 console.error('Failed to fetch chains:', error)
-            } finally {
-                setIsLoading(false)
             }
         }
         fetchChains()
@@ -78,10 +89,9 @@ export default function ChainsPage() {
                         More than just a blockchain, The Root Network enables seamless user experience and asset interoperability across open metaverse.
                     </p>
                     <Button
-                        variant="secondary"
-                        className="bg-white text-black hover:bg-white/90 font-medium px-6"
+                        className="bg-white text-black hover:bg-white/90 font-medium px-5 h-9 rounded-lg text-sm gap-1"
                     >
-                        Enable <ChevronRight className="h-3 w-3 ml-0.5 inline" />
+                        Enable <ChevronRight className="h-3.5 w-3.5" />
                     </Button>
                 </div>
                 {/* decorative background elements could go here */}
@@ -89,19 +99,19 @@ export default function ChainsPage() {
 
             {/* Controls */}
             <div className="flex items-center justify-between gap-4">
-                <div className="relative flex-1 max-w-md">
-                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/40" />
+                <div className="relative w-[300px]">
+                    <Search className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-white/55" />
                     <Input
-                        placeholder="Search Chains"
+                        placeholder="Search Chain"
                         value={searchQuery}
                         onChange={(e) => setSearchQuery(e.target.value)}
-                        className="pl-10 bg-[#111111] border-white/10 text-white placeholder:text-white/40 h-10"
+                        className="h-10 pl-4 pr-10 bg-viper-bg-card border-white/10 rounded-lg text-sm text-white/60 placeholder:text-white/60"
                     />
                 </div>
 
                 <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
                     <DialogTrigger asChild>
-                        <Button className="bg-transparent border border-white/20 text-white hover:bg-white/10 gap-2 h-10 px-4">
+                        <Button className="h-10 px-5 bg-transparent hover:bg-white/5 text-white text-sm font-medium rounded-lg border border-white/20 gap-2">
                             <Plus className="h-4 w-4" />
                             Request Chain
                         </Button>
@@ -148,6 +158,7 @@ export default function ChainsPage() {
                             icon={chain.icon}
                             status={chain.status as 'active' | 'inactive'}
                             type={chain.type as 'tunnel' | 'bridge'}
+                            tags={chain.tags}
                         />
                     ))
                 )}

@@ -86,23 +86,30 @@ export function DashboardSidebar() {
                         <SidebarMenu className="space-y-1">
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title} className="relative">
-                                    {pathname === item.url && (
-                                        <div className="absolute left-0 top-0 bottom-0 w-[3px] bg-[#7f5ee3] rounded-r z-10" />
-                                    )}
                                     <SidebarMenuButton
                                         asChild
                                         isActive={pathname === item.url}
                                         tooltip={item.title}
-                                        onClick={() => router.push(item.url)}
-                                        className={`h-9 transition-all duration-200 rounded-[7px] cursor-pointer ${
+                                        onClick={() => {
+                                            if (item.url === '/dashboard/docs') {
+                                                window.open('https://docs.vipernet.xyz', '_blank')
+                                                return
+                                            }
+                                            if (item.url === '/dashboard/support') {
+                                                window.open('https://discord.gg/vipernet', '_blank')
+                                                return
+                                            }
+                                            router.push(item.url)
+                                        }}
+                                        className={`h-10 transition-all duration-200 rounded-[8px] cursor-pointer ${
                                             pathname === item.url
-                                                ? 'bg-gradient-to-b from-[rgba(182,163,255,0.2)] to-[rgba(14,14,14,0.2)] text-white border border-white/20'
+                                                ? 'bg-gradient-to-r from-[rgba(127,94,227,0.25)] to-[rgba(127,94,227,0.08)] text-white'
                                                 : 'text-white/50 hover:text-white hover:bg-white/5'
                                         }`}
                                     >
                                         <button className="flex items-center gap-3 px-3 w-full cursor-pointer">
-                                            <item.icon className="size-3.5" />
-                                            <span className="font-normal text-sm">{item.title}</span>
+                                            <item.icon className="size-4" />
+                                            <span className="font-normal text-[13px]">{item.title}</span>
                                         </button>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>

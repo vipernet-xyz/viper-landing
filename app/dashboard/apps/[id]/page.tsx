@@ -62,7 +62,7 @@ interface Chain {
     type: string
 }
 
-const PUBLIC_RELAY_BASE_URL = 'http://node2.vipernet.xyz:8000'
+const PUBLIC_RELAY_BASE_URL = 'http://node3.vipernet.xyz:8000'
 
 const EXAMPLE_REQUESTS = {
     eth_blockNumber: {
@@ -312,25 +312,32 @@ export default function AppDetailsPage() {
         ?? null
     const selectedChainId = selectedEndpointChain?.relayChainId ?? endpointChainId ?? ''
     const selectedExample = EXAMPLE_REQUESTS[exampleRequest]
+    const wsChainId = selectedChainId || '0002'
     const networkUrl = requestType === 'http'
-        ? `${PUBLIC_RELAY_BASE_URL}/relay/${selectedChainId || '0002'}`
-        : `${PUBLIC_RELAY_BASE_URL.replace(/^http/, 'ws')}/ws-relay?api_key=${app.api_key}`
+        ? `${PUBLIC_RELAY_BASE_URL}/relay/${wsChainId}`
+        : `${PUBLIC_RELAY_BASE_URL.replace(/^http/, 'ws')}/ws-relay?api_key=${app.api_key}&chain_id=${wsChainId}`
     const examplePayload = selectedExample.payload
     const exampleRequestBody = JSON.stringify(examplePayload, null, 2)
     const curlExample = `curl --location '${networkUrl}' \\
   --header 'x-api-key: ${app.api_key}' \\
   --header 'Content-Type: application/json' \\
   --data '${JSON.stringify(examplePayload, null, 4)}'`
-    const websocketExample = `const ws = new WebSocket('${networkUrl}')
+    const websocketExample = `// Connect (standard JSON-RPC 2.0 — works with wscat, ethers.js, etc.)
+const ws = new WebSocket('${networkUrl}')
 
 ws.onopen = () => {
-  ws.send(JSON.stringify({
-    id: 'demo-request',
-    type: 'relay',
-    chain_id: '${selectedChainId || '0002'}',
-    data: ${JSON.stringify(examplePayload, null, 4)}
-  }))
-}`
+  // Send any JSON-RPC request directly
+  ws.send(JSON.stringify(${JSON.stringify(examplePayload, null, 4)}))
+}
+
+ws.onmessage = (event) => {
+  console.log(JSON.parse(event.data))
+  // => ${JSON.stringify({ jsonrpc: '2.0', id: examplePayload.id, result: '0x...' })}
+}
+
+// --- CLI ---
+// wscat -c "${networkUrl}"
+// > ${JSON.stringify(examplePayload)}`
     const requestSnippet = requestType === 'http' ? curlExample : websocketExample
     const totalRequests24h = analytics?.total_requests_24h ?? 0
     const failedRequests24h = analytics?.failed_requests_24h ?? 0

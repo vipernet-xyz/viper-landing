@@ -119,13 +119,13 @@ export default function AppsPage() {
             <div className="rounded-[10px] border-[0.5px] border-white/10 bg-[rgba(22,22,22,0.85)] overflow-hidden">
                 <Table>
                     <TableHeader>
-                        <TableRow className="bg-[#1e1e1e] border-b-0 hover:bg-[#1e1e1e]">
-                            <TableHead className="text-white text-sm font-normal h-[41px]">App Name</TableHead>
-                            <TableHead className="text-white text-sm font-normal">Requests (24h)</TableHead>
-                            <TableHead className="text-white text-sm font-normal">Failed Requests (24h)</TableHead>
-                            <TableHead className="text-white text-sm font-normal">Created On</TableHead>
-                            <TableHead className="text-white text-sm font-normal">Networks</TableHead>
-                            <TableHead className="text-white text-sm font-normal">Actions</TableHead>
+                        <TableRow className="bg-[#1a1a1a] border-b border-white/10 hover:bg-[#1a1a1a]">
+                            <TableHead className="text-white/80 text-xs font-medium h-10">App Name</TableHead>
+                            <TableHead className="text-white/80 text-xs font-medium">Requests (24h)</TableHead>
+                            <TableHead className="text-white/80 text-xs font-medium">Failed Requests (24h)</TableHead>
+                            <TableHead className="text-white/80 text-xs font-medium">Created On</TableHead>
+                            <TableHead className="text-white/80 text-xs font-medium">Networks</TableHead>
+                            <TableHead className="text-white/80 text-xs font-medium">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>

@@ -146,11 +146,16 @@ export default function CreateAppPage() {
                 <p className="text-zinc-400">Generate a new API Key for your project</p>
             </div>
 
-            <Card className="bg-zinc-900/50 border-zinc-800">
+            <Card className="bg-[#111111] border-white/10 rounded-xl">
                 <form onSubmit={handleSubmit}>
                     <CardHeader>
-                        <CardTitle>App Details</CardTitle>
-                        <CardDescription>
+                        <div className="flex items-center gap-3 mb-2">
+                            <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-[#7f5ee3] to-[#46337d] flex items-center justify-center">
+                                <svg className="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" /></svg>
+                            </div>
+                        </div>
+                        <CardTitle className="text-white text-lg">App Details</CardTitle>
+                        <CardDescription className="text-white/50">
                             Enter the name and description for your application.
                         </CardDescription>
                     </CardHeader>
@@ -162,7 +167,7 @@ export default function CreateAppPage() {
                                 placeholder="e.g., My DeFi Dashboard"
                                 value={name}
                                 onChange={(e) => setName(e.target.value)}
-                                className="bg-zinc-950 border-zinc-800"
+                                className="bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40"
                                 required
                             />
                         </div>
@@ -190,7 +195,7 @@ export default function CreateAppPage() {
                                         placeholder="https://example.com"
                                         value={origin}
                                         onChange={(e) => updateOrigin(index, e.target.value)}
-                                        className="bg-zinc-950 border-zinc-800"
+                                        className="bg-[#0a0a0a] border-white/10 text-white placeholder:text-white/40"
                                     />
                                     {allowedOrigins.length > 1 && (
                                         <Button
@@ -198,7 +203,7 @@ export default function CreateAppPage() {
                                             variant="outline"
                                             size="icon"
                                             onClick={() => removeOriginField(index)}
-                                            className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
+                                            className="bg-transparent border-white/20 text-white hover:bg-white/5"
                                         >
                                             <X className="h-4 w-4" />
                                         </Button>
@@ -209,7 +214,7 @@ export default function CreateAppPage() {
                                 type="button"
                                 variant="outline"
                                 onClick={addOriginField}
-                                className="bg-zinc-800 border-zinc-700 hover:bg-zinc-700"
+                                className="bg-transparent border-white/20 text-white hover:bg-white/5"
                             >
                                 <Plus className="mr-2 h-4 w-4" />
                                 Add Origin
@@ -240,9 +245,9 @@ export default function CreateAppPage() {
                             </div>
                         </div>
                     </CardContent>
-                    <CardFooter className="flex justify-end gap-2">
-                        <Button type="button" variant="ghost" onClick={() => router.back()}>Cancel</Button>
-                        <Button type="submit" disabled={mutation.isPending} className="bg-indigo-600 hover:bg-indigo-700">
+                    <CardFooter className="flex justify-end gap-3 pt-2">
+                        <Button type="button" variant="ghost" onClick={() => router.back()} className="text-white/60 hover:text-white hover:bg-white/5">Cancel</Button>
+                        <Button type="submit" disabled={mutation.isPending} className="bg-viper-purple hover:bg-viper-purple-dark text-white font-medium px-6">
                             {mutation.isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                             Create App
                         </Button>
