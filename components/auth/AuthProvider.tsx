@@ -148,7 +148,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
                     web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
                 })
 
-                await web3authInstance.initModal()
+                await web3authInstance.init()
 
                 if (!isMounted) {
                     return
