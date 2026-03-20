@@ -2,7 +2,6 @@
 
 import { createContext, useContext, useEffect, useRef, useState, ReactNode } from 'react'
 import { useChain } from '@cosmos-kit/react'
-import type { IProvider } from '@web3auth/base'
 
 type Web3Auth = any
 
@@ -30,7 +29,7 @@ function mergeUsers(currentUser: any, nextUser: any) {
 
 interface AuthContextType {
     web3auth: Web3Auth | null
-    provider: IProvider | null
+    provider: any | null
     user: any | null
     isLoading: boolean
     authError: string | null
@@ -58,20 +57,9 @@ interface AuthProviderProps {
 
 const clientId = process.env.NEXT_PUBLIC_WEB3AUTH_CLIENT_ID
 
-const getChainConfig = () => ({
-    chainNamespace: 'eip155',
-    chainId: '0x1',
-    rpcTarget: 'https://eth.llamarpc.com',
-    displayName: 'Ethereum Mainnet',
-    blockExplorerUrl: 'https://etherscan.io/',
-    ticker: 'ETH',
-    tickerName: 'Ethereum',
-    skipLookupNetworkData: true,
-})
-
 export const AuthProvider = ({ children }: AuthProviderProps) => {
     const [web3auth, setWeb3auth] = useState<Web3Auth | null>(null)
-    const [provider, setProvider] = useState<IProvider | null>(null)
+    const [provider, setProvider] = useState<any | null>(null)
     const [user, setUser] = useState<any | null>(null)
     const [isLoading, setIsLoading] = useState(true)
     const [authError, setAuthError] = useState<string | null>(null)
@@ -153,35 +141,13 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
             }
 
             try {
-                const { Web3Auth } = await import('@web3auth/modal')
-                const { CHAIN_NAMESPACES, WEB3AUTH_NETWORK } = await import('@web3auth/base')
-                const { EthereumPrivateKeyProvider } = await import('@web3auth/ethereum-provider')
-                const { MetamaskAdapter } = await import('@web3auth/metamask-adapter')
-
-                const privateKeyProvider = new EthereumPrivateKeyProvider({
-                    config: {
-                        chainConfig: getChainConfig() as any,
-                    },
-                })
+                const { Web3Auth, WEB3AUTH_NETWORK } = await import('@web3auth/modal')
 
                 const web3authInstance = new Web3Auth({
                     clientId,
                     web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-                    privateKeyProvider,
                 })
 
-                const metamaskAdapter = new MetamaskAdapter({
-                    clientId,
-                    sessionTime: 3600,
-                    web3AuthNetwork: WEB3AUTH_NETWORK.SAPPHIRE_MAINNET,
-                    chainConfig: {
-                        chainNamespace: CHAIN_NAMESPACES.EIP155,
-                        chainId: '0x1',
-                        rpcTarget: 'https://eth.llamarpc.com',
-                    },
-                })
-
-                web3authInstance.configureAdapter(metamaskAdapter)
                 await web3authInstance.initModal()
 
                 if (!isMounted) {
