@@ -80,10 +80,10 @@ export function DashboardSidebar() {
                     </div>
                 </div>
             </SidebarHeader>
-            <SidebarContent className="pt-4">
+            <SidebarContent className="pt-5">
                 <SidebarGroup>
                     <SidebarGroupContent>
-                        <SidebarMenu className="space-y-1">
+                        <SidebarMenu className="space-y-3 px-1">
                             {items.map((item) => (
                                 <SidebarMenuItem key={item.title} className="relative">
                                     <SidebarMenuButton
@@ -101,15 +101,15 @@ export function DashboardSidebar() {
                                             }
                                             router.push(item.url)
                                         }}
-                                        className={`h-10 transition-all duration-200 rounded-[8px] cursor-pointer ${
+                                        className={`h-11 transition-all duration-200 rounded-[8px] cursor-pointer ${
                                             pathname === item.url
-                                                ? 'bg-gradient-to-r from-[rgba(127,94,227,0.25)] to-[rgba(127,94,227,0.08)] text-white'
-                                                : 'text-white/50 hover:text-white hover:bg-white/5'
+                                                ? 'bg-gradient-to-r from-[rgba(127,94,227,0.2)] to-[rgba(127,94,227,0.05)] text-white'
+                                                : 'text-white/40 hover:text-white hover:bg-white/5'
                                         }`}
                                     >
                                         <button className="flex items-center gap-3 px-3 w-full cursor-pointer">
-                                            <item.icon className="size-4" />
-                                            <span className="font-normal text-[13px]">{item.title}</span>
+                                            <item.icon className="size-5" />
+                                            <span className="font-normal text-[15px]">{item.title}</span>
                                         </button>
                                     </SidebarMenuButton>
                                 </SidebarMenuItem>
