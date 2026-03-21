@@ -626,10 +626,7 @@ ws.onmessage = (event) => {
                             </CardContent>
                         </Card>
 
-                        <div className="space-y-5 relative">
-                            {/* Purple V circle - decorative */}
-                            <div className="absolute -top-2 right-6 h-12 w-12 rounded-full bg-[#7B5CFF] flex items-center justify-center text-white font-bold text-lg z-10 shadow-lg shadow-purple-500/20">V</div>
-
+                        <div className="space-y-5">
                             {/* Network URL - simple inline style matching Figma */}
                             <Card className="border-white/10 bg-[rgba(18,18,18,0.92)]">
                                 <CardContent className="space-y-1.5 p-5">
